@@ -1,12 +1,12 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router/index' // 引入vue-router
+import router from './router/index'
 import store, { key } from './store'
-import './index.css' // 自定义全局样式
+import './index.css' 
 import api from './api/request'
 
-const app = createApp(App) // 创建实例
+const app = createApp(App) 
 app.config.globalProperties.$api = api;
-app.use(router) // 挂载路由
-app.use(store, key) // 挂载vuex
+app.use(router) 
+app.use(store, key) 
 app.mount('#app')

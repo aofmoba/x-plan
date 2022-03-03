@@ -1,5 +1,4 @@
 <template>
-    <!--  mask黑幕  -->
     <div class="mask" v-if="token0Number<=0"></div>
 
     <div class="welcome" v-else>
@@ -17,8 +16,6 @@
                 <img class="section4-last" src="https://d3bhixjyozyk2o.cloudfront.net/section4-2.png" alt="">
             </div>
         </div>
-        <!-- 添加support后打开section5        -->
-        <!-- <div class="section5"></div> -->
         <div class="foot-bottom"></div>
         <div class="content">
             <div class="models">
@@ -43,14 +40,11 @@
                     <li>
                         <div class="round-title">Seed &nbsp;&nbsp;&nbsp;&nbsp;</div>
                         <div>7%</div>
-                        <!-- <div class="round-price">$0.13</div> -->
                         <div class="round-month">10 month</div>
                         <div class="round-schedule">
                             <div class="schedule-line">
-                                <!-- <img src="https://d3bhixjyozyk2o.cloudfront.net/yellow.png" alt=""> -->
                                 <div class="wrap1"></div>
                             </div>
-                            <!-- <div class="percent">100%</div> -->
                             <img class="schedule-locking" src="https://d3bhixjyozyk2o.cloudfront.net/locking1.png" alt="">
                         </div>
                     </li>
@@ -649,7 +643,7 @@ onMounted(() => {
                                 .wrap1{
                                     position: relative;
                                     height: 2vw;
-                                    width: 90%; // 控制进度
+                                    width: 90%; 
                                     background-color: #dbba11;
                                     background-image: linear-gradient(-60deg, transparent 0rem, transparent 0.8rem, #f5de6b 0.8rem, #e2c94d 1.6rem, transparent 1.6rem, transparent 2.4rem, #e6d273 2.4rem);
                                     background-size: 30px 38px;
@@ -658,7 +652,7 @@ onMounted(() => {
                                 .wrap2{
                                     position: relative;
                                     height: 2vw;
-                                    width: 80%; // 控制进度
+                                    width: 80%; 
                                     background-color: #CCF493;
                                     background-image: linear-gradient(-60deg, transparent 0rem, transparent 0.8rem, #aed37a 0.8rem, #99c063 1.6rem, transparent 1.6rem, transparent 2.4rem, #acd670 2.4rem);
                                     background-size: 30px 38px;

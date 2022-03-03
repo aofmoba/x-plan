@@ -1,4 +1,3 @@
-// 测试合约
 const test = {
     name: 'test',
     address: '0x8000B62AF5D5188337a131c8E40F2BA1adE28669',
@@ -72,7 +71,6 @@ const test = {
         },
     ],
 }
-// 物品合约
 const GameItems = {
     name: 'GameItems',
     address: '0x46700948aC4B23EdbeCb49513946af519d5602Fa',
@@ -461,7 +459,6 @@ const GameItems = {
         },
     ],
 }
-// 市场合约
 const nftTreader = {
     name: 'nftTreader',
     address: '0x1be539C65482A6DC6B8422544171cc7EE6b22fD1',
@@ -580,7 +577,6 @@ const nftTreader = {
         },
     ],
 }
-// 代币合约
 const money = {
     name: 'money',
     address: '0x934c9c52730Fe26187583Ed3712c17576901B68F',
@@ -953,7 +949,6 @@ const money = {
         },
     ],
 }
-// 空投合约
 const airdrop = {
     name: 'airdrop',
     address: '0xF722fECd5657D79F7E69EC90B52F4931d2B804c5',
@@ -1094,8 +1089,6 @@ const airdrop = {
         }
     ],
 }
-
-//nft
 const nft = {
     address: '0x82cCB2FE8f4d07702f7c2F4200f0FBF630C52406',
     abi: [

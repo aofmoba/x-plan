@@ -9,9 +9,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import store from './store'
-// 监听屏幕尺寸
 onMounted(() => {
-    window.onresize = () => store.dispatch('sys/get_screen_size') // 监听屏幕尺寸
+    window.onresize = () => store.dispatch('sys/get_screen_size') 
 })
 </script>
 <style>

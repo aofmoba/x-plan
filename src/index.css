@@ -1,4 +1,3 @@
-/* 自定义样式 */
 .z-blurEffect {
     backdrop-filter: saturate(180%) blur(20px);
 }
@@ -20,7 +19,6 @@ body {
     fill: currentColor;
     overflow: hidden;
 }
-/* 以下是清除默认样式 */
 html,
 body,
 div,

@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import { computed, readonly, ref } from 'vue'
 const props = defineProps({
-    show: Boolean, // 显示隐藏
-    index: [String, Number], // 层级
+    show: Boolean, 
+    index: [String, Number], 
 })
 const Style: any = computed(() => {
     let style = {
