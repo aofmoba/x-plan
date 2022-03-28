@@ -58,13 +58,13 @@
                         <div class="round-month">10 month</div>
                         <div class="round-schedule">
                             <div class="schedule-line">
-                                <!-- <div class="wrap2"> -->
+                                <div class="wrap2">
                                     <!-- <img class="schedule-bg" src="https://d3bhixjyozyk2o.cloudfront.net/green1.png" alt=""> -->
                                     <!-- <span></span> -->
-                                <!-- </div> -->
+                                </div>
                             </div>
                             <!-- <div class="percent">0%</div> -->
-                            <img class="schedule-locking locking2" src="https://d3bhixjyozyk2o.cloudfront.net/locking1.png" alt="">
+                            <img class="schedule-locking locking2" src="https://d3bhixjyozyk2o.cloudfront.net/locking2.png" alt="">
                         </div>
                     </li>
                     <li>
@@ -390,7 +390,15 @@ onMounted(() => {
             width: 0%;
         }
         100% {
-            width: 100%;
+            width: 55%;
+        }
+    }
+    @keyframes readA{
+        0% {
+            width: 0%;
+        }
+        100% {
+            width: 35%;
         }
     }
     a {
@@ -626,7 +634,7 @@ onMounted(() => {
                                 .wrap1{
                                     position: relative;
                                     height: 3.1vw;
-                                    width: 90%; 
+                                    width: 55%; 
                                     background-color: #dbba11;
                                     background-image: linear-gradient(-60deg, transparent 0rem, transparent 0.6rem, #f5de6b 0.8rem, #e2c94d 1.6rem, transparent 1.6rem, transparent 2.4rem, #e6d273 2.4rem);
                                     background-size: 26px 54px;
@@ -635,11 +643,11 @@ onMounted(() => {
                                 .wrap2{
                                     position: relative;
                                     height: 3.1vw;
-                                    width: 80%; 
+                                    width: 35%; 
                                     background-color: #CCF493;
                                     background-image: linear-gradient(-60deg, transparent 0rem, transparent 0.8rem, #aed37a 0.8rem, #99c063 1.6rem, transparent 1.6rem, transparent 2.4rem, #acd670 2.4rem);
                                     background-size: 30px 38px;
-                                    animation: process 800ms infinite linear;
+                                    animation: readA 1000ms linear,process 800ms infinite linear;
                                 }
                             }
                             .percent{
