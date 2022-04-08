@@ -21,3 +21,9 @@ export const failResponseWrap = (data: unknown, msg: string, code = 50000) => {
     code,
   };
 };
+
+export const successResponseInLabs = (data: unknown) => ({
+  result: true,
+  code: 200,
+  data,
+});

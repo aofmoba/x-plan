@@ -31,7 +31,9 @@
         const copyRouter = JSON.parse(JSON.stringify(appRoute.value.children));
         copyRouter.sort(
           (a: RouteRecordNormalized, b: RouteRecordNormalized) => {
-            return (a.meta.order || 0) - (b.meta.order || 0);
+            return (
+              ((a.meta.order as number) || 0) - ((b.meta.order as number) || 0)
+            );
           }
         );
         function travel(_routes: RouteRecordRaw[], layer: number) {
@@ -152,6 +154,7 @@
       display: flex;
       align-items: center;
     }
+
     .arco-icon {
       &:not(.arco-icon-down) {
         font-size: 18px;

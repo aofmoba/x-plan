@@ -14,8 +14,8 @@ export interface PolicyRecord {
 }
 
 export interface PolicyParams extends Partial<PolicyRecord> {
-  current: number;
-  pageSize: number;
+  current?: number;
+  pageSize?: number;
 }
 
 export interface PolicyListRes {
@@ -43,6 +43,7 @@ export interface ServiceRecord {
   enable?: boolean;
   expires?: boolean;
 }
+
 export function queryInspectionList() {
   return axios.get('/api/list/quality-inspection');
 }

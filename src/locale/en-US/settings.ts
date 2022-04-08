@@ -10,7 +10,6 @@ export default {
   'settings.navbar.theme.toDark': 'Click to use dark mode',
   'settings.navbar.alerts': 'alerts',
   'settings.menu': 'Menu',
-  'settings.tabBar': 'Tab Bar',
   'settings.footer': 'Footer',
   'settings.otherSettings': 'Other Settings',
   'settings.colorWeek': 'Color Week',

@@ -1,3 +1,4 @@
+import localeSettings from '@/locale/en-US/settings';
 import localeMessageBox from '@/components/message-box/locale/en-US';
 import localeLogin from '@/views/login/locale/en-US';
 
@@ -26,19 +27,20 @@ import locale500 from '@/views/exception/500/locale/en-US';
 import localeUserInfo from '@/views/user/info/locale/en-US';
 import localeUserSetting from '@/views/user/setting/locale/en-US';
 
-import localeSettings from './en-US/settings';
+// Message
+import SuccessMessage from '@/locale/en-US/Message/Success';
+// import FailedMessage from '@/locale/en-US/Message/Failed';
+
+// Base Components
+import Menu from '@/locale/en-US/menu';
+import SearchTableAction from '@/locale/en-US/searchTableAction';
+
+// Top Views
+// en-US
+import Trade from '@/locale/en-US/Trade';
 
 export default {
-  'menu.dashboard': 'Dashboard',
-  'menu.list': 'List',
-  'menu.result': 'Result',
-  'menu.exception': 'Exception',
-  'menu.form': 'Form',
-  'menu.profile': 'Profile',
-  'menu.visualization': 'Data Visualization',
-  'menu.user': 'User Center',
-  'navbar.docs': 'Docs',
-  'navbar.action.locale': 'Switch to English',
+  ...localeSearchTable,
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
@@ -59,4 +61,10 @@ export default {
   ...locale500,
   ...localeUserInfo,
   ...localeUserSetting,
+
+  // Examples are shown above, and real business is shown below
+  ...Menu,
+  ...SuccessMessage,
+  ...SearchTableAction,
+  ...Trade,
 };

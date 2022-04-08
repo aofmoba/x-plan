@@ -1,19 +1,17 @@
-const TOKEN_KEY = 'token';
-
 const isLogin = () => {
-  return !!localStorage.getItem(TOKEN_KEY);
+  return !!localStorage.getItem('token');
 };
 
 const getToken = () => {
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem('token');
 };
 
 const setToken = (token: string) => {
-  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem('token', token);
 };
 
 const clearToken = () => {
-  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem('token');
 };
 
 export { isLogin, getToken, setToken, clearToken };

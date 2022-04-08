@@ -11,6 +11,7 @@ export interface MyProjectRecord {
     avatar: string;
   }[];
 }
+
 export function queryMyProjectList() {
   return axios.post('/api/user/my-project/list');
 }
@@ -21,6 +22,7 @@ export interface MyTeamRecord {
   name: string;
   peopleNumber: number;
 }
+
 export function queryMyTeamList() {
   return axios.post('/api/user/my-team/list');
 }
@@ -31,6 +33,7 @@ export interface LatestActivity {
   description: string;
   avatar: string;
 }
+
 export function queryLatestActivity() {
   return axios.post<LatestActivity[]>('/api/user/latest-activity');
 }

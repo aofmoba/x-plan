@@ -7,10 +7,10 @@
           src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
         />
         <a-typography-title
-          :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
+          :style="{ margin: 0, fontSize: '18px' }"
         >
-          Arco Pro
+          Cyberpop Online X-Plan
         </a-typography-title>
         <icon-menu-fold
           v-if="appStore.device === 'mobile'"
@@ -22,7 +22,7 @@
     <ul class="right-side">
       <li>
         <a-tooltip :content="$t('settings.search')">
-          <a-button class="nav-btn" type="outline" :shape="'circle'">
+          <a-button :shape="'circle'" class="nav-btn" type="outline">
             <template #icon>
               <icon-search />
             </template>
@@ -32,9 +32,9 @@
       <li>
         <a-tooltip :content="$t('settings.language')">
           <a-button
+            :shape="'circle'"
             class="nav-btn"
             type="outline"
-            :shape="'circle'"
             @click="setDropDownVisible"
           >
             <template #icon>
@@ -64,9 +64,9 @@
           "
         >
           <a-button
+            :shape="'circle'"
             class="nav-btn"
             type="outline"
-            :shape="'circle'"
             @click="toggleTheme"
           >
             <template #icon>
@@ -81,9 +81,9 @@
           <div class="message-box-trigger">
             <a-badge :count="9" dot>
               <a-button
+                :shape="'circle'"
                 class="nav-btn"
                 type="outline"
-                :shape="'circle'"
                 @click="setPopoverVisible"
               >
                 <icon-notification />
@@ -92,10 +92,10 @@
           </div>
         </a-tooltip>
         <a-popover
-          trigger="click"
           :arrow-style="{ display: 'none' }"
           :content-style="{ padding: 0, minWidth: '400px' }"
           content-class="message-popover"
+          trigger="click"
         >
           <div ref="refBtn" class="ref-btn"></div>
           <template #content>
@@ -106,9 +106,9 @@
       <li>
         <a-tooltip :content="$t('settings.title')">
           <a-button
+            :shape="'circle'"
             class="nav-btn"
             type="outline"
-            :shape="'circle'"
             @click="setVisible"
           >
             <template #icon>
@@ -119,11 +119,8 @@
       </li>
       <li>
         <a-dropdown trigger="click">
-          <a-avatar
-            :size="32"
-            :style="{ marginRight: '8px', cursor: 'pointer' }"
-          >
-            <img alt="avatar" :src="avatar" />
+          <a-avatar :size="32" :style="{ marginRight: '8px' }">
+            <img :src="avatar" alt="avatar" />
           </a-avatar>
           <template #content>
             <a-doption>
@@ -165,8 +162,8 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-  import { computed, ref, inject } from 'vue';
+<script lang="ts">
+  import { computed, defineComponent, inject, ref } from 'vue';
   import { Message } from '@arco-design/web-vue';
   import { useDark, useToggle } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
@@ -175,61 +172,84 @@
   import useUser from '@/hooks/user';
   import MessageBox from '../message-box/index.vue';
 
-  const appStore = useAppStore();
-  const userStore = useUserStore();
-  const { logout } = useUser();
-  const { changeLocale } = useLocale();
-  const locales = [...LOCALE_OPTIONS];
-  const avatar = computed(() => {
-    return userStore.avatar;
-  });
-  const theme = computed(() => {
-    return appStore.theme;
-  });
-  const isDark = useDark({
-    selector: 'body',
-    attribute: 'arco-theme',
-    valueDark: 'dark',
-    valueLight: 'light',
-    storageKey: 'arco-theme',
-    onChanged(dark: boolean) {
-      // overridded default behavior
-      appStore.toggleTheme(dark);
+  export default defineComponent({
+    components: {
+      MessageBox,
+    },
+    setup() {
+      const appStore = useAppStore();
+      const userStore = useUserStore();
+      const { logout } = useUser();
+      const { changeLocale } = useLocale();
+      const locales = [...LOCALE_OPTIONS];
+      const avatar = computed(() => {
+        return userStore.avatar;
+      });
+      const theme = computed(() => {
+        return appStore.theme;
+      });
+      const isDark = useDark({
+        selector: 'body',
+        attribute: 'arco-theme',
+        valueDark: 'dark',
+        valueLight: 'light',
+        storageKey: 'arco-theme',
+        onChanged(dark: boolean) {
+          // overridded default behavior
+          appStore.toggleTheme(dark);
+        },
+      });
+      const toggleTheme = useToggle(isDark);
+      const setVisible = () => {
+        appStore.updateSettings({ globalSettings: true });
+      };
+      const refBtn = ref();
+      const triggerBtn = ref();
+      const setPopoverVisible = () => {
+        const event = new MouseEvent('click', {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+        });
+        refBtn.value.dispatchEvent(event);
+      };
+      const handleLogout = () => {
+        logout();
+      };
+      const setDropDownVisible = () => {
+        const event = new MouseEvent('click', {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+        });
+        triggerBtn.value.dispatchEvent(event);
+      };
+      const switchRoles = async () => {
+        const res = await userStore.switchRoles();
+        Message.success(res as string);
+      };
+      const toggleDrawerMenu = inject('toggleDrawerMenu');
+      return {
+        appStore,
+        locales,
+        theme,
+        avatar,
+        changeLocale,
+        toggleTheme,
+        setVisible,
+        setPopoverVisible,
+        refBtn,
+        triggerBtn,
+        handleLogout,
+        setDropDownVisible,
+        switchRoles,
+        toggleDrawerMenu,
+      };
     },
   });
-  const toggleTheme = useToggle(isDark);
-  const setVisible = () => {
-    appStore.updateSettings({ globalSettings: true });
-  };
-  const refBtn = ref();
-  const triggerBtn = ref();
-  const setPopoverVisible = () => {
-    const event = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    });
-    refBtn.value.dispatchEvent(event);
-  };
-  const handleLogout = () => {
-    logout();
-  };
-  const setDropDownVisible = () => {
-    const event = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    });
-    triggerBtn.value.dispatchEvent(event);
-  };
-  const switchRoles = async () => {
-    const res = await userStore.switchRoles();
-    Message.success(res as string);
-  };
-  const toggleDrawerMenu = inject('toggleDrawerMenu');
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
   .navbar {
     display: flex;
     justify-content: space-between;
@@ -248,9 +268,11 @@
     display: flex;
     padding-right: 20px;
     list-style: none;
+
     :deep(.locale-select) {
       border-radius: 20px;
     }
+
     li {
       display: flex;
       align-items: center;
@@ -261,16 +283,19 @@
       color: var(--color-text-1);
       text-decoration: none;
     }
+
     .nav-btn {
-      border-color: rgb(var(--gray-2));
       color: rgb(var(--gray-8));
       font-size: 16px;
+      border-color: rgb(var(--gray-2));
     }
+
     .trigger-btn,
     .ref-btn {
       position: absolute;
       bottom: 14px;
     }
+
     .trigger-btn {
       margin-left: 14px;
     }

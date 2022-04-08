@@ -1,8 +1,14 @@
 <template>
-  <a-layout-footer class="footer">Arco Pro</a-layout-footer>
+  <a-layout-footer class="footer">
+    Cyberpop Labs. Ltd. ALL Rights Reserved.
+  </a-layout-footer>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts">
+  import { defineComponent } from 'vue';
+
+  export default defineComponent({});
+</script>
 
 <style lang="less" scoped>
   .footer {

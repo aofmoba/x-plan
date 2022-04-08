@@ -24,9 +24,11 @@ export interface PostData {
 }
 
 export interface Pagination {
-  current: number;
-  pageSize: number;
+  startPage?: number;
+  size?: number;
   total?: number;
+  current?: number;
+  pageSize?: number;
 }
 
 export type TimeRanger = [string, string];

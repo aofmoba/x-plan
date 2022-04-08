@@ -3,8 +3,8 @@ import NProgress from 'nprogress'; // progress bar
 import 'nprogress/nprogress.css';
 
 import DefaultLayout from '@/layout/default-layout.vue';
-import Login from './routes/modules/login';
-import appRoutes from './routes';
+import Login from '@/router/modules/login';
+import appRoutes from '@/router/modules';
 import createRouteGuard from './guard';
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration

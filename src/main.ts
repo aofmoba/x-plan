@@ -2,6 +2,10 @@ import { createApp } from 'vue';
 import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import globalComponents from '@/components';
+// import axios from 'axios';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import enUS from 'dayjs/locale/en';
 import router from './router';
 import store from './store';
 import i18n from './locale';
@@ -10,7 +14,7 @@ import './mock';
 import App from './App.vue';
 import '@arco-design/web-vue/dist/arco.css';
 import '@/assets/style/global.less';
-import '@/api/interceptor';
+// import '@/api/interceptor';
 
 const app = createApp(App);
 
@@ -24,3 +28,13 @@ app.use(globalComponents);
 app.use(directive);
 
 app.mount('#app');
+
+// set dark theme
+document.body.setAttribute('arco-theme', 'dark');
+
+// set day.js locale
+dayjs.extend(relativeTime);
+dayjs().locale(enUS);
+
+// set axios base URL
+// axios.defaults.baseURL = '/api';
