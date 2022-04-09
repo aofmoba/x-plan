@@ -1,7 +1,12 @@
 <script lang="tsx">
-  import { defineComponent, ref, h, compile, computed } from 'vue';
+  import { compile, computed, defineComponent, h, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { useRouter, RouteRecordRaw, RouteRecordNormalized } from 'vue-router';
+  import {
+    RouteLocationNormalized,
+    RouteRecordNormalized,
+    RouteRecordRaw,
+    useRouter,
+  } from 'vue-router';
   import { useAppStore } from '@/store';
   import usePermission from '@/hooks/permission';
   import { listenerRouteChange } from '@/utils/route-listener';
@@ -36,6 +41,7 @@
             );
           }
         );
+
         function travel(_routes: RouteRecordRaw[], layer: number) {
           if (!_routes) return null;
           const collector: any = _routes.map((element) => {
@@ -74,6 +80,7 @@
           });
           return collector.filter(Boolean);
         }
+
         return travel(copyRouter, 0);
       });
 
@@ -86,12 +93,22 @@
           name: item.name,
         });
       };
-      listenerRouteChange((newRoute) => {
-        if (newRoute.meta.requiresAuth && !newRoute.meta.hideInMenu) {
-          const key = newRoute.matched[2]?.name as string;
-          selectedKey.value = [key];
-        }
-      }, true);
+      listenerRouteChange(
+        (
+          newRoute: RouteLocationNormalized & {
+            meta: { hideChildrenInMenu?: boolean };
+          }
+        ) => {
+          if (!newRoute.meta.hideInMenu) {
+            if (newRoute.meta.hideChildrenInMenu) {
+              selectedKey.value = [newRoute.name as string];
+            } else {
+              selectedKey.value = [newRoute.matched[2]?.name as string];
+            }
+          }
+        },
+        true
+      );
       const setCollapse = (val: boolean) => {
         if (appStore.device === 'desktop')
           appStore.updateSettings({ menuCollapse: val });
@@ -105,7 +122,7 @@
               const icon = element?.meta?.icon
                 ? `<${element?.meta?.icon}/>`
                 : ``;
-              const r = (
+              const r = !element?.meta?.hideChildrenInMenu ? (
                 <a-sub-menu
                   key={element?.name}
                   v-slots={{
@@ -122,12 +139,24 @@
                     );
                   })}
                 </a-sub-menu>
+              ) : (
+                <a-menu-item
+                  key={element?.name}
+                  v-slots={{
+                    icon: () => h(compile(icon)),
+                    title: () => h(compile(t(element?.meta?.locale || ''))),
+                  }}
+                  onClick={() => goto(element)}
+                >
+                  {t(element?.meta?.locale || '')}
+                </a-menu-item>
               );
               nodes.push(r as never);
             });
           }
           return nodes;
         }
+
         return travel(menuTree.value);
       };
       return () => (

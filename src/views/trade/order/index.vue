@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.trade', 'menu.trade.orderInGame']" />
-    <a-card :title="$t('trade.orderInGame.tableTitle')" class="general-card">
+    <Breadcrumb :items="['menu.trade', 'menu.trade.order']" />
+    <a-card :title="$t('trade.order.tableTitle')" class="general-card">
       <a-row>
         <a-col :flex="1">
           <a-form
@@ -13,7 +13,7 @@
             <a-row :gutter="16">
               <a-col :span="8">
                 <a-form-item
-                  :label="$t('trade.orderInGame.searchForm.id')"
+                  :label="$t('trade.order.searchForm.id')"
                   field="id"
                 >
                   <a-input v-model="formModel.id" />
@@ -21,7 +21,7 @@
               </a-col>
               <a-col :span="8">
                 <a-form-item
-                  :label="$t('trade.orderInGame.searchForm.txhash')"
+                  :label="$t('trade.order.searchForm.txhash')"
                   field="txhash"
                 >
                   <a-input v-model="formModel.txhash" />
@@ -29,7 +29,7 @@
               </a-col>
               <a-col :span="8">
                 <a-form-item
-                  :label="$t('trade.orderInGame.searchForm.bigNumber')"
+                  :label="$t('trade.order.searchForm.bigNumber')"
                   field="txhash"
                 >
                   <a-input v-model="formModel.bigNumber" />
@@ -37,7 +37,7 @@
               </a-col>
               <a-col :span="8">
                 <a-form-item
-                  :label="$t('trade.orderInGame.searchForm.formBadge')"
+                  :label="$t('trade.order.searchForm.formBadge')"
                   field="formBadge"
                 >
                   <a-input v-model="formModel.fromBadge" />
@@ -45,7 +45,7 @@
               </a-col>
               <a-col :span="8">
                 <a-form-item
-                  :label="$t('trade.orderInGame.searchForm.toBadge')"
+                  :label="$t('trade.order.searchForm.toBadge')"
                   field="toBadge"
                 >
                   <a-input v-model="formModel.toBadge" />
@@ -53,7 +53,7 @@
               </a-col>
               <a-col :span="8">
                 <a-form-item
-                  :label="$t('trade.orderInGame.searchForm.timeRange')"
+                  :label="$t('trade.order.searchForm.timeRange')"
                   field="timeRange"
                 >
                   <a-range-picker v-model="formModel.timeRange" show-time />
@@ -61,7 +61,7 @@
               </a-col>
               <a-col :span="8">
                 <a-form-item
-                  :label="$t('trade.orderInGame.searchForm.inputAccount')"
+                  :label="$t('trade.order.searchForm.inputAccount')"
                   field="inputAccount"
                 >
                   <a-input v-model="formModel.inputAccount" />
@@ -69,7 +69,7 @@
               </a-col>
               <a-col :span="8">
                 <a-form-item
-                  :label="$t('trade.orderInGame.searchForm.inputId')"
+                  :label="$t('trade.order.searchForm.inputId')"
                   field="inputId"
                 >
                   <a-input v-model="formModel.inputId" disabled />
@@ -77,7 +77,7 @@
               </a-col>
               <a-col :span="8">
                 <a-form-item
-                  :label="$t('trade.orderInGame.searchForm.inputAmount')"
+                  :label="$t('trade.order.searchForm.inputAmount')"
                   field="inputAmount"
                 >
                   <a-input-number v-model="formModel.inputAmount" />
@@ -116,10 +116,7 @@
         @page-change="onPageChange"
       >
         <template #columns>
-          <a-table-column
-            :title="$t('trade.orderInGame.columns.txhash')"
-            width="150"
-          >
+          <a-table-column :title="$t('trade.order.columns.txhash')" width="150">
             <template #cell="{ record }">
               <a-typography-text :ellipsis="{ showTooltip: true }" copyable>
                 {{ record.txhash }}
@@ -127,13 +124,13 @@
             </template>
           </a-table-column>
           <a-table-column
-            :title="$t('trade.orderInGame.columns.block_height')"
+            :title="$t('trade.order.columns.block_height')"
             align="center"
             data-index="bigNumber"
             width="150"
           />
           <a-table-column
-            :title="$t('trade.orderInGame.columns.formBadge')"
+            :title="$t('trade.order.columns.formBadge')"
             width="150"
           >
             <template #cell="{ record }">
@@ -143,7 +140,7 @@
             </template>
           </a-table-column>
           <a-table-column
-            :title="$t('trade.orderInGame.columns.toBadge')"
+            :title="$t('trade.order.columns.toBadge')"
             width="150"
           >
             <template #cell="{ record }">
@@ -153,7 +150,7 @@
             </template>
           </a-table-column>
           <a-table-column
-            :title="$t('trade.orderInGame.columns.price')"
+            :title="$t('trade.order.columns.price')"
             align="center"
             data-index="price"
             width="150"
@@ -163,7 +160,7 @@
             </template>
           </a-table-column>
           <a-table-column
-            :title="$t('trade.orderInGame.columns.inputAccount')"
+            :title="$t('trade.order.columns.inputAccount')"
             width="150"
           >
             <template #cell="{ record }">
@@ -173,21 +170,18 @@
             </template>
           </a-table-column>
           <a-table-column
-            :title="$t('trade.orderInGame.columns.inputId')"
+            :title="$t('trade.order.columns.inputId')"
             align="center"
             data-index="inputId"
             width="150"
           />
           <a-table-column
-            :title="$t('trade.orderInGame.columns.inputAmount')"
+            :title="$t('trade.order.columns.inputAmount')"
             align="center"
             data-index="inputAmount"
             width="150"
           />
-          <a-table-column
-            :title="$t('trade.orderInGame.columns.date')"
-            width="150"
-          >
+          <a-table-column :title="$t('trade.order.columns.date')" width="150">
             <template #cell="{ record }">
               {{ I18nDataFormat(record.timeStamp * 1000) }}
             </template>
@@ -205,7 +199,7 @@
   import I18nDataFormat from '@/hooks/dateFormat';
 
   // request
-  import { getOrderListInGame } from '@/views/trade/request';
+  import { getOrderList } from '@/views/trade/request';
 
   // type
   import type { OrderItem, SearchParams } from '@/views/trade/type';
@@ -231,7 +225,7 @@
         params: Partial<SearchParams> & Pagination = pagination
       ) => {
         setLoading(true);
-        getOrderListInGame(params)
+        getOrderList(params)
           .then((res) => {
             renderData.value = res.data.list;
             pagination.startPage = params.startPage;
