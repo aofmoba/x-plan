@@ -30,7 +30,7 @@ app.use(directive);
 app.mount('#app');
 
 // set dark theme
-document.body.setAttribute('arco-theme', 'dark');
+document.body.setAttribute('arco-theme', 'light');
 
 // set day.js locale
 dayjs.extend(relativeTime);

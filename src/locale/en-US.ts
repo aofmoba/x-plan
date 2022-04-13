@@ -3,7 +3,7 @@ import MessageBox from '@/components/message-box/locale/en-US';
 
 // Message
 import SuccessMessage from '@/locale/en-US/message/success';
-// import FailedMessage from '@/locale/en-US/message/failed';
+import FailedMessage from '@/locale/en-US/message/failed';
 
 // Base Components
 import Menu from '@/locale/en-US/menu';
@@ -20,6 +20,7 @@ export default {
   ...Settings,
   ...MessageBox,
   ...SuccessMessage,
+  ...FailedMessage,
   ...SearchTableAction,
   ...Login,
   ...Workplace,

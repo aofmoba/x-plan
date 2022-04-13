@@ -10,33 +10,48 @@
       @submit="handleSubmit"
     >
       <a-form-item
-        field="address"
-        :rules="[{ required: true, message: $t('login.form.address.errMsg') }]"
+        field="username"
+        :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
         <a-input
-          v-model="userInfo.address"
-          :placeholder="$t('login.form.address.placeholder')"
+          v-model="userInfo.username"
+          :placeholder="$t('login.form.userName.placeholder')"
         >
           <template #prefix>
             <icon-user />
           </template>
         </a-input>
       </a-form-item>
-      <a-space :size="16" direction="vertical">
-        <a-button
-          class="login-form-connect"
-          long
-          title="Auto fill in address"
-          @click="connect"
+      <a-form-item
+        field="password"
+        :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+        :validate-trigger="['change', 'blur']"
+        hide-label
+      >
+        <a-input-password
+          v-model="userInfo.password"
+          :placeholder="$t('login.form.password.placeholder')"
+          allow-clear
         >
-          {{ $t('login.form.connect') }}
-        </a-button>
-      </a-space>
+          <template #prefix>
+            <icon-lock />
+          </template>
+        </a-input-password>
+      </a-form-item>
       <a-space :size="16" direction="vertical">
+        <div class="login-form-password-actions">
+          <a-checkbox checked="rememberPassword" @change="setRememberPassword">
+            {{ $t('login.form.rememberPassword') }}
+          </a-checkbox>
+          <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+        </div>
         <a-button type="primary" html-type="submit" long :loading="loading">
           {{ $t('login.form.login') }}
+        </a-button>
+        <a-button type="text" long class="login-form-register-btn">
+          {{ $t('login.form.register') }}
         </a-button>
       </a-space>
     </a-form>
@@ -52,7 +67,6 @@
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
   import { LoginData } from '@/api/user';
-  import axios from 'axios';
 
   const router = useRouter();
   const { t } = useI18n();
@@ -60,7 +74,8 @@
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
   const userInfo = reactive({
-    address: '',
+    username: 'admin',
+    password: 'admin',
   });
   const handleSubmit = async ({
     errors,
@@ -72,34 +87,15 @@
     if (!errors) {
       setLoading(true);
       try {
-        // await userStore.login(values);
-        axios
-          .get(
-            `http://13.250.39.184:8612/getdata/login?address=${userInfo.address}`
-          )
-          .then((res: any) => {
-            if (res.data.code === 200) {
-              const { redirect, ...othersQuery } =
-                router.currentRoute.value.query;
-              router.push({
-                name: (redirect as string) || 'Workplace',
-                query: {
-                  ...othersQuery,
-                },
-              });
-              Message.success(t('login.success'));
-            } else {
-              Message.success(t('login.error'));
-            }
-          });
-        // const { redirect, ...othersQuery } = router.currentRoute.value.query;
-        // router.push({
-        //   name: (redirect as string) || 'Workplace',
-        //   query: {
-        //     ...othersQuery,
-        //   },
-        // });
-        // Message.success(t('login.success'));
+        await userStore.login(values);
+        const { redirect, ...othersQuery } = router.currentRoute.value.query;
+        router.push({
+          name: (redirect as string) || 'Workplace',
+          query: {
+            ...othersQuery,
+          },
+        });
+        Message.success(t('login.success'));
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {
@@ -107,22 +103,6 @@
       }
     }
   };
-  const connect = async () => {
-    const { ethereum } = window as any; // 获取小狐狸实例
-    if (!ethereum) {
-      Message.error(t('connect.error'));
-    } else {
-      await ethereum
-        .request({ method: 'eth_requestAccounts' })
-        .then((res: any) => {
-          // eslint-disable-next-line prefer-destructuring
-          userInfo.address = res[0];
-          localStorage.setItem('address', res[0]);
-          Message.success(t('connect.success'));
-        });
-    }
-  };
-
   const setRememberPassword = () => {
     //
   };
@@ -161,11 +141,6 @@
 
     &-register-btn {
       color: var(--color-text-3) !important;
-    }
-
-    &-connect {
-      margin-bottom: 18px;
-      border: none;
     }
   }
 </style>

@@ -49,7 +49,7 @@
   const { chartOption } = useChartOption(() => {
     return {
       grid: {
-        left: '2.6%',
+        left: '3%',
         right: '0',
         top: '10',
         bottom: '30',
@@ -97,6 +97,8 @@
           show: false,
         },
         axisLabel: {
+          margin: 0, // 清除默认间距
+          padding: [0, 2, 0, 0], // 右边内边距10
           formatter(value: any, idx: number) {
             if (idx === 0) return value;
             return `${value}k`;

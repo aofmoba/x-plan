@@ -183,7 +183,8 @@
       const { changeLocale } = useLocale();
       const locales = [...LOCALE_OPTIONS];
       const avatar = computed(() => {
-        return userStore.avatar;
+        // return userStore.avatar;
+        return userStore.$state.data.avatar;
       });
       const theme = computed(() => {
         return appStore.theme;

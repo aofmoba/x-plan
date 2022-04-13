@@ -69,7 +69,7 @@
     setLoading(true);
     try {
       const { data } = await queryMessageList();
-      messageData.messageList = data;
+      messageData.messageList = data.data;
     } catch (err) {
       // you can report use errorHandler or other
     } finally {
@@ -83,15 +83,15 @@
   }
   const renderList = computed(() => {
     return messageData.messageList.filter(
-      (item) => messageType.value === item.type
+      (item: any) => messageType.value === item.type
     );
   });
   const unreadCount = computed(() => {
-    return renderList.value.filter((item) => !item.status).length;
+    return renderList.value.filter((item: any) => !item.status).length;
   });
   const getUnreadList = (type: string) => {
     const list = messageData.messageList.filter(
-      (item) => item.type === type && !item.status
+      (item: any) => item.type === type && !item.status
     );
     return list;
   };
@@ -116,12 +116,15 @@
   :deep(.arco-list-item-meta) {
     align-items: flex-start;
   }
+
   :deep(.arco-tabs-nav) {
     padding: 14px 0 12px 16px;
     border-bottom: 1px solid var(--color-neutral-3);
   }
+
   :deep(.arco-tabs-content) {
     padding-top: 0;
+
     .arco-result-subtitle {
       color: rgb(var(--gray-6));
     }

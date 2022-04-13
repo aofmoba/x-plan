@@ -3,7 +3,7 @@ import { setRouteEmitter } from '@/utils/route-listener';
 import setupPermissionGuard from './permission';
 
 function setupPageGuard(router: Router) {
-  router.beforeEach(async (to) => {
+  router.beforeEach(async (to: any) => {
     // emit route change
     setRouteEmitter(to);
   });
