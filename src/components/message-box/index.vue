@@ -69,7 +69,7 @@
     setLoading(true);
     try {
       const { data } = await queryMessageList();
-      messageData.messageList = data.data;
+      messageData.messageList = data;
     } catch (err) {
       // you can report use errorHandler or other
     } finally {
@@ -83,15 +83,15 @@
   }
   const renderList = computed(() => {
     return messageData.messageList.filter(
-      (item: any) => messageType.value === item.type
+      (item) => messageType.value === item.type
     );
   });
   const unreadCount = computed(() => {
-    return renderList.value.filter((item: any) => !item.status).length;
+    return renderList.value.filter((item) => !item.status).length;
   });
   const getUnreadList = (type: string) => {
     const list = messageData.messageList.filter(
-      (item: any) => item.type === type && !item.status
+      (item) => item.type === type && !item.status
     );
     return list;
   };

@@ -10,11 +10,11 @@ export const getOrderList = (params: Partial<SearchParams>) =>
     .get<_Response>('/api/getOrderList', {
       params,
     })
-    .then((res: any) => res.data);
+    .then((res) => res.data);
 
 export const getOrderListInGame = (params: Partial<SearchParams>) =>
   axios
     .get<_Response>('/api/getOrderListInGame', {
       params,
     })
-    .then((res: any) => res.data);
+    .then((res) => res.data);

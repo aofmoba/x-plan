@@ -14,7 +14,7 @@
 <script lang="ts" setup>
   import { useRoute } from 'vue-router';
 
-  const route: any = useRoute();
+  const route = useRoute();
 </script>
 
 <style scoped lang="less"></style>

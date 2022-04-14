@@ -12,7 +12,16 @@
           </a-avatar>
           <a-card class="my-card" :title="'me: ' + address" hoverable>
             <template #extra>
-              <div>Code: {{ inCode ? inCode : 'null' }}</div>
+              <div class="code-group">
+                <div>Code: {{ inCode }}</div>
+                <div>
+                  <a
+                    :href="`https://cyberpop.online?code=` + inCode"
+                    target="view_window"
+                    >https://cyberpop.online?code={{ inCode }}</a
+                  >
+                </div>
+              </div>
             </template>
             <!-- <div v-if="myInvit.length"> -->
             <div>
@@ -71,6 +80,7 @@
       dataIndex: 'createTime',
     },
   ];
+
   const getMyInvit = () => {
     myInvit.value = [];
     if (localStorage.getItem('address')) {
@@ -120,6 +130,28 @@
     .my-card {
       width: 100%;
       border: none !important;
+
+      .code-group {
+        text-align: right !important;
+
+        div:first-child {
+          font-size: 16px;
+        }
+
+        div {
+          margin-bottom: 6px;
+
+          a {
+            color: rgb(var(--primary-6));
+            text-decoration: none;
+            cursor: pointer;
+          }
+
+          a:hover {
+            color: blue;
+          }
+        }
+      }
 
       .subtitle {
         display: flex;

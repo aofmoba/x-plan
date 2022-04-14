@@ -55,7 +55,7 @@
   listenerRouteChange((route: RouteLocationNormalized) => {
     if (
       !route.meta.noAffix &&
-      !tagList.value.some((tag: any) => tag.fullPath === route.fullPath)
+      !tagList.value.some((tag) => tag.fullPath === route.fullPath)
     ) {
       console.log(tagList);
 
