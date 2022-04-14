@@ -93,7 +93,7 @@
     }
   };
   const typeChange = (contentType: string) => {
-    fetchData(contentType);
+    fetchData(contentType); // text image video
   };
   fetchData('text');
 </script>

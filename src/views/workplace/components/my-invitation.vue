@@ -71,7 +71,6 @@
       dataIndex: 'createTime',
     },
   ];
-
   const getMyInvit = () => {
     myInvit.value = [];
     if (localStorage.getItem('address')) {
