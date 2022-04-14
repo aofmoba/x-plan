@@ -1,25 +1,27 @@
 <template>
   <div class="container">
     <div class="left-side">
-      <div class="panel">
+      <div class="panel" style="background: var(--color-fill-2)">
         <Banner />
-        <DataPanel />
-        <ContentChart />
+        <MyInvitation />
+        <!-- <DataPanel /> -->
+        <!-- <InvitationInfo /> -->
+        <!-- <ContentChart /> -->
       </div>
       <a-grid :cols="24" :col-gap="16" :row-gap="16" style="margin-top: 16px">
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <PopularContent />
+          <!-- <PopularContent /> -->
         </a-grid-item>
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <CateforiesPercent />
+          <!-- <CateforiesPercent /> -->
         </a-grid-item>
       </a-grid>
     </div>
-    <div class="right-side">
+    <!-- <div class="right-side">
       <a-grid :cols="24" :row-gap="16">
         <a-grid-item :span="24">
           <div class="panel moduler-wrap">
@@ -37,7 +39,7 @@
           <Docs />
         </a-grid-item>
       </a-grid>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -52,6 +54,8 @@
   import Announcement from './components/announcement.vue';
   import Carousel from './components/carousel.vue';
   import Docs from './components/docs.vue';
+  // import InvitationInfo from './components/invitation-info.vue';
+  import MyInvitation from './components/my-invitation.vue';
 </script>
 
 <style lang="less" scoped>

@@ -20,7 +20,7 @@
       </a-space>
     </div>
     <ul class="right-side">
-      <li>
+      <!-- <li>
         <a-tooltip :content="$t('settings.search')">
           <a-button :shape="'circle'" class="nav-btn" type="outline">
             <template #icon>
@@ -28,8 +28,8 @@
             </template>
           </a-button>
         </a-tooltip>
-      </li>
-      <li>
+      </li> -->
+      <!-- <li>
         <a-tooltip :content="$t('settings.language')">
           <a-button
             :shape="'circle'"
@@ -54,7 +54,7 @@
             </a-doption>
           </template>
         </a-dropdown>
-      </li>
+      </li> -->
       <li>
         <a-tooltip
           :content="
@@ -76,7 +76,7 @@
           </a-button>
         </a-tooltip>
       </li>
-      <li>
+      <!-- <li>
         <a-tooltip :content="$t('settings.navbar.alerts')">
           <div class="message-box-trigger">
             <a-badge :count="9" dot>
@@ -102,7 +102,7 @@
             <message-box />
           </template>
         </a-popover>
-      </li>
+      </li> -->
       <li>
         <a-tooltip :content="$t('settings.title')">
           <a-button
@@ -120,33 +120,37 @@
       <li>
         <a-dropdown trigger="click">
           <a-avatar :size="32" :style="{ marginRight: '8px' }">
-            <img :src="avatar" alt="avatar" />
+            <!-- <img :src="avatar" alt="avatar" /> -->
+            <img
+              src="//lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png"
+              alt="avatar"
+            />
           </a-avatar>
           <template #content>
-            <a-doption>
+            <!-- <a-doption>
               <a-space @click="switchRoles">
                 <icon-tag />
                 <span>
                   {{ $t('messageBox.switchRoles') }}
                 </span>
               </a-space>
-            </a-doption>
-            <a-doption>
+            </a-doption> -->
+            <!-- <a-doption>
               <a-space @click="$router.push({ name: 'info' })">
                 <icon-user />
                 <span>
                   {{ $t('messageBox.userCenter') }}
                 </span>
               </a-space>
-            </a-doption>
-            <a-doption>
+            </a-doption> -->
+            <!-- <a-doption>
               <a-space @click="$router.push({ name: 'setting' })">
                 <icon-settings />
                 <span>
                   {{ $t('messageBox.userSettings') }}
                 </span>
               </a-space>
-            </a-doption>
+            </a-doption> -->
             <a-doption>
               <a-space @click="handleLogout">
                 <icon-export />
@@ -174,7 +178,7 @@
 
   export default defineComponent({
     components: {
-      MessageBox,
+      // MessageBox,
     },
     setup() {
       const appStore = useAppStore();
@@ -183,7 +187,8 @@
       const { changeLocale } = useLocale();
       const locales = [...LOCALE_OPTIONS];
       const avatar = computed(() => {
-        return userStore.avatar;
+        // return userStore.$state.data.avatar;
+        return userStore;
       });
       const theme = computed(() => {
         return appStore.theme;

@@ -57,6 +57,8 @@
       !route.meta.noAffix &&
       !tagList.value.some((tag) => tag.fullPath === route.fullPath)
     ) {
+      console.log(tagList);
+
       tabBarStore.updateTabList(route);
     }
   }, true);
@@ -73,21 +75,25 @@
   .tab-bar-container {
     position: relative;
     background-color: var(--color-bg-2);
+
     .tab-bar-box {
       display: flex;
       padding: 0 0 0 20px;
       background-color: var(--color-bg-2);
       border-bottom: 1px solid var(--color-border);
+
       .tab-bar-scroll {
         flex: 1;
         overflow: hidden;
+
         .tags-wrap {
           padding: 4px 0;
-          white-space: nowrap;
           overflow-x: auto;
+          white-space: nowrap;
 
           :deep(.arco-tag) {
             margin-right: 6px;
+
             &:first-child {
               .arco-tag-close-btn {
                 display: none;
@@ -108,15 +114,18 @@
     color: var(--color-text-2);
     text-decoration: none;
   }
+
   .router-link-active {
     color: rgb(var(--link-6));
+
     & + .arco-tag-close-btn {
       color: rgb(var(--link-6));
     }
   }
+
   :deep(.arco-affix) {
     z-index: 90;
-    background-color: var(--color-bg-2);
     overflow-x: auto;
+    background-color: var(--color-bg-2);
   }
 </style>

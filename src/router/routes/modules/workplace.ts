@@ -6,7 +6,7 @@ export default {
     locale: 'menu.workplace',
     icon: 'icon-dashboard',
     order: 0,
-    requiresAuth: true,
+    // requiresAuth: true,
     hideChildrenInMenu: true,
   },
 };

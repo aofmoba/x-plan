@@ -1,5 +1,9 @@
 const isLogin = () => {
-  return !!localStorage.getItem('token');
+  // return !!localStorage.getItem('token');
+  if (localStorage.getItem('isLogin')) {
+    return true;
+  }
+  return false;
 };
 
 const getToken = () => {

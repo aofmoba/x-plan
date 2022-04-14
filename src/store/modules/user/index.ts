@@ -43,7 +43,10 @@ const useUserStore = defineStore('user', {
       });
     },
     // Set user's information
-    setInfo(partial: Partial<UserState>) {
+    // setInfo(partial: Partial<UserState>) {
+    //   this.$patch(partial);
+    // },
+    setInfo(partial: any) {
       this.$patch(partial);
     },
 
@@ -54,9 +57,9 @@ const useUserStore = defineStore('user', {
 
     // Get user's information
     async info() {
-      const res = await getUserInfo();
+      // const res = await getUserInfo();
 
-      this.setInfo(res.data);
+      this.setInfo(null);
     },
 
     // Login
@@ -72,8 +75,8 @@ const useUserStore = defineStore('user', {
 
     // Logout
     async logout() {
-      await userLogout();
-
+      // await userLogout();
+      localStorage.removeItem('isLogin');
       this.resetInfo();
       clearToken();
       removeRouteListener();
