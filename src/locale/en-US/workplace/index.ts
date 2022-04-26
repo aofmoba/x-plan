@@ -35,4 +35,19 @@ export default {
   'workplace.popularContent.video': 'video',
   'workplace.categoriesPercent': 'Categories Percent',
   'workplace.pecs': 'pecs',
+
+  // my
+  'workplace.me': 'me',
+  'workplace.code': 'Code',
+  'workplace.invitees': 'Invitees',
+  'workplace.total': 'Total',
+  'workplace.hashrate': 'Hashrate',
+  'workplace.table.online': 'Online',
+  'workplace.table.address': 'Address',
+  'workplace.table.download': 'Download',
+  'workplace.table.game': 'Game duration',
+  'workplace.table.balance': 'Balance',
+  'workplace.table.date': 'Date',
+  'workplace.table.hashrate': 'Hashrate/h',
+  'workplace.table.offline': 'Offline',
 };

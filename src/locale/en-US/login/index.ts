@@ -21,4 +21,10 @@ export default {
     'Internationalization, routing configuration, state management everything',
   'login.banner.slogan3': 'Access visualization enhancement tool AUX',
   'login.banner.subSlogan3': 'Realize flexible block development',
+
+  'login.modal.title': 'SELECT YOUR WALLET',
+  'login.modal.msg':
+    'You need to install MetaMask to continue. Once you have it installed, go ahead and refresh the page.',
+  'login.modal.cancel': 'CANCEL',
+  'login.modal.open': 'OPEN METAMASK',
 };

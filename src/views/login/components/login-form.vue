@@ -7,9 +7,8 @@
       :model="userInfo"
       class="login-form"
       layout="vertical"
-      @submit="handleSubmit"
     >
-      <a-form-item
+      <!-- <a-form-item
         field="address"
         :rules="[{ required: true, message: $t('login.form.address.errMsg') }]"
         :validate-trigger="['change', 'blur']"
@@ -23,107 +22,150 @@
             <icon-user />
           </template>
         </a-input>
-      </a-form-item>
+      </a-form-item> -->
       <a-space :size="16" direction="vertical">
         <a-button
+          type="primary"
           class="login-form-connect"
           long
-          title="Auto fill in address"
           @click="connect"
         >
           {{ $t('login.form.connect') }}
         </a-button>
       </a-space>
-      <a-space :size="16" direction="vertical">
-        <a-button type="primary" html-type="submit" long :loading="loading">
+      <!-- <a-space :size="16" direction="vertical">
+        <a-button type="primary" html-type="submit" long>
           {{ $t('login.form.login') }}
         </a-button>
-      </a-space>
+      </a-space> -->
     </a-form>
+
+    <a-modal
+      v-model:visible="noInVisible"
+      simple
+      :cancel-text="$t('login.modal.cancel')"
+      :ok-text="$t('login.modal.open')"
+      @ok="toMetaMask"
+    >
+      <template #title>
+        <img
+          src="https://d2cimmz3cflrbm.cloudfront.net/nwhome/metaMask.svg"
+          style="width: 38px; margin-right: 10px"
+        />
+        {{ $t('login.modal.title') }}
+      </template>
+      <div>{{ $t('login.modal.msg') }}</div>
+    </a-modal>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive } from 'vue';
+  import { ref, reactive, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   import { Message } from '@arco-design/web-vue';
-  import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
   import { useI18n } from 'vue-i18n';
-  import { useUserStore } from '@/store';
-  import useLoading from '@/hooks/loading';
-  import { LoginData } from '@/api/user';
+  import { staticData } from '@/store';
   import axios from 'axios';
+  import { storeToRefs } from 'pinia';
+  import web3 from '@/utils/web3';
+  import contracts from '@/utils/contracts';
 
   const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
-  const { loading, setLoading } = useLoading();
-  const userStore = useUserStore();
+  const comStore = staticData();
+  const { isAssetsAllow, userAddress } = storeToRefs(comStore);
+  const noInVisible = ref(false);
   const userInfo = reactive({
     address: '',
   });
-  const handleSubmit = async ({
-    errors,
-    values,
-  }: {
-    errors: Record<string, ValidatedError> | undefined;
-    values: string;
-  }) => {
-    if (!errors) {
-      setLoading(true);
-      try {
-        localStorage.setItem('address', userInfo.address);
-        axios
-          .get(
-            `https://invitecode.cyberpop.online/getdata/login?address=${userInfo.address}`
-          )
-          // .get(
-          //   `http://13.250.39.184:8612/getdata/login?address=0xf7fB89554f842f550499AEf4FDa2d1898039851f`
-          // )
-          .then((res: any) => {
-            // console.log(res);
-            if (res.data.data) {
-              console.log('success');
-              const { redirect, ...othersQuery } =
-                router.currentRoute.value.query;
-              router.push({
-                name: (redirect as string) || 'Workplace',
-                query: {
-                  ...othersQuery,
-                },
-              });
-              Message.success(t('login.success'));
-              localStorage.setItem('isLogin', 'true');
-            } else {
-              Message.error(t('login.error'));
-            }
+
+  const fetchLogin = () => {
+    axios
+      .get(
+        `https://invitecode.cyberpop.online/getdata/login?address=${userInfo.address}`
+        // `https://invitecode.cyberpop.online/getdata/login?address=0x9b50b668dBa78DD61857e0137412DB6C2dF56016`
+      )
+      .then((res: any) => {
+        // console.log(res);
+        if (res.data.data) {
+          console.log('success');
+          const { redirect, ...othersQuery } = router.currentRoute.value.query;
+          router.push({
+            name: (redirect as string) || 'Workplace',
+            query: {
+              ...othersQuery,
+            },
           });
-      } catch (err) {
-        errorMessage.value = (err as Error).message;
-      } finally {
-        setLoading(false);
-      }
-    }
+          Message.success(t('login.success'));
+          localStorage.setItem('isLogin', 'true');
+          // isAssetsAllow.value = true;
+          // localStorage.setItem('isAssetsAllow', 'true');
+        } else {
+          Message.error(t('login.error'));
+        }
+      });
   };
+
+  const handleSubmit = async () => {
+    await web3
+      .batchBalanceOf(contracts.nft_fuji.abi, contracts.nft_fuji.address)
+      .then((res: any) => {
+        // console.log(res);
+        const len = res.length;
+        let hasNft = false;
+        for (let i = 0; i < len; i += 1) {
+          if (Number(res[i])) {
+            hasNft = true;
+            fetchLogin();
+            return;
+          }
+        }
+        if (!hasNft) {
+          Message.error(t('login.havNft.error'));
+        }
+      });
+  };
+
   const connect = async () => {
     const { ethereum } = window as any; // 获取小狐狸实例
     if (!ethereum) {
-      Message.error(t('connect.error'));
+      noInVisible.value = true;
     } else {
       await ethereum
         .request({ method: 'eth_requestAccounts' })
-        .then((res: any) => {
+        .then(async (res: any) => {
           // eslint-disable-next-line prefer-destructuring
           userInfo.address = res[0];
           localStorage.setItem('address', res[0]);
-          Message.success(t('connect.success'));
+          // eslint-disable-next-line prefer-destructuring
+          userAddress.value = res[0];
+          const a: any = await web3.addChain(43113);
+          if (a) {
+            handleSubmit();
+          } else {
+            Message.error(t('switch.error'));
+          }
         });
     }
   };
-
-  const setRememberPassword = () => {
-    //
+  const toMetaMask = () => {
+    window.open('https://metamask.io/');
   };
+
+  // watch(userAddress, (newVal, oldVal) => {
+  //   console.log(newVal, oldVal);
+
+  //   if(!oldVal) return;
+  //   handleSubmit();
+  // }, {immediate:true,deep:true});
+
+  onMounted(() => {
+    connect();
+    localStorage.removeItem('isLogin');
+    localStorage.removeItem('isAssetsAllow');
+    localStorage.removeItem('address');
+  });
 </script>
 
 <style lang="less" scoped>

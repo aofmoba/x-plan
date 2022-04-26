@@ -1,0 +1,119 @@
+import { chain } from 'lodash';
+
+const { Web3 } = window as any; // 引用全局的web3 在index.html文件cdn引入<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+// const Moralis = (window as any).Moralis; // 引用全局的Moralis 在index.html文件cdn引入<script src="https://cdn.jsdelivr.net/npm/moralis@latest/dist/moralis.min.js"></script>
+
+// 登录钱包
+const login = async () => {
+  const { ethereum } = window as any; // 获取小狐狸实例
+  // if (!ethereum) {
+  //     return 'No install';
+  // }
+  return ethereum.request({ method: 'eth_requestAccounts' });
+};
+
+// 是否安装metamask
+// eslint-disable-next-line consistent-return
+const hasMetaMask = async () => {
+  const { ethereum } = window as any; // 获取小狐狸实例
+  if (!ethereum) {
+    return 'No install';
+  }
+};
+
+const totolsuppl = async (abi: any[], address: string, id?: any) => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    const web3 = new Web3((Web3 as any).givenProvider);
+    const contract = new web3.eth.Contract(abi, address);
+    if (id === -1) {
+      const res = await contract.methods.totalSupply().call();
+      resolve(res);
+    } else {
+      const res = await contract.methods.totalSupply(id).call();
+      resolve(res);
+    }
+  });
+};
+
+const addChain = (chainId: any) => {
+  const { ethereum } = window as any; // 获取小狐狸实例
+  const web3 = new Web3((window as any).ethereum); // 创建一个新的web3 对象
+  // console.log(web3.utils.numberToHex(chainId), 'web3.utils.numberToHex(chainId)');
+  let info: any;
+  // eslint-disable-next-line eqeqeq
+  if (chainId == 43113) {
+    info = {
+      method: 'wallet_addEthereumChain',
+      params: [
+        {
+          chainId: web3.utils.numberToHex(43113),
+          chainName: 'AVAX',
+          nativeCurrency: {
+            name: 'AVAX',
+            symbol: 'AVAX', // 2-6 characters long
+            decimals: 18,
+          },
+          rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
+          blockExplorerUrls: ['https://testnet.snowtrace.io/'],
+        },
+      ],
+    };
+  } else {
+    info = {
+      method: 'wallet_addEthereumChain',
+      params: [
+        {
+          chainId: web3.utils.numberToHex(80001),
+          chainName: 'Mumbai',
+          nativeCurrency: {
+            name: 'MATIC',
+            symbol: 'MATIC', // 2-6 characters long
+            decimals: 18,
+          },
+          rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+          blockExplorerUrls: ['https://mumbai.polygonscan.com/'],
+        },
+      ],
+    };
+  }
+  return new Promise((resolve, reject) => {
+    ethereum
+      .request({
+        ...info,
+      })
+      .then((res: any) => {
+        web3.eth.net.getId().then((realChainId: any) => {
+          // console.log('0',realChainId, info.params[0].chainId);
+          // eslint-disable-next-line eqeqeq
+          if (realChainId == info.params[0].chainId) {
+            // 通过切换结果判断切换成功 或 失败
+            resolve(1);
+            return;
+          }
+          resolve(0);
+        });
+      });
+  });
+};
+
+// 资产查询
+const batchBalanceOf = (abi: any, address: any) => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    // console.log(abi, address, accounts.value);
+    const accounts = localStorage.getItem('address');
+    const web3 = new Web3((Web3 as any).givenProvider);
+    const contract = new web3.eth.Contract(abi, address);
+    const res = await contract.methods.batchBalanceOf(accounts).call();
+    resolve(res);
+  });
+};
+
+export default {
+  login,
+  hasMetaMask,
+  totolsuppl,
+  addChain,
+  batchBalanceOf,
+};

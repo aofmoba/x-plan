@@ -44,7 +44,7 @@
       defaultVal: appStore.menu,
     },
     { name: 'settings.footer', key: 'footer', defaultVal: appStore.footer },
-    { name: 'settings.tabBar', key: 'tabBar', defaultVal: appStore.tabBar },
+    // { name: 'settings.tabBar', key: 'tabBar', defaultVal: appStore.tabBar },
     {
       name: 'settings.menuWidth',
       key: 'menuWidth',
@@ -74,7 +74,7 @@
   .fixed-settings {
     position: fixed;
     top: 280px;
-    right: 0px;
+    right: 0;
 
     svg {
       font-size: 18px;

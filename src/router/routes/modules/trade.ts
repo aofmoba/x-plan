@@ -6,7 +6,7 @@
 //     locale: 'menu.trade',
 //     icon: 'icon-check-circle',
 //     requiresAuth: true,
-//     order: 1,
+//     order: 2,
 //   },
 //   children: [
 //     {

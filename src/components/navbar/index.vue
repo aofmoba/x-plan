@@ -29,7 +29,7 @@
           </a-button>
         </a-tooltip>
       </li> -->
-      <!-- <li>
+      <li>
         <a-tooltip :content="$t('settings.language')">
           <a-button
             :shape="'circle'"
@@ -54,7 +54,7 @@
             </a-doption>
           </template>
         </a-dropdown>
-      </li> -->
+      </li>
       <li>
         <a-tooltip
           :content="
@@ -174,7 +174,7 @@
   import { LOCALE_OPTIONS } from '@/locale';
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
-  import MessageBox from '../message-box/index.vue';
+  // import MessageBox from '../message-box/index.vue';
 
   export default defineComponent({
     components: {
@@ -311,6 +311,17 @@
   .message-popover {
     .arco-popover-content {
       margin-top: 0;
+    }
+  }
+</style>
+
+<style lang="less" scoped>
+  // responsive
+  @media (max-width: @screen-xs) {
+    .navbar {
+      .arco-typography {
+        display: none;
+      }
     }
   }
 </style>

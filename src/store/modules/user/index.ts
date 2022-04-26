@@ -77,6 +77,8 @@ const useUserStore = defineStore('user', {
     async logout() {
       // await userLogout();
       localStorage.removeItem('isLogin');
+      localStorage.removeItem('isAssetsAllow');
+      localStorage.removeItem('address');
       this.resetInfo();
       clearToken();
       removeRouteListener();

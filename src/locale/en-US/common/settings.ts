@@ -11,6 +11,7 @@ export default {
   'settings.navbar.alerts': 'alerts',
   'settings.menu': 'Menu',
   'settings.footer': 'Footer',
+  'settings.tabBar': 'TabBar',
   'settings.otherSettings': 'Other Settings',
   'settings.colorWeek': 'Color Week',
   'settings.alertContent':

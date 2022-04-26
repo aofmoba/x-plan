@@ -20,10 +20,8 @@ declare module 'vue' {
     ADrawer: typeof import('@arco-design/web-vue')['Drawer'];
     ADropdown: typeof import('@arco-design/web-vue')['Dropdown'];
     AForm: typeof import('@arco-design/web-vue')['Form'];
-    AFormItem: typeof import('@arco-design/web-vue')['FormItem'];
     AGrid: typeof import('@arco-design/web-vue')['Grid'];
     AGridItem: typeof import('@arco-design/web-vue')['GridItem'];
-    AInput: typeof import('@arco-design/web-vue')['Input'];
     AInputNumber: typeof import('@arco-design/web-vue')['InputNumber'];
     ALayout: typeof import('@arco-design/web-vue')['Layout'];
     ALayoutContent: typeof import('@arco-design/web-vue')['LayoutContent'];
@@ -31,11 +29,14 @@ declare module 'vue' {
     ALayoutSider: typeof import('@arco-design/web-vue')['LayoutSider'];
     AMenu: typeof import('@arco-design/web-vue')['Menu'];
     AMenuItem: typeof import('@arco-design/web-vue')['MenuItem'];
+    AModal: typeof import('@arco-design/web-vue')['Modal'];
     AResult: typeof import('@arco-design/web-vue')['Result'];
     ASpace: typeof import('@arco-design/web-vue')['Space'];
+    ASpin: typeof import('@arco-design/web-vue')['Spin'];
     ASubMenu: typeof import('@arco-design/web-vue')['SubMenu'];
     ASwitch: typeof import('@arco-design/web-vue')['Switch'];
     ATable: typeof import('@arco-design/web-vue')['Table'];
+    ATableColumn: typeof import('@arco-design/web-vue')['TableColumn'];
     ATooltip: typeof import('@arco-design/web-vue')['Tooltip'];
     ATypographyTitle: typeof import('@arco-design/web-vue')['TypographyTitle'];
   }

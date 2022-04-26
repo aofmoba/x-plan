@@ -73,8 +73,28 @@
   // responsive
   @media (max-width: @screen-lg) {
     .container {
+      .logo {
+        left: 10px;
+        width: calc(25% - 10px);
+      }
+
       .banner {
         width: 25%;
+      }
+    }
+  }
+  @media (max-width: @screen-xs) {
+    .container {
+      .logo {
+        width: 100%;
+
+        .logo-text {
+          color: var(--color-text-1);
+        }
+      }
+
+      .banner {
+        width: 0;
       }
     }
   }

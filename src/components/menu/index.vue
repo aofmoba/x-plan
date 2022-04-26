@@ -7,15 +7,18 @@
     RouteRecordRaw,
     useRouter,
   } from 'vue-router';
-  import { useAppStore } from '@/store';
+  import { useAppStore, staticData } from '@/store';
   import usePermission from '@/hooks/permission';
   import { listenerRouteChange } from '@/utils/route-listener';
+  import { storeToRefs } from 'pinia'; // 使普通数据变响应式的函数
 
   export default defineComponent({
     emit: ['collapse'],
     setup() {
       const { t } = useI18n();
       const appStore = useAppStore();
+      const comStore = staticData();
+      const { isAssetsAllow } = storeToRefs(comStore);
       const permission = usePermission();
       const router = useRouter();
       const collapsed = computed({
@@ -41,6 +44,14 @@
             );
           }
         );
+
+        // 只有可配置的钱包地址可以查看 Assets Overview 页面
+        // eslint-disable-next-line no-empty
+        // if( isAssetsAllow.value || localStorage.getItem('isAssetsAllow') ){
+
+        // }else{
+        //   copyRouter = copyRouter.filter((item: any) => item.name !== 'AssetsOverview')
+        // }
 
         function travel(_routes: RouteRecordRaw[], layer: number) {
           if (!_routes) return null;
