@@ -6,15 +6,20 @@
         <div class="card">
           <div class="item">
             <span class="label">{{ $t('wallet.item.level') }} : </span>
-            <span class="num">{{ cardData.level }}</span>
+            <span class="num">
+              {{ cardData.val.level }}
+              <!-- <a-spin :loading="loading" :size="16" class="load">
+                {{ cardData.val.level }}
+              </a-spin> -->
+            </span>
           </div>
           <div class="item">
             <span class="label">{{ $t('wallet.item.ratio') }} : </span>
-            <span class="num">{{ cardData.ratio }}</span>
+            <span class="num">{{ cardData.val.ratio }}</span>
           </div>
           <div class="item">
             <span class="label">{{ $t('wallet.item.balance') }} : </span>
-            <span class="num">{{ cardData.balance }}</span>
+            <span class="num">{{ cardData.val.balance }}</span>
             <a-button type="primary" shape="round" size="small" class="btn">{{
               $t('wallet.item.btn')
             }}</a-button>
@@ -30,11 +35,12 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+  import { ref, onMounted, reactive } from 'vue';
   import axios from 'axios';
   import type { ToolTipFormatterParams } from '@/types/echarts';
   import useLoading from '@/hooks/loading';
   import { useI18n } from 'vue-i18n';
+
   // import { useRouter } from 'vue-router';
   // import { Message } from '@arco-design/web-vue';
   // const router = useRouter();
@@ -42,6 +48,7 @@
   const { loading, setLoading } = useLoading(true);
   const xAxis = ref<string[]>([]);
   const chartsData = ref<number[]>([]);
+  const address: any = ref('');
   xAxis.value = [
     '2022-4-17',
     '2022-4-18',
@@ -50,11 +57,13 @@
     '2022-4-21',
   ];
   chartsData.value = [0, 0, 0, 0, 0];
-  const cardData: any = {
-    level: '1/2/3',
-    ratio: '20%',
-    balance: '0',
-  };
+  const cardData = reactive({
+    val: {
+      level: '',
+      ratio: '20%',
+      balance: '0',
+    },
+  });
   const chartOption: any = {
     xAxis: {
       type: 'category',
@@ -146,7 +155,27 @@
       setLoading(false);
     }
   };
-  fetchData();
+
+  const getLevel = () => {
+    setLoading(true);
+    axios
+      .get(
+        `https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`
+      )
+      .then((res: any) => {
+        if ( res.data.code === 200 && res.data.data[1] ) {
+          cardData.val.level = res.data.data[0].level;
+          setLoading(false);
+        }
+      })
+  }
+
+  onMounted(() =>{
+    address.value = localStorage.getItem('address');
+    // getLevel();
+    cardData.val.level = String(localStorage.getItem('userLl'));
+    // fetchData();
+  })
 </script>
 
 <style lang="less" scoped>
@@ -173,7 +202,7 @@
         border-radius: 4px;
 
         .item {
-          padding: 16px 30px;
+          padding: 14px 30px;
 
           .label {
             padding-right: 18px;
@@ -182,8 +211,11 @@
           }
 
           .num {
-            color: black;
+            color: var(--color-text-1);
             font-size: 16px;
+            .load {
+              margin-bottom: 4px;
+            }
           }
 
           .btn {

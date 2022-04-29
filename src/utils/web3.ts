@@ -1,7 +1,9 @@
-import { chain } from 'lodash';
+import contracts from '@/utils/contracts'
 
 const { Web3 } = window as any; // 引用全局的web3 在index.html文件cdn引入<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 // const Moralis = (window as any).Moralis; // 引用全局的Moralis 在index.html文件cdn引入<script src="https://cdn.jsdelivr.net/npm/moralis@latest/dist/moralis.min.js"></script>
+const accounts = localStorage.getItem('address');
+
 
 // 登录钱包
 const login = async () => {
@@ -84,7 +86,6 @@ const addChain = (chainId: any) => {
       })
       .then((res: any) => {
         web3.eth.net.getId().then((realChainId: any) => {
-          // console.log('0',realChainId, info.params[0].chainId);
           // eslint-disable-next-line eqeqeq
           if (realChainId == info.params[0].chainId) {
             // 通过切换结果判断切换成功 或 失败
@@ -98,22 +99,50 @@ const addChain = (chainId: any) => {
 };
 
 // 资产查询
-const batchBalanceOf = (abi: any, address: any) => {
+const balanceOfBatch = (abi: any, address: any) => {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
-    // console.log(abi, address, accounts.value);
-    const accounts = localStorage.getItem('address');
+    // console.log(abi, address);
+    // const accounts = localStorage.getItem('address');
     const web3 = new Web3((Web3 as any).givenProvider);
     const contract = new web3.eth.Contract(abi, address);
-    const res = await contract.methods.batchBalanceOf(accounts).call();
+    const res = await contract.methods.balanceOfBatch([accounts,accounts,accounts,accounts,accounts], [0,1,2,3,4]).call();
     resolve(res);
   });
 };
+
+
+
+// 资产查询
+const batchBalanceOf = (abi:any, address:any) => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+      // console.log(abi, address, accounts.value);
+      const web3 = new Web3((Web3 as any).givenProvider);
+      const contract = new web3.eth.Contract(abi, address)
+      const res = await contract.methods.batchBalanceOf(accounts).call();
+      resolve(res);
+  })
+}
+
+// 查询721合约的
+const tokensOfOwner = (abi: any, address: any) => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+      const web3 = new Web3((Web3 as any).givenProvider);
+      const contract = new web3.eth.Contract(abi, address)
+      const result = await contract.methods.tokensOfOwner(accounts).call();
+      resolve(result);
+  })
+}
 
 export default {
   login,
   hasMetaMask,
   totolsuppl,
   addChain,
+  balanceOfBatch,
   batchBalanceOf,
+  tokensOfOwner,
+  contracts
 };

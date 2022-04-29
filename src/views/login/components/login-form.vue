@@ -67,7 +67,7 @@
   import { staticData } from '@/store';
   import axios from 'axios';
   import { storeToRefs } from 'pinia';
-  import web3 from '@/utils/web3';
+  import web3J from '@/utils/web3';
   import contracts from '@/utils/contracts';
 
   const router = useRouter();
@@ -83,13 +83,11 @@
   const fetchLogin = () => {
     axios
       .get(
-        `https://invitecode.cyberpop.online/getdata/login?address=${userInfo.address}`
-        // `https://invitecode.cyberpop.online/getdata/login?address=0x9b50b668dBa78DD61857e0137412DB6C2dF56016`
+        `https://invitecode.cyberpop.online/user/doLogin?address=${userInfo.address}`
       )
       .then((res: any) => {
-        // console.log(res);
-        if (res.data.data) {
-          console.log('success');
+        console.log(res);
+        if ( res.data.code === 200 && res.data.data[1] ) {
           const { redirect, ...othersQuery } = router.currentRoute.value.query;
           router.push({
             name: (redirect as string) || 'Workplace',
@@ -99,33 +97,43 @@
           });
           Message.success(t('login.success'));
           localStorage.setItem('isLogin', 'true');
+          localStorage.setItem('satoken', res.data.data[0].satoken)
+          localStorage.setItem('userLl', res.data.data[0].level);
           // isAssetsAllow.value = true;
           // localStorage.setItem('isAssetsAllow', 'true');
         } else {
           Message.error(t('login.error'));
         }
-      });
+      })
   };
 
-  const handleSubmit = async () => {
-    await web3
-      .batchBalanceOf(contracts.nft_fuji.abi, contracts.nft_fuji.address)
-      .then((res: any) => {
-        // console.log(res);
-        const len = res.length;
-        let hasNft = false;
-        for (let i = 0; i < len; i += 1) {
-          if (Number(res[i])) {
-            hasNft = true;
-            fetchLogin();
-            return;
-          }
-        }
-        if (!hasNft) {
-          Message.error(t('login.havNft.error'));
-        }
-      });
-  };
+
+  // get NFT
+  const getNft = async () => {
+    const result: any = await web3J.balanceOfBatch(contracts.nft_fuji.abi, contracts.nft_fuji.address);
+    const len = result.length;
+    let hasNft = false;
+    console.log(result);
+    for (let i = 0; i < len; i += 1) {
+      if ( Number(result[i]) ) {
+        hasNft = true;
+        fetchLogin();
+        // const { redirect, ...othersQuery } = router.currentRoute.value.query;
+        // router.push({
+        //   name: (redirect as string) || 'Workplace',
+        //   query: {
+        //     ...othersQuery,
+        //   },
+        // });
+        // localStorage.setItem('isLogin', 'true');
+        return;
+      }
+    }
+    if (!hasNft) {
+      Message.error(t('login.havNft.error'));
+    }
+  }
+
 
   const connect = async () => {
     const { ethereum } = window as any; // 获取小狐狸实例
@@ -140,12 +148,22 @@
           localStorage.setItem('address', res[0]);
           // eslint-disable-next-line prefer-destructuring
           userAddress.value = res[0];
-          const a: any = await web3.addChain(43113);
-          if (a) {
-            handleSubmit();
-          } else {
-            Message.error(t('switch.error'));
-          }
+          const {Web3} = window as any;
+          const web3obj = new Web3((Web3 as any).givenProvider);
+          await web3obj.eth.net.getId().then(async (chainId: any) => {
+              console.log(chainId);
+              // eslint-disable-next-line eqeqeq
+              if(chainId != 43113) {
+                const a: any = await web3J.addChain(43113);
+                if (a) {
+                  getNft();
+                } else {
+                  Message.error(t('switch.error'));
+                }
+              }else{
+                getNft();
+              }
+          })
         });
     }
   };
@@ -153,18 +171,11 @@
     window.open('https://metamask.io/');
   };
 
-  // watch(userAddress, (newVal, oldVal) => {
-  //   console.log(newVal, oldVal);
-
-  //   if(!oldVal) return;
-  //   handleSubmit();
-  // }, {immediate:true,deep:true});
-
   onMounted(() => {
-    connect();
     localStorage.removeItem('isLogin');
     localStorage.removeItem('isAssetsAllow');
     localStorage.removeItem('address');
+    localStorage.removeItem('satoken')
   });
 </script>
 

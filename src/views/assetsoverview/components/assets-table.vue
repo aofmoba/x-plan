@@ -96,19 +96,18 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref, reactive } from 'vue';
+  import { onMounted, ref } from 'vue';
   // import { useRouter } from 'vue-router';
   import { Message } from '@arco-design/web-vue';
   import { useI18n } from 'vue-i18n';
-  import useLoading from '@/hooks/loading';
   import contracts from '@/utils/contracts';
   import web3 from '@/utils/web3';
-  import { settings } from 'nprogress';
-
+  // import useLoading from '@/hooks/loading';
   // import axios from 'axios';
+
+  // const { loading, setLoading } = useLoading(true);
   // const router = useRouter();
   const { t } = useI18n();
-  const { loading, setLoading } = useLoading(true);
   const nowNetWork = ref('Fuji');
   const fujiGame: any = ref([]);
   const fujiRole: any = ref([]);
@@ -201,8 +200,8 @@
     );
     fujiHead.value.push(
       await web3.totolsuppl(
-        contracts.cyberClubFuji.abi,
-        contracts.cyberClubFuji.address,
+        contracts.cyberClub_Fuji.abi,
+        contracts.cyberClub_Fuji.address,
         -1
       )
     );

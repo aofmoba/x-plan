@@ -5978,7 +5978,8 @@ const cyberClub = {
   ],
 };
 // 头像合约
-const cyberClubFuji = {
+// eslint-disable-next-line camelcase
+const cyberClub_Fuji = {
   address: '0x4B4cbe55125B48e868AA68E08b7527524C46E8AC',
   abi: [
     {
@@ -10151,20 +10152,5 @@ const cyt = {
 };
 
 // eslint-disable-next-line camelcase
-export default {
-  nft,
-  nft_fuji,
-  arms,
-  erc721,
-  weapons,
-  gamePool,
-  GiftBox,
-  LootBox,
-  cyberClub,
-  cyberClubFuji,
-  Cyborg,
-  Cyborg_Fuji,
-  game_Fuji,
-  MarketV2,
-  cyt,
+export default { nft,nft_fuji,arms,erc721,weapons,gamePool,GiftBox,LootBox,cyberClub,cyberClub_Fuji,Cyborg,Cyborg_Fuji,game_Fuji,MarketV2,cyt,
 };

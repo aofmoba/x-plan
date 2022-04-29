@@ -38,7 +38,10 @@ export default {
 
   // my
   'workplace.me': 'me',
-  'workplace.code': 'Code',
+  'workplace.level': 'Level ',
+  'workplace.code1': 'User invitation link',
+  'workplace.code2': 'Partner invitation link',
+  'workplace.code3': 'Regional invitation link',
   'workplace.invitees': 'Invitees',
   'workplace.total': 'Total',
   'workplace.hashrate': 'Hashrate',
@@ -50,4 +53,13 @@ export default {
   'workplace.table.date': 'Date',
   'workplace.table.hashrate': 'Hashrate/h',
   'workplace.table.offline': 'Offline',
+  'workplace.table.disable': 'Disable',
+  'workplace.modal.title': 'Disable account',
+  'workplace.modal.msg': 'Disable this account',
+  'workplace.modal.date1': 'One day',
+  'workplace.modal.date2': 'Three day',
+  'workplace.modal.date3': 'Seven day',
+  'workplace.modal.date4': 'One month',
+  'workplace.modal.date5': 'Forever',
+  'workplace.modal.place': 'Please select ...',
 };

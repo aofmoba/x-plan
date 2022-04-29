@@ -10,6 +10,19 @@ export default mergeConfig(
       fs: {
         strict: true,
       },
+      host: '0.0.0.0',
+      proxy: {
+          '/game': {
+              target: 'https://gamepool.cyberpop.online/', // 实际请求地址
+              changeOrigin: true,
+              rewrite: (path) => path.replace(/^\/game/, '')
+          },
+          '/api': {
+            target: 'https://api.cyberpop.online/', // 实际请求地址
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/api/, '')
+          },
+      },
     },
     plugins: [
       eslint({

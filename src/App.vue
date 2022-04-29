@@ -23,14 +23,13 @@
       const { logout } = useUser();
 
       onMounted(() => {
-        const { ethereum } = window as any;
-        // eslint-disable-next-line no-empty
-        if (ethereum) {
+        if( localStorage.getItem('address') ){
+          const { ethereum } = window as any;
           ethereum.on('accountsChanged', (accounts: any) => {
             console.log(accounts[0]); // 一旦切换账号这里就会执行
-            localStorage.setItem('address', accounts[0]);
+            // localStorage.setItem('address', accounts[0]);
             // eslint-disable-next-line prefer-destructuring
-            userAddress.value = accounts[0];
+            // userAddress.value = accounts[0];
             logout();
           });
         }

@@ -18,6 +18,7 @@ import Agent from '@/locale/zh-CN/agent';
 import Promotion from '@/locale/zh-CN/promotion';
 import System from '@/locale/zh-CN/systemsetting';
 import Purchase from '@/locale/zh-CN/purchase';
+import Financial from '@/locale/zh-CN/financial';
 import Trade from '@/locale/zh-CN/trade';
 
 export default {
@@ -36,5 +37,6 @@ export default {
   ...Promotion,
   ...System,
   ...Purchase,
+  ...Financial,
   ...Trade,
 };

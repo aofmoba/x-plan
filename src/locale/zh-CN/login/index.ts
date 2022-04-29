@@ -25,4 +25,6 @@ export default {
   'login.modal.title': '选择您的钱包',
   'login.modal.msg':
     '您需要安装MetaMask才能继续。安装完毕后，请刷新页面以继续。',
+  'login.modal.cancel': '取消',
+  'login.modal.open': '打开 METAMASK',
 };

@@ -38,7 +38,11 @@ export default {
 
   // my
   'workplace.me': '我的',
+  'workplace.level': '等级 ',
   'workplace.code': '邀请码',
+  'workplace.code1': '用户邀请链接',
+  'workplace.code2': '伙伴邀请链接',
+  'workplace.code3': '区域邀请链接',
   'workplace.invitees': '被邀请者',
   'workplace.total': '总计',
   'workplace.hashrate': '算力',
@@ -50,4 +54,13 @@ export default {
   'workplace.table.date': '日期',
   'workplace.table.hashrate': '算力/小时',
   'workplace.table.offline': '已离线',
+  'workplace.table.disable': '禁用',
+  'workplace.modal.title': '禁用账号',
+  'workplace.modal.msg': '确定禁用此账户',
+  'workplace.modal.date1': '1天',
+  'workplace.modal.date2': '3天',
+  'workplace.modal.date3': '7天',
+  'workplace.modal.date4': '一个月',
+  'workplace.modal.date5': '永久',
+  'workplace.modal.place': '请选择 ...',
 };

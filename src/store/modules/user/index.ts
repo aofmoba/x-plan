@@ -7,6 +7,7 @@ import {
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
+import axios from 'axios';
 import { UserState } from './types';
 
 const useUserStore = defineStore('user', {
@@ -75,10 +76,21 @@ const useUserStore = defineStore('user', {
 
     // Logout
     async logout() {
+      const address = localStorage.getItem('address')
+      axios
+        .get(
+          `https://invitecode.cyberpop.online/user/outLogin?address=${ address }`,
+          { 
+            headers: {
+              satoken: String(localStorage.getItem('satoken'))
+            }
+          }
+        )
       // await userLogout();
       localStorage.removeItem('isLogin');
       localStorage.removeItem('isAssetsAllow');
       localStorage.removeItem('address');
+      localStorage.removeItem('satoken');
       this.resetInfo();
       clearToken();
       removeRouteListener();

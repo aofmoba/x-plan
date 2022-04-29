@@ -22,3 +22,11 @@ export function queryMore() {
     .get<{ data: any }>('/api/mock/tree/more')
     .then((res) => res.data);
 }
+export function queryMoreTable() {
+  return axios
+    .get<{ data: any }>('/api/mock/tree/table')
+    .then((res) => res.data);
+}
+export function addTableDate() {
+  return axios.get<{ data: any }>('/api/mock/tree/jiatable').then((res) => res.data);
+}

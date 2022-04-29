@@ -14,7 +14,7 @@
         </a-typography-title>
         <icon-menu-fold
           v-if="appStore.device === 'mobile'"
-          style="font-size: 22px; cursor: pointer"
+          style="font-size: 22px; cursor: pointer; color: var(--color-text-1);"
           @click="toggleDrawerMenu"
         />
       </a-space>

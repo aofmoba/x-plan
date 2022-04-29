@@ -116,6 +116,53 @@ const newNode = {
   level: 2,
 };
 
+
+const moreData = [
+  {
+    address: "0xa5A97581cB36E793287a3DcC1154Df02BCb1222",
+    fujiCoin: "0",
+    connectWallet: false,
+    createTime: "2022-04-26 19:20:49",
+    download: "false",
+    onlineTime: 6540,
+    hashrate: "0",
+    id: "15188863271224811531",
+  },
+  {
+    address: "0xa5A97581cB36E793287a3DcC1154Df02BCb1D111",
+    fujiCoin: "0",
+    connectWallet: false,
+    createTime: "2022-04-26 19:20:49",
+    download: "false",
+    onlineTime: 6000,
+    hashrate: "0",
+    id: "15188863271224811532",
+  },
+  {
+    address: "0xa5A97581cB36E793287a3DcC1154Df02BCb1D000",
+    fujiCoin: "0",
+    connectWallet: false,
+    createTime: "2022-04-26 19:20:49",
+    download: "false",
+    onlineTime: 3000,
+    hashrate: "0",
+    id: "15188863271224811533",
+  }
+];
+const addData = {
+    address: "0xa5A97581cB36E793287a3DcC1154Df02BCb1222",
+    fujiCoin: "0",
+    connectWallet: false,
+    createTime: "2022-04-26 19:20:49",
+    download: "false",
+    onlineTime: 4040,
+    hashrate: "6",
+    id: "15188863271224811531",
+  }
+
+
+
+
 setupMock({
   setup() {
     Mock.mock(new RegExp('/api/mock/tree/list'), () => {
@@ -126,6 +173,12 @@ setupMock({
     });
     Mock.mock(new RegExp('/api/mock/tree/more'), () => {
       return successResponseWrap(dataList.level3);
+    });
+    Mock.mock(new RegExp('/api/mock/tree/table'), () => {
+      return successResponseWrap(moreData);
+    });
+    Mock.mock(new RegExp('/api/mock/tree/jiatable'), () => {
+      return successResponseWrap(addData);
     });
   },
 });
