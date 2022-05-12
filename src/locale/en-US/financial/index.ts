@@ -13,4 +13,5 @@ export default {
   'financial.table.col4.txt': 'Completed',
   'financial.table.col6.txt': 'Details',
   'financial.withdrawn.pwd': 'Password',
+  'financial.modal.title': 'Password confirmation',
 };

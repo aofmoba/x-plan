@@ -13,4 +13,5 @@ export default {
   'financial.table.col4.txt': '完成',
   'financial.table.col6.txt': '详情',
   'financial.withdrawn.pwd': '密码',
+  'financial.modal.title': '密码确认',
 };

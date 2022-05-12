@@ -8,4 +8,7 @@ export default {
   'promotion.quyu.code': 'My regional promotion code',
   'promotion.quyu.link': 'My regional promotion link',
   'promotion.nothing': 'Oops, There’s nothing left here.',
+  'promotion.national': 'National agency privilege',
+  'promotion.regional': 'Regional agent privileges',
+  'promotion.partner': 'Partner agent privilege',
 };

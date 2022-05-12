@@ -37,4 +37,14 @@
       display: block;
     }
   }
+  // responsive
+  @media (max-width: @screen-xs) {
+    :deep(.arco-grid) {
+      row-gap: 16px !important;
+      column-gap: 0 !important;
+    }
+    :deep(.arco-grid-item) {
+      grid-column: span 24 / span 12 !important;
+    }
+  }
 </style>

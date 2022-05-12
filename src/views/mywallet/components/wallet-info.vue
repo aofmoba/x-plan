@@ -7,22 +7,30 @@
           <div class="item">
             <span class="label">{{ $t('wallet.item.level') }} : </span>
             <span class="num">
-              {{ cardData.val.level }}
-              <!-- <a-spin :loading="loading" :size="16" class="load">
-                {{ cardData.val.level }}
-              </a-spin> -->
+              <!-- {{ $t(cardData.val.level) }} -->
+              <a-spin :loading="loading" :size="16" class="load">
+                {{ $t(cardData.val.level) }}
+              </a-spin>
             </span>
           </div>
           <div class="item">
             <span class="label">{{ $t('wallet.item.ratio') }} : </span>
-            <span class="num">{{ cardData.val.ratio }}</span>
+            <span class="num">
+              <!-- {{ cardData.val.ratio }} -->
+              <a-spin :loading="loading" :size="16" class="load">
+                {{ cardData.val.ratio }}
+              </a-spin>  
+            </span>
           </div>
           <div class="item">
             <span class="label">{{ $t('wallet.item.balance') }} : </span>
-            <span class="num">{{ cardData.val.balance }}</span>
-            <a-button type="primary" shape="round" size="small" class="btn">{{
-              $t('wallet.item.btn')
-            }}</a-button>
+            <span class="num">
+              <!-- {{ cardData.val.balance }} -->
+              <a-spin :loading="loading" :size="16" class="load">
+                {{ cardData.val.balance }}
+              </a-spin>  
+            </span>
+            <a-button type="primary" shape="round" size="small" class="btn">{{$t('wallet.item.btn')}}</a-button>
           </div>
         </div>
         <div class="charts">
@@ -31,11 +39,44 @@
         </div>
       </div>
     </a-grid-item>
+
+    <!-- 提现 -->
+    <!-- <a-modal
+      v-model:visible="visible"
+      :title="$t('financial.modal.title')"
+      class="modal"
+      :cancel-text="$t('login.modal.cancel2')"
+      :ok-text="$t('login.modal.ok2')"
+      @cancel="handleCancel"
+      @ok="withdrawn"
+    >
+      <div class="drop" style="width: 320px; margin: 0 auto;">
+        <a-form :model="formInfo">
+          <a-form-item
+            field="password"
+            :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+            :validate-trigger="['change', 'blur']"
+            hide-label
+          >
+            <a-input-password
+              v-model="formInfo.inputVal"
+              :style="{width:'320px'}"
+              :placeholder="$t('financial.withdrawn.pwd')" 
+              allow-clear
+            >
+              <template #prefix>
+                <icon-lock />
+              </template>
+            </a-input-password>
+          </a-form-item>
+        </a-form>
+      </div>
+    </a-modal> -->
   </a-grid>
 </template>
 
 <script lang="ts" setup>
-  import { ref, onMounted, reactive } from 'vue';
+  import { ref, onMounted, reactive, onActivated, onDeactivated } from 'vue';
   import axios from 'axios';
   import type { ToolTipFormatterParams } from '@/types/echarts';
   import useLoading from '@/hooks/loading';
@@ -49,6 +90,7 @@
   const xAxis = ref<string[]>([]);
   const chartsData = ref<number[]>([]);
   const address: any = ref('');
+  const visible = ref(false);
   xAxis.value = [
     '2022-4-17',
     '2022-4-18',
@@ -57,11 +99,14 @@
     '2022-4-21',
   ];
   chartsData.value = [0, 0, 0, 0, 0];
+  const formInfo: any = ref({
+    inputVal: '',
+  });
   const cardData = reactive({
     val: {
-      level: '',
-      ratio: '20%',
-      balance: '0',
+      level: 'agent.level0',
+      ratio: '',
+      balance: '',
     },
   });
   const chartOption: any = {
@@ -141,6 +186,19 @@
     ],
   };
 
+  const inputModal = (info: any) => {
+    visible.value = true;
+  }
+  const handleCancel = () => {
+    visible.value = false;
+    formInfo.value.inputVal = '';
+  }
+  const withdrawn = () => {
+    // console.log(address, inputVal.value);
+  }
+
+
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -164,16 +222,64 @@
       )
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data[1] ) {
-          cardData.val.level = res.data.data[0].level;
+          console.log(res);
+          console.log(res.data.data[0].level);
+          
+          // eslint-disable-next-line eqeqeq
+          if( res.data.data[0].level == '4'){
+            cardData.val.level = 'agent.level1'
+            cardData.val.ratio = '20%'
+          // eslint-disable-next-line eqeqeq
+          }else if( res.data.data[0].level == '3' ){
+            cardData.val.level = 'agent.level2'  
+            cardData.val.ratio = '15%'
+          // eslint-disable-next-line eqeqeq
+          }else if( res.data.data[0].level == '2' ){
+            cardData.val.level = 'agent.level3'
+            cardData.val.ratio = '10%'
+          }else{
+            cardData.val.level = 'agent.level4'
+            // cardData.val.ratio = ''
+          }
           setLoading(false);
         }
       })
   }
 
+  const getBalance = () => {
+    axios
+      .get(
+        `https://invitecode.cyberpop.online/user/getuser?address=${address.value}`,
+        { 
+          headers: {
+            satoken: String(localStorage.getItem('satoken'))
+          }
+        }
+      )
+      .then((res: any) => {
+        if ( res.data.code === 200 ) {
+          cardData.val.balance = res.data.data.personalrewards;
+        }
+      })
+  }
+
+  let bTimer: any = null;
+  onActivated(() => {
+    bTimer =  window.setInterval(() => {
+        getBalance();
+    }, 60000)
+  })
+
+  onDeactivated(() => {
+    clearInterval(bTimer)
+  })
+
+
   onMounted(() =>{
     address.value = localStorage.getItem('address');
-    // getLevel();
-    cardData.val.level = String(localStorage.getItem('userLl'));
+    getLevel();
+    getBalance();
+    // cardData.val.level = String(localStorage.getItem('userLl'));
     // fetchData();
   })
 </script>
@@ -212,7 +318,7 @@
 
           .num {
             color: var(--color-text-1);
-            font-size: 16px;
+            font-size: 18px;
             .load {
               margin-bottom: 4px;
             }

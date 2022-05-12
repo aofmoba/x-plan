@@ -5,7 +5,7 @@
 //   meta: {
 //     locale: 'menu.purchase',
 //     icon: 'icon-plus-circle',
-//     order: 6,
+//     order: 5,
 //     // requiresAuth: true,
 //     hideChildrenInMenu: true,
 //   },

@@ -1,5 +1,6 @@
 export default {
-  'login.form.title': 'Login to Cyberpop Online X-Plan',
+  // 'login.form.title': 'Login to Cyberpop Online X-Plan',
+  'login.form.title': 'Welcome',
   'login.form.userName.errMsg': 'Username cannot be empty',
   'login.form.password.errMsg': 'Password cannot be empty',
   'login.form.address.errMsg': 'Address cannot be empty',
@@ -12,6 +13,9 @@ export default {
   'login.form.forgetPassword': 'Forgot password',
   'login.form.login': 'login',
   'login.form.connect': 'CONNECT WALLET',
+  'login.form.reg.btn1': 'Register as a partner dealer',
+  'login.form.reg.btn2': 'Register as a regional distributor',
+  'login.form.reg.btn3': 'Register as a global distributor',
   'login.form.register': 'register account',
   'login.banner.slogan1': 'Out-of-the-box high-quality template',
   'login.banner.subSlogan1':
@@ -23,8 +27,19 @@ export default {
   'login.banner.subSlogan3': 'Realize flexible block development',
 
   'login.modal.title': 'SELECT YOUR WALLET',
+  'login.modal.title2': 'Registration information',
   'login.modal.msg':
     'You need to install MetaMask to continue. Once you have it installed, go ahead and refresh the page.',
   'login.modal.cancel': 'CANCEL',
+  'login.modal.ok': 'OK',
+  'login.modal.cancel2': 'Cancel',
+  'login.modal.ok2': 'Ok',
   'login.modal.open': 'OPEN METAMASK',
+  'login.modal.email': 'Email',
+  'login.modal.name': 'Name',
+  'login.form.email.errMsg': 'Email cannot be empty',
+  'login.form.email.ruleMsg': 'Please enter email address',
+  'login.form.name.errMsg': 'Name cannot be empty',
+  'login.form.name.errMsg2': 'Must be less than 50 characters',
+  'login.form.title2': 'Welcome',
 };

@@ -1,5 +1,6 @@
 export default {
-  'login.form.title': '登录 Cyberpop Online X-Plan',
+  // 'login.form.title': '登录 Cyberpop Online X-Plan',
+  'login.form.title': '欢迎',
   'login.form.userName.errMsg': '用户名不能为空',
   'login.form.password.errMsg': '密码不能为空',
   'login.form.address.errMsg': '地址不能为空',
@@ -12,6 +13,9 @@ export default {
   'login.form.forgetPassword': '忘记密码',
   'login.form.login': '登录',
   'login.form.connect': '连接钱包',
+  'login.form.reg.btn1': '注册成为伙伴经销商',
+  'login.form.reg.btn2': '注册成为区域经销商',
+  'login.form.reg.btn3': '注册成为全球经销商',
   'login.form.register': '注册帐号',
   'login.banner.slogan1': 'Out-of-the-box high-quality template',
   'login.banner.subSlogan1':
@@ -23,8 +27,19 @@ export default {
   'login.banner.subSlogan3': 'Realize flexible block development',
 
   'login.modal.title': '选择您的钱包',
+  'login.modal.title2': '注册信息',
   'login.modal.msg':
     '您需要安装MetaMask才能继续。安装完毕后，请刷新页面以继续。',
   'login.modal.cancel': '取消',
+  'login.modal.ok': '确定',
+  'login.modal.cancel2': '取消',
+  'login.modal.ok2': '确定',
   'login.modal.open': '打开 METAMASK',
+  'login.modal.email': '邮箱',
+  'login.modal.name': '姓名',
+  'login.form.email.errMsg': '邮箱不能为空',
+  'login.form.email.ruleMsg': '请输入邮箱',
+  'login.form.name.errMsg': '姓名不能为空',
+  'login.form.name.errMsg2': '必须小于50个字符',
+  'login.form.title2': '欢迎',
 };

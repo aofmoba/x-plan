@@ -73,8 +73,10 @@
     <!-- 提现 -->
     <a-modal
       v-model:visible="visible"
-      :title="$t('workplace.modal.title')"
+      :title="$t('financial.modal.title')"
       class="modal"
+      :cancel-text="$t('login.modal.cancel2')"
+      :ok-text="$t('login.modal.ok2')"
       @cancel="handleCancel"
       @ok="withdrawn"
     >

@@ -5,7 +5,7 @@ export default {
   meta: {
     locale: 'menu.asset',
     icon: 'icon-sun',
-    order: 7,
+    order: 6,
     // requiresAuth: true,
     hideChildrenInMenu: true,
   },

@@ -98,15 +98,20 @@ const addChain = (chainId: any) => {
   });
 };
 
-// 资产查询
-const balanceOfBatch = (abi: any, address: any) => {
+// 原生1155查询资产
+const balanceOfBatch = (abi: any, address: any, ids: any) => {
+  const tempAccounts: any = []
+  const accounts1 = localStorage.getItem('address');
+  // eslint-disable-next-line no-restricted-syntax
+  for (const iterator of ids) {
+      tempAccounts.push(accounts1)
+  }
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     // console.log(abi, address);
-    // const accounts = localStorage.getItem('address');
     const web3 = new Web3((Web3 as any).givenProvider);
     const contract = new web3.eth.Contract(abi, address);
-    const res = await contract.methods.balanceOfBatch([accounts,accounts,accounts,accounts,accounts], [0,1,2,3,4]).call();
+    const res = await contract.methods.balanceOfBatch(tempAccounts, ids).call();
     resolve(res);
   });
 };
@@ -136,6 +141,17 @@ const tokensOfOwner = (abi: any, address: any) => {
   })
 }
 
+const currentChain = () => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    const web3obj = new Web3((Web3 as any).givenProvider);
+    const chainId = await web3obj.eth.net.getId()
+    resolve(chainId);
+  })
+  
+
+}
+
 export default {
   login,
   hasMetaMask,
@@ -144,5 +160,6 @@ export default {
   balanceOfBatch,
   batchBalanceOf,
   tokensOfOwner,
+  currentChain,
   contracts
 };

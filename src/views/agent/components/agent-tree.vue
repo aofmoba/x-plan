@@ -6,21 +6,21 @@
         <a-space class="btnGroup">
           <div>
             <a-button
-              v-if="level == 1"
-              :class="levels == 2 ? 'active' : ''"
-              @click="changeItem(2)"
+              v-if="level == 4"
+              :class="levels == 4 ? 'active' : ''"
+              @click="changeItem(4)"
               >{{ $t('agent.level2') }}</a-button
             >
             <a-button
-              v-if="level <= 2"
+              v-if="level >= 3"
               :class="levels == 3 ? 'active' : ''"
               @click="changeItem(3)"
               >{{ $t('agent.level3') }}</a-button
             >
             <!-- <a-button
-              v-if="level <= 3"
-              :class="levels == 4 ? 'active' : ''"
-              @click="changeItem(4)"
+              v-if="level >= 2"
+              :class="levels == 2 ? 'active' : ''"
+              @click="changeItem(2)"
               >{{ $t('agent.level4') }}</a-button
             > -->
           </div>
@@ -44,22 +44,20 @@
               :load-more="moretable"
               :data="useDate" 
               :loading="loading"
-              :pagination="false"
+              :pagination="pagination"
             >
               <template #columns>
-                  <!-- <a-table-column :title="$t('workplace.table.online')">
-                    <template #cell="{ record }">
-                      <img
-                        v-show="record.connectWallet == true"
-                        src="@/assets/images/online1.png"
-                        alt=""
-                        sizes="20"
-                      />
-                    </template>
-                  </a-table-column> -->
+                  <a-table-column
+                    :title="$t('workplace.table.nickname')"
+                    data-index="nickname"
+                  />
                   <a-table-column
                     :title="$t('workplace.table.address')"
                     data-index="addr"
+                  />
+                  <a-table-column
+                    :title="$t('workplace.table.email')"
+                    data-index="email"
                   />
                   <a-table-column
                     :title="$t('workplace.table.download')"
@@ -81,6 +79,14 @@
                     :title="$t('workplace.table.hashrate')"
                     data-index="hashrate"
                   />
+                  <a-table-column
+                    :title="$t('workplace.table.beiz')"
+                  >
+                    <template #cell="{ record }">
+                      {{record.remarks}}
+                      <icon-pen-fill v-if="!record.loadEdit" class="remarks-edit" @click="editRemarks(record.addr, record.level)"/>
+                    </template>
+                  </a-table-column>
                   <a-table-column :title="$t('agent.table.action')">
                     <template #cell="{ record }">
                       <div class="actionBtn">
@@ -102,11 +108,31 @@
           </a-spin>
         </div>
       </div>
+      <!-- edit remarks -->
+      <a-modal
+        v-model:visible="editVisible"
+        simple
+        :cancel-text="$t('login.modal.cancel2')"
+        :ok-text="$t('login.modal.ok2')"
+        @cancel="editCancel"
+        @ok="okRemarks"
+      >
+        <a-form :model="remarkInfo.val">
+          <a-form-item 
+            field="remarks" 
+            :rules="[{maxLength: 20, message: $t('workplace.table.beiz.msg')}]"
+          >
+            <a-input v-model="remarkInfo.val.remarks" />
+          </a-form-item>
+        </a-form>
+      </a-modal>
 
       <!-- del -->
       <a-modal
         v-model:visible="delVisible"
         simple
+        :cancel-text="$t('login.modal.cancel2')"
+        :ok-text="$t('login.modal.ok2')"
         @cancel="delCancel"
         @ok="deleteMember"
       >
@@ -122,6 +148,8 @@
         v-model:visible="addVisible"
         :title="$t('agent.addModal.title')"
         class="addModal"
+        :cancel-text="$t('login.modal.cancel2')"
+        :ok-text="$t('login.modal.ok2')"
         @cancel="addCancel"
         @ok="addMember"
       >
@@ -142,33 +170,44 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, onMounted } from 'vue';
+  import { ref, reactive, onMounted, onActivated } from 'vue';
   import useLoading from '@/hooks/loading';
   import { useI18n } from 'vue-i18n';
-  import { IconPlus } from '@arco-design/web-vue/es/icon';
   import axios from 'axios';
   import { computedDur, vertDate } from '@/utils/computed'
 
   // request
-  import { queryMoreTable, addTableDate } from '@/views/agent/request';
+  import { addTableDate } from '@/views/agent/request';
+  import { Message } from '@arco-design/web-vue';
   // import { useRouter } from 'vue-router';
-  // import { Message } from '@arco-design/web-vue';
   // const router = useRouter();
   const { t } = useI18n();
   const { loading, setLoading } = useLoading(true);
   const address: any = ref('');
-  const treeRef = ref();
   const useDate = ref([]);
-  const treeDataL2: any = [];
-  const treeDataL3: any = [];
-  const treeDataL4: any = [];
-  const levels = ref(2);
+  const treeDataL2: any = ref([]);
+  const treeDataL3: any = ref([]);
+  const treeDataL4: any = ref([]);
+  const levels = ref(4);
   const delVisible = ref(false);
   const addVisible = ref(false);
   const currentNode: any = [];
-  const level: any = ref('4')
+  const level: any = ref('1')
   const isLeaf: any = ref(false);
-
+  const editVisible = ref(false);
+  const toAddress: any = ref('');
+  const toLevel: any = ref('');
+  const remarksActive: any = ref(false);
+  const pagination: any = ref({
+    type: 'pagination',
+    page: 50,
+    pageSize: 10,
+  });
+  const remarkInfo = reactive({
+    val: {
+      remarks: ''
+    },
+  });
   const addForm = reactive({
     val: {
       address: '',
@@ -179,25 +218,28 @@
   });
 
   // push children
-  const childPush = (levelArr: any) => {
-      const resultL3 = levelArr;
-      const lenL3 = resultL3.length;
+  const childPush = (resultL: any, loade: any) => {
+      const lenL = resultL.length;
       const children: any = []; 
-      for (let i = 0; i < lenL3; i += 1) {
+      for (let i = 0; i < lenL; i += 1) {
         children.push({
-          key: resultL3[i].id,
-          connectWallet: resultL3[i].connectWallet,
-          addr: resultL3[i].address,
-          download: resultL3[i].download ? 'true' : 'false',
+          key: resultL[i].id,
+          connectWallet: resultL[i].connectWallet,
+          nickname: resultL[i].nikename,
+          addr: resultL[i].address,
+          email: resultL[i].email,
+          download: resultL[i].download ? 'true' : 'false',
           duration:
-            resultL3[i].onlineTime > 86400
+            resultL[i].onlineTime > 86400
               ? t('workplace.table.offline')
-              : computedDur(resultL3[i].onlineTime),
-          balance: resultL3[i].fujiCoin ? resultL3[i].fujiCoin : 0,
-          createTime: resultL3[i].createTime ? vertDate(resultL3[i].createTime) : 'null',
-          hashrate: resultL3[i].hashrate,
-          level: resultL3[i].level,
-          isLeaf: isLeaf.value
+              : computedDur(resultL[i].onlineTime),
+          balance: resultL[i].fujiCoin ? resultL[i].fujiCoin : 0,
+          createTime: resultL[i].createTime ? vertDate(resultL[i].createTime) : 'null',
+          hashrate: resultL[i].hashrate,
+          remarks: resultL[i].remarks ? resultL[i].remarks : 'Cyber user',
+          level: resultL[i].level,
+          isLeaf: isLeaf.value,
+          loadEdit: loade,
         });
       }
       return children
@@ -208,6 +250,7 @@
     axios
       .get(
         `https://invitecode.cyberpop.online/user/getdata?address=${record.addr}`,
+        // `https://invitecode.cyberpop.online/user/getdata?address=0x7291030263771b40731d6bc6b352358d23f5737f`,
         { 
           headers: {
             satoken: String(localStorage.getItem('satoken'))
@@ -215,24 +258,26 @@
         }
       )
       .then((res: any) => {
+        console.log(res);
         if (res.data.code === 200) {
             const result = res.data.data;
             // eslint-disable-next-line eqeqeq
-            if( record.level == 2 ){
-              if( result.level3 ){
-                if( !result.level4 ){
-                  isLeaf.value = true;
-                }
-                const children = childPush(result.level3);
-                done(children)
-              }else{
-                done([]);
-              }
+            // if( record.level == 4 ){
+            //   if( result.level3 ){
+            //     if( !result.level2 ){
+            //       isLeaf.value = true;
+            //     }
+            //     const children = childPush(result.level3);
+            //     done(children)
+            //   }else{
+            //     done([]);
+            //   }
+            // }else 
             // eslint-disable-next-line eqeqeq
-            }else if( record.level == 3 ){
-              if( result.level4 ){
-                isLeaf.value = false;
-                const children = childPush(result.level4);
+            if( record.level == 3 ){
+              if( result.level2 ){
+                isLeaf.value = true;
+                const children = childPush(result.level2, true);
                 done(children)
               }else{
                 done([]);
@@ -247,23 +292,30 @@
   // switch type
   const changeItem = (type: any) => {
     levels.value = type;
-    if (type === 2) {
-      useDate.value = treeDataL2;
+    if (type === 4) {
+      useDate.value = treeDataL2.value;
     } else if (type === 3) {
-      useDate.value = treeDataL3;
-    } else if (type === 4) {
-      useDate.value = treeDataL4;
+      useDate.value = treeDataL3.value;
+    } else if (type === 2) {
+      useDate.value = treeDataL4.value;
     }
   };
 
   // init data
-  const fetchData = async () => {
+  const fetchData = async (toL?: any) => {
+    useDate.value = [];
+    treeDataL2.value = [];
+    treeDataL3.value = [];
+    treeDataL4.value = [];
+    isLeaf.value = false;
+    levels.value = 4;
     setLoading(true);
     const satoken = String(localStorage.getItem('satoken'))
     if (address.value) {
       await axios
         .get(
           `https://invitecode.cyberpop.online/user/getdata?address=${address.value}`,
+          // `https://invitecode.cyberpop.online/user/getdata?address=0x7291030263771b40731d6bc6b352358d23f5737f`,
           { 
             headers: {
               satoken
@@ -273,38 +325,56 @@
         .then((res: any) => {
           if (res.data.code === 200) {
             const result = res.data.data;
-            if( result.level2 ){
-              const children2 = childPush(result.level2);
-              treeDataL2.push(...children2)
-            }
             if( result.level3 ){
-              const children3 = childPush(result.level3);
-              treeDataL3.push(...children3)
+              const children2 = childPush(result.level3, false);
+              treeDataL2.value.push(...children2)
             }
-            if( result.level4 ){
+            if( result.level2 ){
               isLeaf.value = true;
-              const children4 = childPush(result.level4);
-              treeDataL4.push(...children4)
+              const children3 = childPush(result.level2, false);
+              treeDataL3.value.push(...children3)
             }
-            // eslint-disable-next-line eqeqeq
-            if( level.value == '1'){
-              useDate.value = treeDataL2;
-              levels.value = 2;
-            // eslint-disable-next-line eqeqeq
-            }else if( level.value == '2' ){
-              useDate.value = treeDataL3;
-              levels.value = 3;
-            // eslint-disable-next-line eqeqeq
-            }else if( level.value == '3' ){
-              useDate.value = treeDataL4;
-              levels.value = 4;
-            }else{
-              levels.value = 0;
+            if( result.level1 ){
+              isLeaf.value = true;
+              const children4 = childPush(result.level1, false);
+              treeDataL4.value.push(...children4)
             }
+            if( toL ){
+              if( toL === '3'){
+                useDate.value = treeDataL2.value;
+                levels.value = 4;
+              }else if( toL === '2' ){
+                useDate.value = treeDataL3.value;
+                levels.value = 3;
+              }else{
+                useDate.value = treeDataL4.value;
+                levels.value = 2;
+              }
+            // eslint-disable-next-line eqeqeq
+            } else if( toL == undefined ){
+              // eslint-disable-next-line eqeqeq
+              if( level.value == '4'){
+                useDate.value = treeDataL2.value;
+                levels.value = 4;
+              // eslint-disable-next-line eqeqeq
+              }else if( level.value == '3' ){
+                useDate.value = treeDataL3.value;
+                levels.value = 3;
+              // eslint-disable-next-line eqeqeq
+              }else if( level.value == '2' ){
+                useDate.value = treeDataL4.value;
+                levels.value = 2;
+              }else{
+                levels.value = 1;
+              }
+            }
+
+
           }
         })
         .finally(() => {
           setLoading(false);
+          remarksActive.value = true;
         });
     }
   };
@@ -331,7 +401,9 @@
       children.push({
         key: res.data.id,
         connectWallet: res.data.connectWallet,
+        nickname: res.data.nikename,
         addr: res.data.address,
+        email: res.data.email,
         download: res.data.download ? 'true' : 'false',
         duration:
           res.data.onlineTime > 86400
@@ -340,6 +412,8 @@
         balance: res.data.fujiCoin,
         createTime: vertDate(res.data.createTime),
         hashrate: res.data.hashrate,
+        remarks: res.data.remarks ? res.data.remarks : 'Cyber user',
+        level: res.data.level,
         isLeaf: false,
       })
       currentNode.children = children
@@ -359,25 +433,60 @@
     fetchData();
   };
 
-  const getLevel = async () => {
-    await axios
+  // edit remarks
+  const editRemarks = (toA: any, toL: any) => {
+    editVisible.value = true;
+    toAddress.value = toA;
+    toLevel.value = toL;
+  };
+  const editCancel = () => {
+    editVisible.value = false;
+    remarkInfo.val.remarks = ''
+  };
+
+  const okRemarks = () => {
+    // console.log('ok', address.value, toAddress.value, remarkInfo.val.remarks);
+    axios
       .get(
-        `https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`
+        `https://invitecode.cyberpop.online/re/setremarks?address=${address.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`
       )
       .then((res: any) => {
-        if ( res.data.code === 200 && res.data.data[1] ) {
-          level.value = res.data.data[0].level;
-          fetchData();
+        if ( res.data.code === 200 && res.data.data ) {
+          Message.success(t('beiz.success'))
+          fetchData(toLevel.value);
+        }else {
+          Message.error(t('beiz.error'))
         }
+        remarkInfo.val.remarks = ''
       })
-  }
+  };
+
+  // const getLevel = async () => {
+  //   await axios
+  //     .get(
+  //       `https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`
+  //     )
+  //     .then((res: any) => {
+  //       if ( res.data.code === 200 && res.data.data[1] ) {
+  //         level.value = res.data.data[0].level;
+  //         fetchData();
+  //       }
+  //     })
+  // }
 
   onMounted(() => {
     address.value = localStorage.getItem('address');
     // getLevel();
-    level.value = localStorage.getItem('userLl') ? localStorage.getItem('userLl') : '4';
+    level.value = localStorage.getItem('userLl') ? localStorage.getItem('userLl') : '1';
     fetchData();
   });
+
+  onActivated(() => {
+    if( remarksActive.value ){
+      fetchData();
+      console.log('aonActivated');
+    }
+  })
 </script>
 
 <style lang="less" scoped>
@@ -385,7 +494,6 @@
     margin-bottom: 0;
     padding: 16px 20px 0 20px;
   }
-
   .panel-col {
     .title {
       color: var(--color-text-1);
@@ -433,16 +541,45 @@
     }
   }
   :deep(.arco-table-tr) {
-    .arco-table-td:nth-child(1), .arco-table-td:nth-child(2) {
+    .arco-table-td:nth-child(1) {
+      .arco-table-cell {
+        display: block;
+        min-width: 160px !important;
+        margin: 0 auto;
+      }
+    }
+    .arco-table-td:nth-child(3), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5) {
       .arco-table-cell {
         white-space: nowrap;
       }
     }
-    .arco-table-td:nth-child(5) {
+    .arco-table-td:nth-child(2) {
+      .arco-table-cell {
+        width: 220px;
+      }
+    }
+    .arco-table-td:nth-child(7) {
       .arco-table-cell {
         width: 120px;
       }
     }
+    .arco-table-td:nth-child(9) {
+      .arco-table-cell {
+        width: 120px;
+      }
+    }
+    .remarks-edit {
+      float: right;
+      color: #165dff;
+      font-size: 22px !important;
+      cursor: pointer;
+    }
+  }
+  :deep(.arco-row-justify-start) {
+    justify-content: center;
+  }
+  :deep(.arco-form-item-label-col) {
+    display: none;
   }
 
 </style>
@@ -454,24 +591,15 @@
       padding: 0 !important;
       :deep(.arco-table-tr) {
         padding: 16px 2px;
-        .arco-table-td:nth-child(5) {
-          .arco-table-cell {
-            width: 120px;
-          }
-        }
-
-        .arco-table-td:nth-child(3) {
-          .arco-table-cell {
-            width: 90px;
-          }
-        }
-
-        .arco-table-td:nth-child(2) {
-          .arco-table-cell {
-            white-space: nowrap;
-          }
-        }
       }
+    }
+    .btnGroup {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        .addbtn {
+          margin-top: 10px;
+        }
     }
   }
 </style>

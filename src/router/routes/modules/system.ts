@@ -5,7 +5,7 @@
 //   meta: {
 //     locale: 'menu.system',
 //     icon: 'icon-settings',
-//     order: 5,
+//     order: 7,
 //     // requiresAuth: true,
 //     hideChildrenInMenu: true,
 //   },

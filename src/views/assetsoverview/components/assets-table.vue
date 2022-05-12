@@ -237,9 +237,9 @@
   };
 
   const handleSelect = async (v: any) => {
-    nowNetWork.value = v.value;
     if (v.value === 'Mumbai') {
       if (circFlagMum.value !== 1) {
+        Message.info(t('switch.mumbai'));
         const a: any = await web3.addChain(80001);
         if (a) {
           Message.success(t('switch.success'));
@@ -273,9 +273,9 @@
             // console.log(mumbaiGame.value, mumbaiRole.value, mumbaiHead.value);
             circFlagMum.value = 1;
           }, 2500);
-        } else {
-          Message.error(t('switch.error'));
         }
+      }else{
+        nowNetWork.value = v.value;
       }
       contractDate.value = [];
       contractDate.value.push(
@@ -322,6 +322,7 @@
       );
     } else if (v.value === 'Fuji') {
       if (circFlaFuji.value !== 1) {
+        Message.info(t('switch.fuji'));
         const a: any = await web3.addChain(43113);
         if (a) {
           Message.success(t('switch.success'));
@@ -376,6 +377,7 @@
         }
       );
     }
+    nowNetWork.value = v.value;
   };
 
   const getMyInvit = async () => {
