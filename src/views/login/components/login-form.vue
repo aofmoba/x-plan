@@ -366,6 +366,8 @@ import { log } from 'console';
   const toMetaMask = () => {
     window.open('https://metamask.io/');
   };
+
+  // register 
   const addInfo = (types: any) => {
     addVisible.value = true;
     alltype.value = types;
@@ -379,9 +381,13 @@ import { log } from 'console';
   };
   const into = (url: any, type: any) => {
       axios
-      .get(
-        `https://invitecode.cyberpop.online/business/${url}?address=${userInfo.address}&nickname=${addForm.val.name}&email=${addForm.val.email}&level=${type}`
-        // `https://invitecode.cyberpop.online/business/${url}?address=0x57f4D94d80c5ee580F3de62851c7AD7B44aCcc43&nickname=${addForm.val.name}&email=${addForm.val.email}&level=${type}`
+      .post(
+        `https://invitecode.cyberpop.online/business/${url}?address=${userInfo.address}&nickname=${addForm.val.name}&email=${addForm.val.email}&level=${type}`,
+        { 
+          headers: {
+            satoken: String(localStorage.getItem('satoken'))
+          }
+        }
       )
       .then((res: any) => {
         console.log(res);
@@ -398,19 +404,21 @@ import { log } from 'console';
         }
       })
   } 
-
-
   const register = () => {
     ruleform.value.validate((res: any) => {
       // eslint-disable-next-line eqeqeq
       if( res == undefined ) {
-        if( alltype.value === 1 ){
+
+        // 提前校验 userInfo.address addForm.val.email
+
+        if( alltype.value === 1 ){ // 注册国家代理
           into('nationallevel', 4)
-        }else if( alltype.value === 2 ){
+        }else if( alltype.value === 2 ){ // 注册区域代理
           into('arealevel', 3)
-        }else {
+        }else {  // 注册伙伴代理
           into('partnerlevel',2)
         }
+
       }
     })
   };

@@ -10,6 +10,11 @@
                 src="//lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png"
               />
             </a-avatar>
+            <div class="username">
+              <span v-show="!switchInput">{{ editInfo.oldName }}</span>
+              <input v-show="switchInput" v-model="editInfo.inputName" class="nameInput" type="text" :placeholder="editInfo.oldName" @blur="editName(1)">
+              <icon-pen-fill class="name-edit" @click="editName(1)"/>
+            </div>
             <div class="btnGroup">
               <a-button
                 v-if="level == 4"
@@ -37,7 +42,14 @@
           >
             <template #title>
               <div>{{ $t('workplace.me') }} : {{ address }}</div>
-              <a-button type="outline" size="mini" style="margin-top: 6px; height: 18px; line-height: 16px">{{ $t(userLevel) }}</a-button>
+              <div class="my-card-title">
+                <a-button type="outline" size="mini" style="height: 18px; line-height: 16px">{{ $t(userLevel) }}</a-button>
+                <!-- <div class="useremail">
+                  <span v-show="!switchInput2">{{ editInfo.oldEmail }}</span>
+                  <input v-show="switchInput2" v-model="editInfo.inputEmail" class="emailInput" type="text" :placeholder="editInfo.oldEmail" @blur="editName(2)">
+                  <icon-pen-fill class="email-edit" @click="editName(2)"/>
+                </div> -->
+              </div>
             </template>
             <template #extra>
               <div class="code-group">
@@ -238,6 +250,15 @@
   const toAddress: any = ref('');
   const toLevel: any = ref('');
   const remarksActive: any = ref(false);
+  const satoken: any = String(localStorage.getItem('satoken'))
+  const switchInput: any = ref(false); // nickname
+  const switchInput2: any = ref(false); // email
+  const editInfo: any = ref({
+    oldName: '',
+    inputName: '',
+    oldEmail: '',
+    inputEmail: ''
+  });
   const remarkInfo = reactive({
     val: {
       remarks: ''
@@ -254,6 +275,7 @@
     page: 50,
     pageSize: 10,
   });
+  // switch code
   const changeCode = () =>{
     // eslint-disable-next-line eqeqeq
     if( inCode.value.partnerCode && ( curCode.value == inCode.value.userCode ) ){
@@ -309,7 +331,8 @@
     return children
   }
 
-  const getMyInvit = async(toL?: any) => {
+  // init data
+  const getMyInvit = (toL?: any) => {
     useDate.value = [];
     treeDataL2.value = [];
     treeDataL3.value = [];
@@ -320,12 +343,10 @@
     myInvit.value = [];
     hash.value = 0;
     totalInfo.value.total = 0;
-    const satoken = String(localStorage.getItem('satoken'))
     if (address.value) {
-      await axios
+      axios
         .get(
           `https://invitecode.cyberpop.online/user/getdata?address=${address.value}`,
-          // `https://invitecode.cyberpop.online/user/getdata?address=0x7291030263771b40731d6bc6b352358d23f5737f`,
           { 
             headers: {
               satoken
@@ -418,68 +439,132 @@
   const disMember = () => {
     console.log(disAddress.value, selectVal.value);
   }
-
   // edit remarks
   const editRemarks = (toA: any, toL: any) => {
     editVisible.value = true;
     toAddress.value = toA;
-    toLevel.value = toL;
+    toLevel.value = toL; // 存储修改备注时的等级
   };
   const editCancel = () => {
     editVisible.value = false;
     remarkInfo.val.remarks = ''
   };
   const okRemarks = () => {
-    // console.log('ok', address.value, toAddress.value, remarkInfo.val.remarks);
     axios
-      .get(
-        `https://invitecode.cyberpop.online/re/setremarks?address=${address.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`
+      .put(
+        `https://invitecode.cyberpop.online/re/setremarks?address=${address.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`,
+        { 
+          headers: {
+            satoken
+          }
+        }
       )
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data ) {
           Message.success(t('beiz.success'))
-          getMyInvit(toLevel.value);
+          getMyInvit(toLevel.value); // 刷新显示当前修改位置信息
         }else {
           Message.error(t('beiz.error'))
         }
         remarkInfo.val.remarks = ''
       })
   };
-  
+
+
+  // get nickname
+  const getNickname =() => {
+    axios
+      .get(`https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`)
+        .then((res: any) => {
+          console.log(res);
+          
+          if ( res.data.code === 200 && res.data.data[1] ) {
+            editInfo.value.oldName = res.data.data[0].nikename;
+            editInfo.value.oldEmail = res.data.data[0].email;
+          }
+        })
+  } 
+  // edit nickname
+  const editName = (type: any) => {
+    if( type === 1 ){ // 修改昵称
+      if( !switchInput.value ){
+        switchInput.value = !switchInput.value;
+        return
+      }
+      // 判断当填写完、填写值和原名称不等、填写值不为空时，发送请求
+      if( switchInput.value && (editInfo.value.inputName !== editInfo.value.oldName) && editInfo.value.inputName){
+        axios
+          .put(
+            `https://invitecode.cyberpop.online/user/nickname?address=${address.value}&nikename=${editInfo.value.inputName}`,
+            { 
+              headers: {
+                satoken
+              }
+            }
+          )
+          .then((res: any) => {
+            if ( res.data.code === 200 && res.data.data ) {
+              switchInput.value = !switchInput.value;
+              Message.success(t('beiz.success'))
+              editInfo.value.oldName = editInfo.value.inputName;
+              editInfo.value.inputName = '';
+              getNickname();
+            }else {
+              Message.error(t('beiz.error'))
+            }
+          })
+      }else{
+        switchInput.value = !switchInput.value;
+      }
+    }else{  // 修改邮箱
+      if( !switchInput2.value ){
+        switchInput2.value = !switchInput2.value;
+        return
+      }
+      // 判断当填写完、填写值和原名称不等、填写值不为空时，发送请求
+      if( switchInput2.value && (editInfo.value.inputEmail !== editInfo.value.oldEmail) && editInfo.value.inputEmail){
+        axios
+          .put(
+            `https://invitecode.cyberpop.online/user/nickname?address=${address.value}&nikename=${editInfo.value.inputEmail}`,
+            { 
+              headers: {
+                satoken
+              }
+            }
+          )
+          .then((res: any) => {
+            if ( res.data.code === 200 && res.data.data ) {
+              switchInput2.value = !switchInput2.value;
+              Message.success(t('beiz.success'))
+              editInfo.value.oldEmail = editInfo.value.inputEmail;
+              editInfo.value.inputEmail = '';
+              getNickname();
+            }else {
+              Message.error(t('beiz.error'))
+            }
+          })
+      }else{
+        switchInput2.value = !switchInput2.value;
+      }
+    }
+  }
+
 
   // const onPageChange = (current: number) => {
   //   pagination.value.startPage = current;
   //   getMyInvit();
   // };
 
-
-
-  // const getLevel = async() => {
-  //   await axios
-  //     .get(
-  //       `https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`
-  //     )
-  //     .then((res: any) => {
-  //       if ( res.data.code === 200 && res.data.data[1] ) {
-  //         level.value = res.data.data[0].level;
-  //         getMyInvit();
-  //       }
-  //     })
-  // }
-
-  // disCancel
-
   onMounted(() => {
     address.value = localStorage.getItem('address');
-    // getLevel();
     level.value = localStorage.getItem('userLl') ? localStorage.getItem('userLl') : '1';
     getMyInvit();
+    getNickname();
   });
 
   onActivated(() => {
     if( remarksActive.value ){
-      getMyInvit();
-      console.log('onActivated');
+      getMyInvit(); // 进入页面局部刷新数据
     }
   })
 
@@ -497,10 +582,43 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      .username {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 132px;
+        margin: 14px auto 15px;
+        color: var(--color-text-1);
+        font-size: 14px;
+        font-weight: bold;
+        span {
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          text-align: center;
+        }
+        .nameInput {
+          width: 110px;
+          border: none;
+          border-bottom: 1px solid #ccc;
+          text-align: center;
+          color: var(--color-text-1);
+          font-size: 14px;
+          font-weight: bold;
+          outline: none;
+        }
+        .name-edit {
+          width: 22px;
+          min-width: 22px;
+          color: #165dff;
+          font-size: 22px !important;
+          cursor: pointer;
+        }
+      }
       .btnGroup {
         display: flex;
         flex-direction: column;
-        margin: 50px 0 10px;
+        margin-bottom: 10px;
         button{
           margin-bottom: 10px;
           border-radius: 6px;
@@ -514,8 +632,37 @@
     .my-card {
       width: 100%;
       border: none !important;
+      padding-right: 20px;
       :deep(.arco-card-header){
         height: 56px;
+      }
+      &-title {
+        display: flex;
+        align-items: center;
+        margin-top: 6px;
+        overflow: hidden;
+        .useremail {
+          display: flex;
+          align-items: center;
+          margin-left: 14px;
+          color: var(--color-text-1);
+          font-size: 14px;
+          .emailInput {
+            width: 150px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            color: var(--color-text-1);
+            font-size: 14px;
+            outline: none;
+          }
+          .email-edit {
+            width: 22px;
+            min-width: 22px;
+            color: #165dff;
+            font-size: 20px !important;
+            cursor: pointer;
+          }
+        }
       }
       .code-group {
         overflow: hidden;
@@ -603,16 +750,6 @@
     background-color: var(--color-fill-2);
   }
 
-  .up-icon {
-    color: rgb(var(--red-6));
-  }
-
-  .unit {
-    // margin-left: 8px;
-    color: rgb(var(--gray-8));
-    font-size: 16px;
-  }
-
   :deep(.panel-border) {
     margin: 4px 0 0 0;
   }
@@ -690,15 +827,12 @@
     .wrapper {
       .left{
         .btnGroup{
-          margin-top: 150px;
+          margin-top: 29px;
         }
       }
-      .col-avatar {
-        display: none;
-      }
-
       :deep(.arco-card-header) {
         flex-direction: column !important;
+        width: 410px;
         height: auto !important;
 
         .arco-card-header-title {
@@ -708,19 +842,27 @@
           word-break: break-all;
           text-align: center;
         }
+        .my-card-title {
+          justify-content: center;
+        }
 
         .code-group {
           text-align: center !important;
 
           a {
-            white-space: normal;
+            white-space: nowrap;
           }
         }
       }
 
       :deep(.arco-card-body) {
-        padding: 16px 10px;
+        width: 410px;
+        padding: 16px 20px 16px 10px;
       }
+    }
+
+    .col-avatar {
+      margin-top: 85px;
     }
   }
 </style>

@@ -198,6 +198,7 @@
   const toAddress: any = ref('');
   const toLevel: any = ref('');
   const remarksActive: any = ref(false);
+  const satoken: any = String(localStorage.getItem('satoken'))
   const pagination: any = ref({
     type: 'pagination',
     page: 50,
@@ -250,10 +251,9 @@
     axios
       .get(
         `https://invitecode.cyberpop.online/user/getdata?address=${record.addr}`,
-        // `https://invitecode.cyberpop.online/user/getdata?address=0x7291030263771b40731d6bc6b352358d23f5737f`,
         { 
           headers: {
-            satoken: String(localStorage.getItem('satoken'))
+            satoken
           }
         }
       )
@@ -261,18 +261,6 @@
         console.log(res);
         if (res.data.code === 200) {
             const result = res.data.data;
-            // eslint-disable-next-line eqeqeq
-            // if( record.level == 4 ){
-            //   if( result.level3 ){
-            //     if( !result.level2 ){
-            //       isLeaf.value = true;
-            //     }
-            //     const children = childPush(result.level3);
-            //     done(children)
-            //   }else{
-            //     done([]);
-            //   }
-            // }else 
             // eslint-disable-next-line eqeqeq
             if( record.level == 3 ){
               if( result.level2 ){
@@ -310,12 +298,10 @@
     isLeaf.value = false;
     levels.value = 4;
     setLoading(true);
-    const satoken = String(localStorage.getItem('satoken'))
     if (address.value) {
       await axios
         .get(
           `https://invitecode.cyberpop.online/user/getdata?address=${address.value}`,
-          // `https://invitecode.cyberpop.online/user/getdata?address=0x7291030263771b40731d6bc6b352358d23f5737f`,
           { 
             headers: {
               satoken
@@ -445,10 +431,14 @@
   };
 
   const okRemarks = () => {
-    // console.log('ok', address.value, toAddress.value, remarkInfo.val.remarks);
     axios
-      .get(
-        `https://invitecode.cyberpop.online/re/setremarks?address=${address.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`
+      .put(
+        `https://invitecode.cyberpop.online/re/setremarks?address=${address.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`,
+        { 
+          headers: {
+            satoken
+          }
+        }
       )
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data ) {
@@ -461,30 +451,15 @@
       })
   };
 
-  // const getLevel = async () => {
-  //   await axios
-  //     .get(
-  //       `https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`
-  //     )
-  //     .then((res: any) => {
-  //       if ( res.data.code === 200 && res.data.data[1] ) {
-  //         level.value = res.data.data[0].level;
-  //         fetchData();
-  //       }
-  //     })
-  // }
-
   onMounted(() => {
     address.value = localStorage.getItem('address');
-    // getLevel();
     level.value = localStorage.getItem('userLl') ? localStorage.getItem('userLl') : '1';
     fetchData();
   });
 
   onActivated(() => {
     if( remarksActive.value ){
-      fetchData();
-      console.log('aonActivated');
+      fetchData(); // 进入页面局部刷新数据
     }
   })
 </script>

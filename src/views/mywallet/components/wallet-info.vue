@@ -18,7 +18,7 @@
             <span class="num">
               <!-- {{ cardData.val.ratio }} -->
               <a-spin :loading="loading" :size="16" class="load">
-                {{ cardData.val.ratio }}
+                {{ cardData.val.ratio ? cardData.val.ratio + '%' : ''}}
               </a-spin>  
             </span>
           </div>
@@ -91,17 +91,20 @@
   const chartsData = ref<number[]>([]);
   const address: any = ref('');
   const visible = ref(false);
+  const satoken: any = String(localStorage.getItem('satoken'))
   xAxis.value = [
-    '2022-4-17',
-    '2022-4-18',
-    '2022-4-19',
-    '2022-4-20',
-    '2022-4-21',
+    '2022-5-09',
+    '2022-5-10',
+    '2022-5-11',
+    '2022-5-12',
+    '2022-5-13',
   ];
   chartsData.value = [0, 0, 0, 0, 0];
+  const level: any = ref(0);
   const formInfo: any = ref({
     inputVal: '',
   });
+
   const cardData = reactive({
     val: {
       level: 'agent.level0',
@@ -186,6 +189,7 @@
     ],
   };
 
+  // 提现
   const inputModal = (info: any) => {
     visible.value = true;
   }
@@ -197,62 +201,61 @@
     // console.log(address, inputVal.value);
   }
 
-
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      // const { data: chartData } = await queryContentData();
-      // chartData.forEach((el: any, idx: number) => {
-      //   xAxis.value.push(el.x);
-      //   chartsData.value.push(el.y);
-      // });
-    } catch (err) {
-      // you can report use errorHandler or other
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // 获取等级、返佣比
   const getLevel = () => {
     setLoading(true);
     axios
       .get(
-        `https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`
+        `https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`,
+        { 
+          headers: {
+            satoken
+          }
+        }
       )
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data[1] ) {
-          console.log(res);
-          console.log(res.data.data[0].level);
-          
+          level.value = res.data.data[0].level;
           // eslint-disable-next-line eqeqeq
           if( res.data.data[0].level == '4'){
             cardData.val.level = 'agent.level1'
-            cardData.val.ratio = '20%'
           // eslint-disable-next-line eqeqeq
           }else if( res.data.data[0].level == '3' ){
             cardData.val.level = 'agent.level2'  
-            cardData.val.ratio = '15%'
           // eslint-disable-next-line eqeqeq
           }else if( res.data.data[0].level == '2' ){
             cardData.val.level = 'agent.level3'
-            cardData.val.ratio = '10%'
           }else{
             cardData.val.level = 'agent.level4'
-            // cardData.val.ratio = ''
           }
           setLoading(false);
         }
       })
+    const mylevel = String(localStorage.getItem('userLl'));
+    axios
+      .get(
+        `https://invitecode.cyberpop.online/sys/commission?level=${mylevel}`,
+        { 
+          headers: {
+            satoken
+          }
+        }
+      )
+      .then((res: any) => {
+        if( res.data.code === 200 && res.data.data ){
+          cardData.val.ratio = `${Number(res.data.data.systemval)*100}`;
+        }
+      })
   }
 
+  // 获取余额
   const getBalance = () => {
     axios
       .get(
         `https://invitecode.cyberpop.online/user/getuser?address=${address.value}`,
         { 
           headers: {
-            satoken: String(localStorage.getItem('satoken'))
+            satoken
           }
         }
       )
@@ -263,13 +266,13 @@
       })
   }
 
+  // 轮询获取余额
   let bTimer: any = null;
   onActivated(() => {
     bTimer =  window.setInterval(() => {
         getBalance();
     }, 60000)
   })
-
   onDeactivated(() => {
     clearInterval(bTimer)
   })
@@ -280,7 +283,6 @@
     getLevel();
     getBalance();
     // cardData.val.level = String(localStorage.getItem('userLl'));
-    // fetchData();
   })
 </script>
 
