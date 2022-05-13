@@ -114,18 +114,12 @@
       v-model:visible="addVisible"
       :title="$t('login.modal.title2')"
       class="addModal"
+      :closable="false"
     >
       <a-form 
         ref="ruleform" 
         :model="addForm.val"
       >
-        <a-form-item 
-            field="email" 
-            :rules="[{ required: true, message: $t('login.form.email.errMsg') }, { match: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/, message: $t('login.form.email.ruleMsg') }]"
-            :validate-trigger="['change', 'blur']"
-            :label="$t('login.modal.email')">
-          <a-input v-model="addForm.val.email" />
-        </a-form-item>
         <a-form-item 
           field="name" 
           :rules="[{ required: true, message: $t('login.form.name.errMsg') },{maxLength: 50, message: $t('login.form.name.errMsg2')}]"
@@ -133,10 +127,28 @@
           :label="$t('login.modal.name')">
           <a-input v-model="addForm.val.name" />
         </a-form-item>
+        <!-- <a-form 
+          ref="ruleEmail" 
+          :model="addForm.val"
+        > -->
+        <a-form-item 
+            field="email" 
+            :rules="[{ required: true, message: $t('login.form.email.errMsg') }, { match: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/, message: $t('login.form.email.ruleMsg') }]"
+            :validate-trigger="['change', 'blur']"
+            :label="$t('login.modal.email')">
+          <a-input v-model="addForm.val.email" />
+          <!-- <a-button :style="{marginLeft:'10px'}" @click="sendCode">{{ $t('login.modal.send') }}</a-button> -->
+        </a-form-item>
+        <!-- </a-form> -->
+        <!-- <a-form-item 
+          field="code" 
+          :label="$t('login.modal.code')">
+          <a-input v-model="addForm.val.code" :placeholder="$t('login.modal.codePlaceholder')"/>
+        </a-form-item> -->
       </a-form>
       <template #footer>
         <a-button @click="addCancel">{{ $t('login.modal.cancel') }}</a-button>
-        <a-button type="primary" @click="register">{{ $t('login.modal.ok') }}</a-button>
+        <a-button :loading="regDisable" type="primary" @click="register">{{ $t('login.modal.ok') }}</a-button>
       </template>
     </a-modal>
   </div>
@@ -171,16 +183,22 @@ import { log } from 'console';
   const nickna: any = ref('');
   const isregist: any = ref(false);
   const ruleform: any = ref(null)
+  // const ruleEmail: any = ref(null)
   const logDisable: any = ref(false);
+  const regDisable: any = ref(false);
   const dobadge: any = ref('-1');
   const level: any = ref('1');
+  const UniqVer: any = ref(0); // 注册唯一性验证
+  const { Web3 } = window as any
+  const web3obj = new Web3((Web3 as any).givenProvider);
   const userInfo = reactive({
     address: '',
   });
   const addForm = reactive({
     val: {
       email: '',
-      name: ''
+      name: '',
+      code: ''
     },
   });
   
@@ -269,8 +287,10 @@ import { log } from 'console';
         .request({ method: 'eth_requestAccounts' })
         .then(async (res: any) => {
           // eslint-disable-next-line prefer-destructuring
-          userInfo.address = res[0];
-          localStorage.setItem('address', res[0]);
+          // eslint-disable-next-line no-use-before-define
+          const res0 = await web3obj.utils.toChecksumAddress(res[0]);
+          userInfo.address = res0;
+          localStorage.setItem('address', res0);
           // eslint-disable-next-line prefer-destructuring
           userAddress.value = res[0];
           await dologin().then((xres: any)=>{
@@ -293,8 +313,6 @@ import { log } from 'console';
               }
             }
           })
-          const {Web3} = window as any;
-          const web3obj = new Web3((Web3 as any).givenProvider);
           await web3obj.eth.net.getId().then(async (chainId: any) => {
               console.log(chainId);
               // eslint-disable-next-line eqeqeq
@@ -318,10 +336,12 @@ import { log } from 'console';
     await dologin().then((res: any)=>{
       console.log(res);
       logDisable.value = false;
+      regDisable.value = false;
       if ( res.data.code === 200 && res.data.data[1] ) {
         localStorage.setItem('isLogin', 'true');
         const { redirect } = router.currentRoute.value.query;
-        router.push({name: (redirect as string) || 'Workplace'});
+        // router.push({name: (redirect as string) || 'Workplace'});
+        router.push({name: 'Workplace'});
         Message.success(t('login.success'));
         localStorage.setItem('satoken', res.data.data[0].satoken);
         localStorage.setItem('userLl', res.data.data[0].level);
@@ -376,11 +396,35 @@ import { log } from 'console';
     addVisible.value = false;
     addForm.val = {
       email: '',
-      name: ''
+      name: '',
+      code: ''
     };
   };
+  // send Referral Code
+  // const sendCode = () => {
+  //   ruleEmail.value.validate((result: any) => {
+  //     console.log(result);
+  //     // eslint-disable-next-line eqeqeq
+  //     if( result == undefined ) {
+  //       axios
+  //         .get(
+  //           `/email/generate_code?email=${addForm.val.code}`
+  //         )
+  //         .then((res: any) => {
+  //           console.log('email',res);
+  //           if ( res.data.error === 'ok') {
+  //             Message.success(t('login.modal.sendSucc'));
+  //           } else {
+  //             Message.error(t('login.modal.sendErr'));
+  //           }
+  //         })
+  //     }
+  //   })
+  // } 
+
+  // common axios
   const into = (url: any, type: any) => {
-      axios
+    axios
       .post(
         `https://invitecode.cyberpop.online/business/${url}?address=${userInfo.address}&nickname=${addForm.val.name}&email=${addForm.val.email}&level=${type}`,
         { 
@@ -395,7 +439,8 @@ import { log } from 'console';
           addVisible.value = false;
           addForm.val = {
             email: '',
-            name: ''
+            name: '',
+            code: ''
           };
           Message.success(t('reg.success'));
           goWorkplace();
@@ -404,21 +449,57 @@ import { log } from 'console';
         }
       })
   } 
+
+  const regPprocess = () => {
+    if( alltype.value === 1 ){ // 注册国家代理
+      into('nationallevel', 4)
+    }else if( alltype.value === 2 ){ // 注册区域代理
+      into('arealevel', 3)
+    }else {  // 注册伙伴代理
+      into('partnerlevel',2)
+    }
+  } 
+
   const register = () => {
+    regDisable.value = true;
     ruleform.value.validate((res: any) => {
       // eslint-disable-next-line eqeqeq
       if( res == undefined ) {
-
         // 提前校验 userInfo.address addForm.val.email
-
-        if( alltype.value === 1 ){ // 注册国家代理
-          into('nationallevel', 4)
-        }else if( alltype.value === 2 ){ // 注册区域代理
-          into('arealevel', 3)
-        }else {  // 注册伙伴代理
-          into('partnerlevel',2)
-        }
-
+        axios.get(
+          `https://invitecode.cyberpop.online/user/bemail?email=${addForm.val.email}`,
+          { 
+            headers: {
+              satoken: String(localStorage.getItem('satoken'))
+            }
+          }
+        )
+        .then((result: any) => {
+          if ( result.data.code === 200 && result.data.data === true ) { 
+            UniqVer.value += 1;
+            if( UniqVer.value === 2) regPprocess();
+          }else{  
+            Message.error(t('login.form.uniqEmail.errMsg'))
+            regDisable.value = false;
+          }
+        })
+        axios.get(
+          `https://invitecode.cyberpop.online/user/baddress?address=${userInfo.address}`,
+          { 
+            headers: {
+              satoken: String(localStorage.getItem('satoken'))
+            }
+          }
+        )
+        .then((result: any) => {
+          if ( result.data.code === 200 && result.data.data === true ) { 
+            UniqVer.value += 1;
+            if( UniqVer.value === 2) regPprocess();
+          }else{
+            Message.error(t('login.form.uniqAddr.errMsg'))
+            regDisable.value = false;
+          }
+        })
       }
     })
   };
@@ -426,7 +507,12 @@ import { log } from 'console';
 
 
   onMounted(() => {
-    localStorage.clear();
+    // localStorage.clear();
+    localStorage.removeItem('isLogin')
+    localStorage.removeItem('bImg')
+    localStorage.removeItem('userLl')
+    localStorage.removeItem('satoken')
+    localStorage.removeItem('address')
     connect();
   });
 </script>

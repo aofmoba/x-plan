@@ -10,11 +10,11 @@
                 src="//lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png"
               />
             </a-avatar>
-            <div class="username">
+            <!-- <div class="username">
               <span v-show="!switchInput">{{ editInfo.oldName }}</span>
               <input v-show="switchInput" v-model="editInfo.inputName" class="nameInput" type="text" :placeholder="editInfo.oldName" @blur="editName(1)">
               <icon-pen-fill class="name-edit" @click="editName(1)"/>
-            </div>
+            </div> -->
             <div class="btnGroup">
               <a-button
                 v-if="level == 4"
@@ -102,20 +102,20 @@
                       />
                     </template>
                   </a-table-column>
-                  <a-table-column
+                  <!-- <a-table-column
                     :title="$t('workplace.table.nickname')"
                   >
                     <template #cell="{ record }">
                       <div class="nickname">{{record.nickname}}</div>
                     </template>
-                  </a-table-column>
-                  <a-table-column
-                    :title="$t('workplace.table.address')"
-                    data-index="addr"
-                  />
+                  </a-table-column> -->
                   <a-table-column
                     :title="$t('workplace.table.email')"
                     data-index="email"
+                  />
+                  <a-table-column
+                    :title="$t('workplace.table.address')"
+                    data-index="addr"
                   />
                   <a-table-column
                     :title="$t('workplace.table.download')"
@@ -619,6 +619,7 @@
         display: flex;
         flex-direction: column;
         margin-bottom: 10px;
+        margin-top: 50px; // 
         button{
           margin-bottom: 10px;
           border-radius: 6px;
@@ -760,7 +761,7 @@
       text-overflow: ellipsis;
       overflow: hidden;
     }
-    .arco-table-td:nth-child(4), .arco-table-td:nth-child(5), .arco-table-td:nth-child(6) {
+    .arco-table-td:nth-child(2), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5) {
       .arco-table-cell {
         white-space: nowrap;
       }
@@ -770,12 +771,12 @@
         width: 220px;
       }
     }
-    .arco-table-td:nth-child(8) {
+    .arco-table-td:nth-child(7) {
       .arco-table-cell {
         width: 120px;
       }
     }
-    .arco-table-td:nth-child(10) {
+    .arco-table-td:nth-child(9) {
       .arco-table-cell {
         width: 120px;
       }

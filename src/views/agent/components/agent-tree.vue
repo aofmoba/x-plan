@@ -47,17 +47,17 @@
               :pagination="pagination"
             >
               <template #columns>
-                  <a-table-column
+                  <!-- <a-table-column
                     :title="$t('workplace.table.nickname')"
                     data-index="nickname"
+                  /> -->
+                  <a-table-column
+                    :title="$t('workplace.table.email')"
+                    data-index="email"
                   />
                   <a-table-column
                     :title="$t('workplace.table.address')"
                     data-index="addr"
-                  />
-                  <a-table-column
-                    :title="$t('workplace.table.email')"
-                    data-index="email"
                   />
                   <a-table-column
                     :title="$t('workplace.table.download')"
@@ -516,29 +516,30 @@
     }
   }
   :deep(.arco-table-tr) {
-    .arco-table-td:nth-child(1) {
-      .arco-table-cell {
-        display: block;
-        min-width: 160px !important;
-        margin: 0 auto;
-      }
-    }
-    .arco-table-td:nth-child(3), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5) {
+    // .arco-table-td:nth-child(1) {
+    //   .arco-table-cell {
+    //     display: block;
+    //     min-width: 160px !important;
+    //     margin: 0 auto;
+    //   }
+    // }
+    .arco-table-td:nth-child(1), .arco-table-td:nth-child(3), .arco-table-td:nth-child(4) {
       .arco-table-cell {
         white-space: nowrap;
       }
     }
     .arco-table-td:nth-child(2) {
       .arco-table-cell {
-        width: 220px;
+        width: 240px;
+        margin: 0 auto;
       }
     }
-    .arco-table-td:nth-child(7) {
+    .arco-table-td:nth-child(6) {
       .arco-table-cell {
         width: 120px;
       }
     }
-    .arco-table-td:nth-child(9) {
+    .arco-table-td:nth-child(8) {
       .arco-table-cell {
         width: 120px;
       }

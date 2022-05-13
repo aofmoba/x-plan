@@ -17,6 +17,11 @@ export default mergeConfig(
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/data/, '')
           },
+          // '/email': {
+          //   target: 'http://192.168.0.134/', // 实际请求地址
+          //   changeOrigin: true,
+          //   rewrite: (path) => path.replace(/^\/email/, '')
+          // },
       },
     },
     plugins: [
