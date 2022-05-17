@@ -7,6 +7,7 @@ export default {
   'promotion.partner.link': '我的伙伴推广链接',
   'promotion.quyu.code': '我的区域推广码',
   'promotion.quyu.link': '我的区域推广链接',
+  'promotion.down.link': '我的下载推广链接',
   'promotion.nothing': '呀, 空空如也。',
   'promotion.national': '全国代理特权',
   'promotion.regional': '区域代理特权',

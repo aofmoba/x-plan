@@ -85,6 +85,21 @@
               </div>
             </div>
           </div>
+          <div v-if="codeInfo.userCode" class="item">
+            <div class="info">
+              <div class="subitem">
+                <div class="label">{{ $t('promotion.down.link') }} :</div>
+                <div class="num">
+                  <a
+                    :href="`https://test.cyberpop.online/download?code=` + codeInfo.userCode"
+                    target="view_window"
+                  >
+                    https://test.cyberpop.online/download?code={{ codeInfo.userCode }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
           <div v-if="!codeInfo.userCode && !codeInfo.partnerCode && !codeInfo.quyuCode && !loading" class="nothing">{{ $t('promotion.nothing') }}</div>
           <!-- loading -->
           <a-skeleton v-if="!codeInfo.userCode && !codeInfo.partnerCode && !codeInfo.quyuCode" :animation="true" :loading="loading" style="padding: 30px;">

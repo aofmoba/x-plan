@@ -261,7 +261,7 @@
       )
       .then((res: any) => {
         if ( res.data.code === 200 ) {
-          cardData.val.balance = res.data.data.personalrewards;
+          cardData.val.balance = Number(res.data.data.personalrewards).toFixed(2);
         }
       })
   }

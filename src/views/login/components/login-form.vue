@@ -286,13 +286,10 @@ import { log } from 'console';
       await ethereum
         .request({ method: 'eth_requestAccounts' })
         .then(async (res: any) => {
-          // eslint-disable-next-line prefer-destructuring
-          // eslint-disable-next-line no-use-before-define
           const res0 = await web3obj.utils.toChecksumAddress(res[0]);
           userInfo.address = res0;
           localStorage.setItem('address', res0);
-          // eslint-disable-next-line prefer-destructuring
-          userAddress.value = res[0];
+          userAddress.value = res0;
           await dologin().then((xres: any)=>{
             if ( xres.data.code === 200 && xres.data.data[1] ) {
               isregist.value = true
@@ -345,6 +342,7 @@ import { log } from 'console';
         Message.success(t('login.success'));
         localStorage.setItem('satoken', res.data.data[0].satoken);
         localStorage.setItem('userLl', res.data.data[0].level);
+        localStorage.setItem('userEmail', res.data.data[0].level);
         // isAssetsAllow.value = true;
         // localStorage.setItem('isAssetsAllow', 'true');
       } else {

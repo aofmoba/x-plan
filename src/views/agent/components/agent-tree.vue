@@ -57,15 +57,22 @@
                   />
                   <a-table-column
                     :title="$t('workplace.table.address')"
-                    data-index="addr"
-                  />
+                  >
+                    <template #cell="{ record }">
+                      {{ record.addr ? record.addr : $t('workplace.table.nodata') }}
+                    </template>
+                  </a-table-column>
                   <a-table-column
                     :title="$t('workplace.table.download')"
                     data-index="download"
                   />
                   <a-table-column
-                    :title="$t('workplace.table.game')"
+                    :title="$t('workplace.table.ontime')"
                     data-index="duration"
+                  />
+                  <a-table-column
+                    :title="$t('workplace.table.game')"
+                    data-index="gametime"
                   />
                   <a-table-column
                     :title="$t('workplace.table.balance')"
@@ -229,11 +236,12 @@
           nickname: resultL[i].nikename,
           addr: resultL[i].address,
           email: resultL[i].email,
-          download: resultL[i].download ? 'true' : 'false',
+          download: Number(resultL[i].download) ? 'true' : 'false',
           duration:
             resultL[i].onlineTime > 86400
               ? t('workplace.table.offline')
               : computedDur(resultL[i].onlineTime),
+          gametime: computedDur(resultL[i].playgametimes),
           balance: resultL[i].fujiCoin ? resultL[i].fujiCoin : 0,
           createTime: resultL[i].createTime ? vertDate(resultL[i].createTime) : 'null',
           hashrate: resultL[i].hashrate,
@@ -273,6 +281,8 @@
             }else{
               done([]);
             }
+        }else{
+          done([]);
         }
       })
   }
@@ -382,29 +392,30 @@
   };
 
   const addMember = () => {
-    addTableDate().then((res: any) => {
-      const children = currentNode.children || []
-      children.push({
-        key: res.data.id,
-        connectWallet: res.data.connectWallet,
-        nickname: res.data.nikename,
-        addr: res.data.address,
-        email: res.data.email,
-        download: res.data.download ? 'true' : 'false',
-        duration:
-          res.data.onlineTime > 86400
-            ? t('workplace.table.offline')
-            : computedDur(res.data.onlineTime),
-        balance: res.data.fujiCoin,
-        createTime: vertDate(res.data.createTime),
-        hashrate: res.data.hashrate,
-        remarks: res.data.remarks ? res.data.remarks : 'Cyber user',
-        level: res.data.level,
-        isLeaf: false,
-      })
-      currentNode.children = children
-      console.log(useDate);
-    });
+    // addTableDate().then((res: any) => {
+    //   const children = currentNode.children || []
+    //   children.push({
+    //     key: res.data.id,
+    //     connectWallet: res.data.connectWallet,
+    //     nickname: res.data.nikename,
+    //     addr: res.data.address,
+    //     email: res.data.email,
+    //     download: res.data.download ? 'true' : 'false',
+    //     duration:
+    //       res.data.onlineTime > 86400
+    //         ? t('workplace.table.offline')
+    //         : computedDur(res.data.onlineTime),
+    //     balance: res.data.fujiCoin,
+    //     gametime: computedDur(res.data.playgametimes),
+    //     createTime: vertDate(res.data.createTime),
+    //     hashrate: res.data.hashrate,
+    //     remarks: res.data.remarks ? res.data.remarks : 'Cyber user',
+    //     level: res.data.level,
+    //     isLeaf: false,
+    //   })
+    //   currentNode.children = children
+    //   console.log(useDate);
+    // });
   };
   // delete
   const deletekWarning = (nodeData: any) => {
@@ -523,7 +534,7 @@
     //     margin: 0 auto;
     //   }
     // }
-    .arco-table-td:nth-child(1), .arco-table-td:nth-child(3), .arco-table-td:nth-child(4) {
+    .arco-table-td:nth-child(1), .arco-table-td:nth-child(3), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5) {
       .arco-table-cell {
         white-space: nowrap;
       }
@@ -534,12 +545,12 @@
         margin: 0 auto;
       }
     }
-    .arco-table-td:nth-child(6) {
+    .arco-table-td:nth-child(7) {
       .arco-table-cell {
         width: 120px;
       }
     }
-    .arco-table-td:nth-child(8) {
+    .arco-table-td:nth-child(9) {
       .arco-table-cell {
         width: 120px;
       }

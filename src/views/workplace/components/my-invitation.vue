@@ -115,15 +115,22 @@
                   />
                   <a-table-column
                     :title="$t('workplace.table.address')"
-                    data-index="addr"
-                  />
+                  >
+                    <template #cell="{ record }">
+                      {{ record.addr ? record.addr : $t('workplace.table.nodata') }}
+                    </template>
+                  </a-table-column>
                   <a-table-column
                     :title="$t('workplace.table.download')"
                     data-index="download"
                   />
                   <a-table-column
-                    :title="$t('workplace.table.game')"
+                    :title="$t('workplace.table.ontime')"
                     data-index="duration"
+                  />
+                  <a-table-column
+                    :title="$t('workplace.table.game')"
+                    data-index="gametime"
                   />
                   <a-table-column
                     :title="$t('workplace.table.balance')"
@@ -314,11 +321,12 @@
         nickname: result[i].nikename,
         addr: result[i].address,
         email: result[i].email,
-        download: result[i].download ? 'true' : 'false',
+        download: Number(result[i].download) ? 'true' : 'false',
         duration:
           result[i].onlineTime > 86400
             ? t('workplace.table.offline')
             : computedDur(result[i].onlineTime),
+        gametime: computedDur(result[i].playgametimes),
         balance: result[i].fujiCoin ? result[i].fujiCoin : 0,
         createTime: result[i].createTime ? vertDate(result[i].createTime) : 'null',
         hashrate: result[i].hashrate,
@@ -476,8 +484,6 @@
     axios
       .get(`https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`)
         .then((res: any) => {
-          console.log(res);
-          
           if ( res.data.code === 200 && res.data.data[1] ) {
             editInfo.value.oldName = res.data.data[0].nikename;
             editInfo.value.oldEmail = res.data.data[0].email;
@@ -761,7 +767,7 @@
       text-overflow: ellipsis;
       overflow: hidden;
     }
-    .arco-table-td:nth-child(2), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5) {
+    .arco-table-td:nth-child(2), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5),.arco-table-td:nth-child(6) {
       .arco-table-cell {
         white-space: nowrap;
       }
@@ -771,12 +777,12 @@
         width: 220px;
       }
     }
-    .arco-table-td:nth-child(7) {
+    .arco-table-td:nth-child(8) {
       .arco-table-cell {
         width: 120px;
       }
     }
-    .arco-table-td:nth-child(9) {
+    .arco-table-td:nth-child(10) {
       .arco-table-cell {
         width: 120px;
       }
