@@ -5,6 +5,7 @@ export default {
   'agent.level2': 'Regional agent',
   'agent.level3': 'Partner agent',
   'agent.level4': 'Client user',
+  'agent.level5': 'My details',
   'agent.btn.add': 'ADD',
   'agent.btn.addto': 'add to',
   'agent.btn.del': 'DELETE',

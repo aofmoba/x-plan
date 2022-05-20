@@ -56,6 +56,13 @@
                     data-index="email"
                   />
                   <a-table-column
+                    :title="$t('workplace.table.nickname')"
+                  >
+                    <template #cell="{ record }">
+                      {{record.nickname ? record.nickname : 'null'}}
+                    </template>
+                  </a-table-column>
+                  <a-table-column
                     :title="$t('workplace.table.address')"
                   >
                     <template #cell="{ record }">
@@ -91,7 +98,7 @@
                   >
                     <template #cell="{ record }">
                       {{record.remarks}}
-                      <icon-pen-fill v-if="!record.loadEdit" class="remarks-edit" @click="editRemarks(record.addr, record.level)"/>
+                      <icon-pen-fill v-if="!record.loadEdit" class="remarks-edit" @click="editRemarks(record.email, record.level)"/>
                     </template>
                   </a-table-column>
                   <a-table-column :title="$t('agent.table.action')">
@@ -191,6 +198,7 @@
   const { t } = useI18n();
   const { loading, setLoading } = useLoading(true);
   const address: any = ref('');
+  const email: any = ref('');
   const useDate = ref([]);
   const treeDataL2: any = ref([]);
   const treeDataL3: any = ref([]);
@@ -241,7 +249,9 @@
             resultL[i].onlineTime > 86400
               ? t('workplace.table.offline')
               : computedDur(resultL[i].onlineTime),
-          gametime: computedDur(resultL[i].playgametimes),
+          gametime: resultL[i].gameTime > 86400
+              ? t('workplace.table.offline')
+              : computedDur(resultL[i].gameTime),
           balance: resultL[i].fujiCoin ? resultL[i].fujiCoin : 0,
           createTime: resultL[i].createTime ? vertDate(resultL[i].createTime) : 'null',
           hashrate: resultL[i].hashrate,
@@ -258,12 +268,12 @@
   const moretable = (record: any, done: any) => {
     axios
       .get(
-        `https://invitecode.cyberpop.online/user/getdata?address=${record.addr}`,
-        { 
-          headers: {
-            satoken
-          }
-        }
+        `/api/user/getdata?email=${record.email}`,
+        // { 
+        //   headers: {
+        //     satoken
+        //   }
+        // }
       )
       .then((res: any) => {
         console.log(res);
@@ -311,30 +321,30 @@
     if (address.value) {
       await axios
         .get(
-          `https://invitecode.cyberpop.online/user/getdata?address=${address.value}`,
-          { 
-            headers: {
-              satoken
-            }
-          }
+          `/api/user/getdata?email=${email.value}`,
+          // { 
+          //   headers: {
+          //     satoken
+          //   }
+          // }
         )
         .then((res: any) => {
           if (res.data.code === 200) {
             const result = res.data.data;
-            if( result.level3 ){
+            if( result.level3 ){ // 当前用户下的区域代理
               const children2 = childPush(result.level3, false);
               treeDataL2.value.push(...children2)
             }
-            if( result.level2 ){
+            if( result.level2 ){ // 当前用户下的伙伴代理
               isLeaf.value = true;
               const children3 = childPush(result.level2, false);
               treeDataL3.value.push(...children3)
             }
-            if( result.level1 ){
-              isLeaf.value = true;
-              const children4 = childPush(result.level1, false);
-              treeDataL4.value.push(...children4)
-            }
+            // if( result.level1 ){ // 当前用户下的C端用户
+            //   isLeaf.value = true;
+            //   const children4 = childPush(result.level1, false);
+            //   treeDataL4.value.push(...children4)
+            // }
             if( toL ){
               if( toL === '3'){
                 useDate.value = treeDataL2.value;
@@ -431,9 +441,9 @@
   };
 
   // edit remarks
-  const editRemarks = (toA: any, toL: any) => {
+  const editRemarks = (toE: any, toL: any) => {
     editVisible.value = true;
-    toAddress.value = toA;
+    toAddress.value = toE;
     toLevel.value = toL;
   };
   const editCancel = () => {
@@ -444,12 +454,12 @@
   const okRemarks = () => {
     axios
       .put(
-        `https://invitecode.cyberpop.online/re/setremarks?address=${address.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`,
-        { 
-          headers: {
-            satoken
-          }
-        }
+        `/api/re/setremarks?address=${email.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`,
+        // { 
+        //   headers: {
+        //     satoken
+        //   }
+        // }
       )
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data ) {
@@ -464,6 +474,7 @@
 
   onMounted(() => {
     address.value = localStorage.getItem('address');
+    email.value = localStorage.getItem('userEm');
     level.value = localStorage.getItem('userLl') ? localStorage.getItem('userLl') : '1';
     fetchData();
   });
@@ -534,23 +545,23 @@
     //     margin: 0 auto;
     //   }
     // }
-    .arco-table-td:nth-child(1), .arco-table-td:nth-child(3), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5) {
+    .arco-table-td:nth-child(1),.arco-table-td:nth-child(2), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5), .arco-table-td:nth-child(6) {
       .arco-table-cell {
         white-space: nowrap;
       }
     }
-    .arco-table-td:nth-child(2) {
+    .arco-table-td:nth-child(3) {
       .arco-table-cell {
         width: 240px;
         margin: 0 auto;
       }
     }
-    .arco-table-td:nth-child(7) {
+    .arco-table-td:nth-child(8) {
       .arco-table-cell {
         width: 120px;
       }
     }
-    .arco-table-td:nth-child(9) {
+    .arco-table-td:nth-child(10) {
       .arco-table-cell {
         width: 120px;
       }

@@ -76,18 +76,9 @@ const useUserStore = defineStore('user', {
 
     // Logout
     async logout() {
-      const address = localStorage.getItem('address')
-      axios
-        .get(
-          `https://invitecode.cyberpop.online/user/outLogin?address=${ address }`,
-          { 
-            headers: {
-              satoken: String(localStorage.getItem('satoken'))
-            }
-          }
-        )
       // await userLogout();
-      // localStorage.clear();
+      const address = localStorage.getItem('address')
+      axios.get(`/api/user/outLogin?address=${ address }`)
       localStorage.removeItem('isLogin')
       localStorage.removeItem('bImg')
       localStorage.removeItem('userLl')

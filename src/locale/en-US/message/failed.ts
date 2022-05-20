@@ -7,4 +7,5 @@ export default {
   'reg.error': 'Identity registration failed',
   'beiz.error': 'Operation failed',
   'dobadge.error': 'The badge corresponding to this identity is wrong!',
+  'cuser.error': 'This address has been registered as a user and does not have permission to log in',
 };

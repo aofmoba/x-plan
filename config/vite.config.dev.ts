@@ -17,6 +17,11 @@ export default mergeConfig(
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/data/, '')
           },
+          '/api': {
+              target: 'https://invitecode.cyberpop.online/', // http://1.14.201.147:8612/
+              changeOrigin: true,
+              rewrite: (path) => path.replace(/^\/api/, '')
+          }
           // '/email': {
           //   target: 'http://192.168.0.134/', // 实际请求地址
           //   changeOrigin: true,

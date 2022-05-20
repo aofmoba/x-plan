@@ -5,6 +5,7 @@ export default {
   'agent.level2': '区域代理',
   'agent.level3': '伙伴代理',
   'agent.level4': 'C端用户',
+  'agent.level5': '我的信息',
   'agent.btn.add': '新增',
   'agent.btn.addto': '新增到',
   'agent.btn.del': '删除',

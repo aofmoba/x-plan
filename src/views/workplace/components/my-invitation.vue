@@ -10,12 +10,17 @@
                 src="//lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png"
               />
             </a-avatar>
-            <!-- <div class="username">
+            <div class="username">
               <span v-show="!switchInput">{{ editInfo.oldName }}</span>
               <input v-show="switchInput" v-model="editInfo.inputName" class="nameInput" type="text" :placeholder="editInfo.oldName" @blur="editName(1)">
               <icon-pen-fill class="name-edit" @click="editName(1)"/>
-            </div> -->
+            </div>
             <div class="btnGroup">
+              <a-button
+                :class="levels == 9 ? 'active' : ''"
+                @click="changeItem(9)"
+                >{{ $t('agent.level5') }}</a-button
+              >
               <a-button
                 v-if="level == 4"
                 :class="levels == 4 ? 'active' : ''"
@@ -77,10 +82,11 @@
                 <!-- <div class="total">
                 </div> -->
                 <div class="hash">
-                  <div>{{ $t('workplace.total') }}: <span style="margin-right: 20px;">{{ totalInfo.total }}</span></div>
-                  <div>{{ $t('workplace.hashrate') }}: <span>{{ hash }}</span></div>
+                  <div>{{ $t('workplace.total') }}: <span style="margin-right: 20px;">{{ totalInfo.total === -1 ? 0 : totalInfo.total }}</span></div>
+                  <div>{{ $t('workplace.hashrate') }}: <span>{{ totalInfo.hash }}</span></div>
                 </div>
               </div>
+              <!-- 我邀请用户信息 -->
               <a-table
                 column-resizable
                 :bordered="{ cell: true }"
@@ -102,17 +108,17 @@
                       />
                     </template>
                   </a-table-column>
-                  <!-- <a-table-column
-                    :title="$t('workplace.table.nickname')"
-                  >
-                    <template #cell="{ record }">
-                      <div class="nickname">{{record.nickname}}</div>
-                    </template>
-                  </a-table-column> -->
                   <a-table-column
                     :title="$t('workplace.table.email')"
                     data-index="email"
                   />
+                  <a-table-column
+                    :title="$t('workplace.table.nickname')"
+                  >
+                    <template #cell="{ record }">
+                      {{record.nickname ? record.nickname : 'null'}}
+                    </template>
+                  </a-table-column>
                   <a-table-column
                     :title="$t('workplace.table.address')"
                   >
@@ -149,7 +155,7 @@
                   >
                     <template #cell="{ record }">
                       {{record.remarks}}
-                      <icon-pen-fill class="remarks-edit" @click="editRemarks(record.addr, record.level)"/>
+                      <icon-pen-fill v-if="levels !== 9" class="remarks-edit" @click="editRemarks(record.email, record.level)"/>
                     </template>
                   </a-table-column>
                   <!-- <a-table-column :title="$t('agent.table.action')">
@@ -237,18 +243,18 @@
 
   // const router = useRouter();
   const { t } = useI18n();
-  const myInvit: any = ref([]);
+  const { loading, setLoading } = useLoading(true);
   const address: any = ref('');
-  const inCode: any = ref({});
+  const email: any = ref('');
+  const inCode: any = ref({}); // 最多存放三个邀请码
   const curCode: any = ref('');
-  const hash: any = ref(0);
   const levels = ref(4);
   const useDate = ref([]);
+  const myUseDate: any = ref([]);
   const treeDataL2: any = ref([]);
   const treeDataL3: any = ref([]);
   const treeDataL4: any = ref([]);
   const btnContent: any = ref('workplace.code1')
-  const { loading, setLoading } = useLoading(true);
   const level: any = ref('1')
   const userLevel: any = ref('workplace.level')
   const disVisible = ref(false);
@@ -275,7 +281,8 @@
     level3count: 0,
     level2count: 0,
     level1count: 0,
-    total: 0
+    total: -1, // 总人数
+    hash: 0, // 总算力
   });
   const pagination: any = ref({
     type: 'pagination',
@@ -307,11 +314,13 @@
       useDate.value = treeDataL3.value;
     } else if (type === 2) {
       useDate.value = treeDataL4.value;
+    } else if (type === 9) {
+      useDate.value = myUseDate.value;
     }
   };
 
   // push children
-  const childPush = (result: any) => {
+  const childPush = (result: any, editNameFlag?: any) => {
     const lenL = result.length;
     const children: any = []; 
     for (let i = 0; i < lenL; i += 1) {
@@ -326,16 +335,20 @@
           result[i].onlineTime > 86400
             ? t('workplace.table.offline')
             : computedDur(result[i].onlineTime),
-        gametime: computedDur(result[i].playgametimes),
+        gametime: result[i].gameTime > 86400
+              ? t('workplace.table.offline')
+              : computedDur(result[i].gameTime),
         balance: result[i].fujiCoin ? result[i].fujiCoin : 0,
         createTime: result[i].createTime ? vertDate(result[i].createTime) : 'null',
         hashrate: result[i].hashrate,
         remarks: result[i].remarks ? result[i].remarks : 'Cyber user',
         level: result[i].level,
       });
-      hash.value += Number(result[i].hashrate);
+      // 当修改昵称时，children不进行总数、算力计算
+      if(!editNameFlag) totalInfo.value.hash += Number(result[i].hashrate);
     }
-    totalInfo.value.total += lenL;
+    
+    if(!editNameFlag) totalInfo.value.total += lenL;
     return children
   }
 
@@ -348,18 +361,22 @@
     levels.value = 4;
     userLevel.value = 'workplace.level';
     setLoading(true);
-    myInvit.value = [];
-    hash.value = 0;
-    totalInfo.value.total = 0;
+    totalInfo.value = {
+      level3count: 0,
+      level2count: 0,
+      level1count: 0,
+      total: -1, 
+      hash: 0,
+    };
     if (address.value) {
       axios
         .get(
-          `https://invitecode.cyberpop.online/user/getdata?address=${address.value}`,
-          { 
-            headers: {
-              satoken
-            }
-          }
+          `/api/user/getdata?email=${email.value}`,
+          // { 
+          //   headers: {
+          //     satoken
+          //   }
+          // }
         )
         .then((res: any) => {
           console.log(res);
@@ -448,9 +465,9 @@
     console.log(disAddress.value, selectVal.value);
   }
   // edit remarks
-  const editRemarks = (toA: any, toL: any) => {
+  const editRemarks = (toE: any, toL: any) => {
     editVisible.value = true;
-    toAddress.value = toA;
+    toAddress.value = toE;
     toLevel.value = toL; // 存储修改备注时的等级
   };
   const editCancel = () => {
@@ -460,17 +477,19 @@
   const okRemarks = () => {
     axios
       .put(
-        `https://invitecode.cyberpop.online/re/setremarks?address=${address.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`,
-        { 
-          headers: {
-            satoken
-          }
-        }
+        `/api/re/setremarks?address=${email.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`,
+        // { 
+        //   headers: {
+        //     satoken
+        //   }
+        // }
       )
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data ) {
           Message.success(t('beiz.success'))
           getMyInvit(toLevel.value); // 刷新显示当前修改位置信息
+          // eslint-disable-next-line no-use-before-define
+          getHashrate();
         }else {
           Message.error(t('beiz.error'))
         }
@@ -480,16 +499,16 @@
 
 
   // get nickname
-  const getNickname =() => {
-    axios
-      .get(`https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`)
-        .then((res: any) => {
-          if ( res.data.code === 200 && res.data.data[1] ) {
-            editInfo.value.oldName = res.data.data[0].nikename;
-            editInfo.value.oldEmail = res.data.data[0].email;
-          }
-        })
-  } 
+  // const getNickname =() => {
+  //   axios
+  //     .get(`/api/user/doLogin?address=${address.value}`)
+  //       .then((res: any) => {
+  //         if ( res.data.code === 200 && res.data.data[1] ) {
+  //           editInfo.value.oldName = res.data.data[0].nikename;
+  //           editInfo.value.oldEmail = res.data.data[0].email;
+  //         }
+  //       })
+  // } 
   // edit nickname
   const editName = (type: any) => {
     if( type === 1 ){ // 修改昵称
@@ -501,12 +520,12 @@
       if( switchInput.value && (editInfo.value.inputName !== editInfo.value.oldName) && editInfo.value.inputName){
         axios
           .put(
-            `https://invitecode.cyberpop.online/user/nickname?address=${address.value}&nikename=${editInfo.value.inputName}`,
-            { 
-              headers: {
-                satoken
-              }
-            }
+            `/api/user/nickname?email=${email.value}&nikename=${editInfo.value.inputName}`,
+            // { 
+            //   headers: {
+            //     satoken
+            //   }
+            // }
           )
           .then((res: any) => {
             if ( res.data.code === 200 && res.data.data ) {
@@ -514,7 +533,8 @@
               Message.success(t('beiz.success'))
               editInfo.value.oldName = editInfo.value.inputName;
               editInfo.value.inputName = '';
-              getNickname();
+              // eslint-disable-next-line no-use-before-define
+              getHashrate(1);
             }else {
               Message.error(t('beiz.error'))
             }
@@ -531,12 +551,12 @@
       if( switchInput2.value && (editInfo.value.inputEmail !== editInfo.value.oldEmail) && editInfo.value.inputEmail){
         axios
           .put(
-            `https://invitecode.cyberpop.online/user/nickname?address=${address.value}&nikename=${editInfo.value.inputEmail}`,
-            { 
-              headers: {
-                satoken
-              }
-            }
+            `/api/user/nickname?email=${email.value}&nikename=${editInfo.value.inputEmail}`,
+            // { 
+            //   headers: {
+            //     satoken
+            //   }
+            // }
           )
           .then((res: any) => {
             if ( res.data.code === 200 && res.data.data ) {
@@ -544,7 +564,8 @@
               Message.success(t('beiz.success'))
               editInfo.value.oldEmail = editInfo.value.inputEmail;
               editInfo.value.inputEmail = '';
-              getNickname();
+              // eslint-disable-next-line no-use-before-define
+              getHashrate(1);
             }else {
               Message.error(t('beiz.error'))
             }
@@ -561,16 +582,43 @@
   //   getMyInvit();
   // };
 
+
+  // 获取算力
+  const getHashrate = (editNameFlag?: any) => {
+    axios
+      .get(
+        `/api/user/getuser?address=${address.value}`,
+        // { 
+        //   headers: {
+        //     satoken
+        //   }
+        // }
+      )
+      .then((res: any) => {
+        if ( res.data.code === 200 && res.data.data ) {
+          editInfo.value.oldName = res.data.data.nikename;
+          // editInfo.value.oldEmail = res.data.data.email;
+          const tempArr = []
+          tempArr.push(res.data.data)
+          myUseDate.value = childPush( tempArr,editNameFlag); // 当修改昵称时，children不进行总数、算力计算
+        }
+      })
+  }
+
+
   onMounted(() => {
     address.value = localStorage.getItem('address');
+    email.value = localStorage.getItem('userEm');
     level.value = localStorage.getItem('userLl') ? localStorage.getItem('userLl') : '1';
     getMyInvit();
-    getNickname();
+    getHashrate();
+    // getNickname();
   });
 
   onActivated(() => {
     if( remarksActive.value ){
       getMyInvit(); // 进入页面局部刷新数据
+      getHashrate();
     }
   })
 
@@ -592,7 +640,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 132px;
+        width: 112px;
         margin: 14px auto 15px;
         color: var(--color-text-1);
         font-size: 14px;
@@ -604,7 +652,7 @@
           text-align: center;
         }
         .nameInput {
-          width: 110px;
+          width: 90px;
           border: none;
           border-bottom: 1px solid #ccc;
           text-align: center;
@@ -625,7 +673,7 @@
         display: flex;
         flex-direction: column;
         margin-bottom: 10px;
-        margin-top: 50px; // 
+        // margin-top: 50px; // 
         button{
           margin-bottom: 10px;
           border-radius: 6px;
@@ -767,22 +815,22 @@
       text-overflow: ellipsis;
       overflow: hidden;
     }
-    .arco-table-td:nth-child(2), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5),.arco-table-td:nth-child(6) {
+    .arco-table-td:nth-child(2),.arco-table-td:nth-child(3), .arco-table-td:nth-child(5), .arco-table-td:nth-child(6),.arco-table-td:nth-child(7) {
       .arco-table-cell {
         white-space: nowrap;
       }
     }
-    .arco-table-td:nth-child(3) {
+    .arco-table-td:nth-child(4) {
       .arco-table-cell {
         width: 220px;
       }
     }
-    .arco-table-td:nth-child(8) {
+    .arco-table-td:nth-child(9) {
       .arco-table-cell {
         width: 120px;
       }
     }
-    .arco-table-td:nth-child(10) {
+    .arco-table-td:nth-child(11) {
       .arco-table-cell {
         width: 120px;
       }

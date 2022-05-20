@@ -50,4 +50,7 @@ export default {
   'login.form.uniqAddr.errMsg': '地址已注册',
   'login.form.uniqEmail.errMsg': '邮箱已注册',
   'login.form.title2': '欢迎',
+  'login.delUser.msg': '检查到该地址已注册用户，是否删除之前注册的用户数据？',
+  'login.delUser.succ': '删除成功',
+  'login.delUser.err': '删除失败',
 };

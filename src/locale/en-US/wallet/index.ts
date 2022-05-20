@@ -5,6 +5,8 @@ export default {
   'wallet.item.ratio': 'Rebate ratio',
   'wallet.item.balance': 'Balance',
   'wallet.item.btn': 'WITHDRAWAL',
+  'wallet.item.withdrawn.succ': 'Withdrawal succeeded!',
+  'wallet.item.withdrawn.err': 'Withdrawal failed!',
   'wallet.charts.title': 'Personal Sales',
   'wallet.charts.tooltip': 'Sales',
 };

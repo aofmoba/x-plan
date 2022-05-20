@@ -6,6 +6,7 @@ const staticData = defineStore('common', {
       isAssetsAllow: false,
       userAddress: '',
       badgeData: [],
+      isRefresh: false,
     };
   },
 

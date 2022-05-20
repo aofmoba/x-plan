@@ -126,6 +126,7 @@
   const { badgeData } = storeToRefs(comStore);
   const { t } = useI18n();
   const tempDate: any = ref([])
+  const email: any = ref('');
   const codeInfo: any = ref({
     userCode: '',
     partnerCode: '',
@@ -145,12 +146,12 @@
     if (address) {
       axios
         .get(
-          `https://invitecode.cyberpop.online/user/getdata?address=${address}`,
-          { 
-            headers: {
-              satoken
-            }
-          }
+          `/api/user/getdata?email=${email.value}`,
+          // { 
+          //   headers: {
+          //     satoken
+          //   }
+          // }
         )
         .then((res: any) => {
           if (res.data.code === 200) {
@@ -181,6 +182,7 @@
   }
 
   onMounted(()=>{
+    email.value = localStorage.getItem('userEm');
     getBadgeImg();
     getCode();
 

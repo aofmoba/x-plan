@@ -50,4 +50,7 @@ export default {
   'login.form.uniqAddr.errMsg': 'Address registered',
   'login.form.uniqEmail.errMsg': 'Mailbox registered',
   'login.form.title2': 'Welcome',
+  'login.delUser.msg': 'It is checked that the address has registered users. Do you want to delete the previously registered user data?',
+  'login.delUser.succ': 'Deleted successfully',
+  'login.delUser.err': 'Delete failed',
 };

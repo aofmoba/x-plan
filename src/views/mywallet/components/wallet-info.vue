@@ -30,7 +30,7 @@
                 {{ cardData.val.balance }}
               </a-spin>  
             </span>
-            <a-button type="primary" shape="round" size="small" class="btn">{{$t('wallet.item.btn')}}</a-button>
+            <a-button :loading="btnDisable" type="primary" shape="round" size="small" class="btn" @click="withdrawn">{{$t('wallet.item.btn')}}</a-button>
           </div>
         </div>
         <div class="charts">
@@ -81,17 +81,19 @@
   import type { ToolTipFormatterParams } from '@/types/echarts';
   import useLoading from '@/hooks/loading';
   import { useI18n } from 'vue-i18n';
+  import { Message } from '@arco-design/web-vue';
 
   // import { useRouter } from 'vue-router';
-  // import { Message } from '@arco-design/web-vue';
   // const router = useRouter();
   const { t } = useI18n();
   const { loading, setLoading } = useLoading(true);
   const xAxis = ref<string[]>([]);
   const chartsData = ref<number[]>([]);
   const address: any = ref('');
+  const email: any = ref('');
   const visible = ref(false);
   const satoken: any = String(localStorage.getItem('satoken'))
+  const btnDisable: any = ref(false);
   xAxis.value = [
     '2022-5-09',
     '2022-5-10',
@@ -198,7 +200,29 @@
     formInfo.value.inputVal = '';
   }
   const withdrawn = () => {
-    // console.log(address, inputVal.value);
+    // if( !Number(cardData.val.balance) ) return
+    // btnDisable.value = true;
+    // axios
+    //   .get(
+    //     `/api/user/alltransfer?address=${address.value}&email=${email.value}&personalreward=${cardData.val.balance}`,
+    //     // `/api/user/alltransfer?address=${address.value}&email=${email.value}&personalreward=0.1`,
+    //     { 
+    //       headers: {
+    //         satoken
+    //       }
+    //     }
+    //   )
+    //   .then((res: any) => {
+    //     if ( res.data.code === 200 && res.data.data ) {
+    //       Message.success(t('wallet.item.withdrawn.succ'))
+    //       // eslint-disable-next-line no-use-before-define
+    //       getBalance();
+    //     }else{
+    //       Message.error(t('wallet.item.withdrawn.err'))
+    //     }
+    //   }).finally(()=>{
+    //     btnDisable.value = false;
+    //   })
   }
 
   // 获取等级、返佣比
@@ -206,16 +230,17 @@
     setLoading(true);
     axios
       .get(
-        `https://invitecode.cyberpop.online/user/doLogin?address=${address.value}`,
-        { 
-          headers: {
-            satoken
-          }
-        }
+        `/api/user/doLogin?address=${address.value}`,
+        // { 
+        //   headers: {
+        //     satoken
+        //   }
+        // }
       )
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data[1] ) {
           level.value = res.data.data[0].level;
+          email.value = res.data.data[0].email;
           // eslint-disable-next-line eqeqeq
           if( res.data.data[0].level == '4'){
             cardData.val.level = 'agent.level1'
@@ -234,12 +259,12 @@
     const mylevel = String(localStorage.getItem('userLl'));
     axios
       .get(
-        `https://invitecode.cyberpop.online/sys/commission?level=${mylevel}`,
-        { 
-          headers: {
-            satoken
-          }
-        }
+        `/api/sys/commission?level=${mylevel}`,
+        // { 
+        //   headers: {
+        //     satoken
+        //   }
+        // }
       )
       .then((res: any) => {
         if( res.data.code === 200 && res.data.data ){
@@ -252,16 +277,16 @@
   const getBalance = () => {
     axios
       .get(
-        `https://invitecode.cyberpop.online/user/getuser?address=${address.value}`,
-        { 
-          headers: {
-            satoken
-          }
-        }
+        `/api/user/getuser?address=${address.value}`,
+        // { 
+        //   headers: {
+        //     satoken
+        //   }
+        // }
       )
       .then((res: any) => {
         if ( res.data.code === 200 ) {
-          cardData.val.balance = Number(res.data.data.personalrewards).toFixed(2);
+          cardData.val.balance = (Math.floor(res.data.data.personalrewards * 100) / 100).toFixed(2);
         }
       })
   }

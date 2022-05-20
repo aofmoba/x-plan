@@ -6,4 +6,5 @@ export default {
   'reg.error': '身份注册失败',
   'beiz.error': '操作失败',
   'dobadge.error': '该身份对应的徽章错误！',
+  'cuser.error': '该地址已注册成为用户，无权限登录',
 };
