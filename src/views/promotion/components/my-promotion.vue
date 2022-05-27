@@ -142,17 +142,9 @@
   const getCode = () => {
     setLoading(true);
     const address = localStorage.getItem('address');
-    const satoken = String(localStorage.getItem('satoken'));
     if (address) {
       axios
-        .get(
-          `/api/user/getdata?email=${email.value}`,
-          // { 
-          //   headers: {
-          //     satoken
-          //   }
-          // }
-        )
+        .get(`/api/user/getdata?email=${email.value}`)
         .then((res: any) => {
           if (res.data.code === 200) {
             setLoading(false);

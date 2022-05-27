@@ -111,9 +111,15 @@ const balanceOfBatch = (abi: any, address: any, ids: any) => {
     // console.log(abi, address);
     const web3 = new Web3((Web3 as any).givenProvider);
     const contract = new web3.eth.Contract(abi, address);
-    const res = await contract.methods.balanceOfBatch(tempAccounts, ids).call();
-    resolve(res);
+    try {
+      const res = await contract.methods.balanceOfBatch(tempAccounts, ids).call();
+      resolve(res);
+    } catch (error) {
+      console.log(error)
+      resolve('error')
+    }
   });
+
 };
 
 

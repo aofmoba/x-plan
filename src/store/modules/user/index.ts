@@ -78,11 +78,13 @@ const useUserStore = defineStore('user', {
     async logout() {
       // await userLogout();
       const address = localStorage.getItem('address')
-      axios.get(`/api/user/outLogin?address=${ address }`)
+      if( localStorage.getItem('isLogin') ){
+        axios.get(`/api/user/outLogin?address=${ address }`)
+      }
       localStorage.removeItem('isLogin')
       localStorage.removeItem('bImg')
       localStorage.removeItem('userLl')
-      localStorage.removeItem('satoken')
+      localStorage.removeItem('userEm')
       localStorage.removeItem('address')
       this.resetInfo();
       clearToken();

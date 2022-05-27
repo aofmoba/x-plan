@@ -12,8 +12,8 @@
             </a-avatar>
             <div class="username">
               <span v-show="!switchInput">{{ editInfo.oldName }}</span>
-              <input v-show="switchInput" v-model="editInfo.inputName" class="nameInput" type="text" :placeholder="editInfo.oldName" @blur="editName(1)">
-              <icon-pen-fill class="name-edit" @click="editName(1)"/>
+              <input v-show="switchInput" v-model="editInfo.inputName" class="nameInput" type="text" @blur="editName(1)">
+              <icon-pen-fill v-show="!switchInput" class="name-edit" @click="editName(1)"/>
             </div>
             <div class="btnGroup">
               <a-button
@@ -46,7 +46,7 @@
             hoverable
           >
             <template #title>
-              <div>{{ $t('workplace.me') }} : {{ address }}</div>
+              <div class="me">{{ $t('workplace.me') }} : {{ address }}</div>
               <div class="my-card-title">
                 <a-button type="outline" size="mini" style="height: 18px; line-height: 16px">{{ $t(userLevel) }}</a-button>
                 <!-- <div class="useremail">
@@ -70,17 +70,13 @@
                 </div>
               </div>
             </template>
-            <!-- <div v-if="myInvit.length"> -->
             <div>
               <div class="subtitle">
-                <!-- <div>{{ $t('workplace.invitees') }}:</div> -->
                 <div class="total-left">
                   <div v-if="level == 4">{{ $t('agent.level2') }} : <span>{{ totalInfo.level3count }}</span></div>
                   <div v-if="level >= 3">{{ $t('agent.level3') }} : <span>{{ totalInfo.level2count }}</span></div>
                   <div v-if="level >= 2">{{ $t('agent.level4') }} : <span>{{ totalInfo.level1count }}</span></div>
                 </div>
-                <!-- <div class="total">
-                </div> -->
                 <div class="hash">
                   <div>{{ $t('workplace.total') }}: <span style="margin-right: 20px;">{{ totalInfo.total === -1 ? 0 : totalInfo.total }}</span></div>
                   <div>{{ $t('workplace.hashrate') }}: <span>{{ totalInfo.hash }}</span></div>
@@ -263,7 +259,6 @@
   const toAddress: any = ref('');
   const toLevel: any = ref('');
   const remarksActive: any = ref(false);
-  const satoken: any = String(localStorage.getItem('satoken'))
   const switchInput: any = ref(false); // nickname
   const switchInput2: any = ref(false); // email
   const editInfo: any = ref({
@@ -370,14 +365,7 @@
     };
     if (address.value) {
       axios
-        .get(
-          `/api/user/getdata?email=${email.value}`,
-          // { 
-          //   headers: {
-          //     satoken
-          //   }
-          // }
-        )
+        .get(`/api/user/getdata?email=${email.value}`)
         .then((res: any) => {
           console.log(res);
           if (res.data.code === 200) {
@@ -402,7 +390,7 @@
               treeDataL4.value.push(...children4)
             }
 
-            if( toL ){
+            if( toL ){  // 保存修改备注时的浏览位置
               if( toL === '3'){
                 useDate.value = treeDataL2.value;
                 levels.value = 4;
@@ -476,14 +464,7 @@
   };
   const okRemarks = () => {
     axios
-      .put(
-        `/api/re/setremarks?address=${email.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`,
-        // { 
-        //   headers: {
-        //     satoken
-        //   }
-        // }
-      )
+      .put(`/api/re/setremarks?address=${email.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`)
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data ) {
           Message.success(t('beiz.success'))
@@ -510,6 +491,7 @@
   //       })
   // } 
   // edit nickname
+
   const editName = (type: any) => {
     if( type === 1 ){ // 修改昵称
       if( !switchInput.value ){
@@ -519,14 +501,7 @@
       // 判断当填写完、填写值和原名称不等、填写值不为空时，发送请求
       if( switchInput.value && (editInfo.value.inputName !== editInfo.value.oldName) && editInfo.value.inputName){
         axios
-          .put(
-            `/api/user/nickname?email=${email.value}&nikename=${editInfo.value.inputName}`,
-            // { 
-            //   headers: {
-            //     satoken
-            //   }
-            // }
-          )
+          .put(`/api/user/nickname?email=${email.value}&nikename=${editInfo.value.inputName}`)
           .then((res: any) => {
             if ( res.data.code === 200 && res.data.data ) {
               switchInput.value = !switchInput.value;
@@ -550,14 +525,7 @@
       // 判断当填写完、填写值和原名称不等、填写值不为空时，发送请求
       if( switchInput2.value && (editInfo.value.inputEmail !== editInfo.value.oldEmail) && editInfo.value.inputEmail){
         axios
-          .put(
-            `/api/user/nickname?email=${email.value}&nikename=${editInfo.value.inputEmail}`,
-            // { 
-            //   headers: {
-            //     satoken
-            //   }
-            // }
-          )
+          .put(`/api/user/nickname?email=${email.value}&nikename=${editInfo.value.inputEmail}`)
           .then((res: any) => {
             if ( res.data.code === 200 && res.data.data ) {
               switchInput2.value = !switchInput2.value;
@@ -586,14 +554,7 @@
   // 获取算力
   const getHashrate = (editNameFlag?: any) => {
     axios
-      .get(
-        `/api/user/getuser?address=${address.value}`,
-        // { 
-        //   headers: {
-        //     satoken
-        //   }
-        // }
-      )
+      .get(`/api/user/getuser?address=${address.value}`)
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data ) {
           editInfo.value.oldName = res.data.data.nikename;
@@ -601,6 +562,9 @@
           const tempArr = []
           tempArr.push(res.data.data)
           myUseDate.value = childPush( tempArr,editNameFlag); // 当修改昵称时，children不进行总数、算力计算
+          if (levels.value === 9) { // 如果当前浏览我的信息，修改昵称后刷新数据
+            useDate.value = myUseDate.value;
+          }
         }
       })
   }
@@ -920,4 +884,29 @@
       margin-top: 85px;
     }
   }
+
+  @media (max-width: @screen-sm) {
+    .my-card {
+      :deep(.arco-card-header){
+        .me {
+          width: 140px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+  @media (max-width: @screen-md) and (min-width: @screen-sm) {
+    .my-card {
+      :deep(.arco-card-header){
+        .me {
+          width: 380px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+
+
 </style>

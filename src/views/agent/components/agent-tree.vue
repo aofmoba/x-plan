@@ -47,10 +47,6 @@
               :pagination="pagination"
             >
               <template #columns>
-                  <!-- <a-table-column
-                    :title="$t('workplace.table.nickname')"
-                    data-index="nickname"
-                  /> -->
                   <a-table-column
                     :title="$t('workplace.table.email')"
                     data-index="email"
@@ -213,7 +209,6 @@
   const toAddress: any = ref('');
   const toLevel: any = ref('');
   const remarksActive: any = ref(false);
-  const satoken: any = String(localStorage.getItem('satoken'))
   const pagination: any = ref({
     type: 'pagination',
     page: 50,
@@ -267,14 +262,7 @@
   // load more
   const moretable = (record: any, done: any) => {
     axios
-      .get(
-        `/api/user/getdata?email=${record.email}`,
-        // { 
-        //   headers: {
-        //     satoken
-        //   }
-        // }
-      )
+      .get(`/api/user/getdata?email=${record.email}`)
       .then((res: any) => {
         console.log(res);
         if (res.data.code === 200) {
@@ -320,14 +308,7 @@
     setLoading(true);
     if (address.value) {
       await axios
-        .get(
-          `/api/user/getdata?email=${email.value}`,
-          // { 
-          //   headers: {
-          //     satoken
-          //   }
-          // }
-        )
+        .get(`/api/user/getdata?email=${email.value}`)
         .then((res: any) => {
           if (res.data.code === 200) {
             const result = res.data.data;
@@ -345,7 +326,7 @@
             //   const children4 = childPush(result.level1, false);
             //   treeDataL4.value.push(...children4)
             // }
-            if( toL ){
+            if( toL ){ // 保存修改备注时的浏览位置
               if( toL === '3'){
                 useDate.value = treeDataL2.value;
                 levels.value = 4;
@@ -453,14 +434,7 @@
 
   const okRemarks = () => {
     axios
-      .put(
-        `/api/re/setremarks?address=${email.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`,
-        // { 
-        //   headers: {
-        //     satoken
-        //   }
-        // }
-      )
+      .put(`/api/re/setremarks?address=${email.value}&toaddress=${toAddress.value}&remarks=${remarkInfo.val.remarks}`)
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data ) {
           Message.success(t('beiz.success'))

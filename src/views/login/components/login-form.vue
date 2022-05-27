@@ -118,6 +118,7 @@
   import web3J from '@/utils/web3';
   import contracts from '@/utils/contracts';
 
+
   const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
@@ -158,16 +159,33 @@
 
   // get NFT
   const getNft = async () => {
+    data.value = [];
     const ids = [0, 1, 2, 3, 4];
     const result: any = await web3J.balanceOfBatch(contracts.nft_fuji.abi, contracts.nft_fuji.address, ids);
+    if( result === 'error' ){
+      isReady.value = 0;
+      isRefresh.value = false; // 错误中断之后，isRefresh置false，下次切换依旧执行watch
+      return
+    }
     const len = result.length;
-    // let hasNft = false;
     console.log(result);
     (function loop(i){
-        if(result[i] === 0 || i === 0) { // 为了减少不必要的请求
+        // eslint-disable-next-line eqeqeq
+        if(result[i] == 0) { // 为了减少不必要的请求
             // eslint-disable-next-line no-plusplus
             if (++i<len) {
                 loop(i);
+            }else{
+                // eslint-disable-next-line eqeqeq
+                if( dobadge.value == '1' && data.value.length == 0 ){ // 通过徽章注册的用户再次登录验证对应徽章
+                    isReady.value = 9;
+                    Message.error(t('dobadge.error'));
+                    logDisable.value = false; // 查询结束，按钮的loading结束
+                    return
+                }
+                isReady.value = 2;
+                logDisable.value = false; // 查询结束，按钮的loading结束
+                localStorage.removeItem('bImg');
             }
             return;
         }
@@ -229,12 +247,12 @@
     }) 
   }
 
-  const connect = () => {
+  const connect = async () => {
     isReady.value = 1;
     if (!ethereum) {
       noInVisible.value = true;
     } else {
-      ethereum
+      await ethereum
         .request({ method: 'eth_requestAccounts' })
         .then( async (res: any) => {
           const res0 = await web3obj.utils.toChecksumAddress(res[0]);
@@ -294,7 +312,6 @@
         localStorage.setItem('isLogin', 'true');
         Message.success(t('login.success'));
         router.push({name: 'Workplace'});
-        localStorage.setItem('satoken', res.data.data[0].satoken);
         localStorage.setItem('userLl', res.data.data[0].level);
         localStorage.setItem('userEm', res.data.data[0].email);
         // isAssetsAllow.value = true;
@@ -394,12 +411,7 @@
   const into = (url: any, type: any) => {
     axios
       .post(
-        `/api/business/${url}?address=${userInfo.address}&nickname=${addForm.val.name}&email=${addForm.val.email}&level=${type}`,
-        // { 
-        //   headers: {
-        //     satoken: String(localStorage.getItem('satoken'))
-        //   }
-        // }
+        `/api/business/${url}?address=${userInfo.address}&nickname=${addForm.val.name}&email=${addForm.val.email}&level=${type}`
       )
       .then((res: any) => {
         console.log(res);
@@ -428,7 +440,6 @@
       into('partnerlevel',2)
     }
   } 
-
   // 弹框信息校验、确认
   const register = () => {
     regDisable.value = true;
@@ -436,14 +447,7 @@
       // eslint-disable-next-line eqeqeq
       if( res == undefined ) {
         // 提前校验 userInfo.address addForm.val.email
-        axios.get(
-          `/api/user/bemail?email=${addForm.val.email}`,
-          // { 
-          //   headers: {
-          //     satoken: String(localStorage.getItem('satoken'))
-          //   }
-          // }
-        )
+        axios.get(`/api/user/bemail?email=${addForm.val.email}`)
         .then((result: any) => {
           if ( result.data.code === 200 && result.data.data === true ) { 
             UniqVer.value += 1;
@@ -453,14 +457,7 @@
             regDisable.value = false;
           }
         })
-        axios.get(
-          `/api/user/baddress?address=${userInfo.address}`,
-          // { 
-          //   headers: {
-          //     satoken: String(localStorage.getItem('satoken'))
-          //   }
-          // }
-        )
+        axios.get(`/api/user/baddress?address=${userInfo.address}`)
         .then((result: any) => {
           if ( result.data.code === 200 && result.data.data === true ) { 
             UniqVer.value += 1;
@@ -474,37 +471,41 @@
     })
   };
 
+
   // 在当前页监听钱包地址切换，一旦切换自动刷新
-  watch(isRefresh,(newV,oldV) => {
+  watch(isRefresh,(newV, oldV) => {
     if( newV && router.currentRoute.value.name === 'login'){
-      // 数据初始化
-      data.value = [];
-      isReady.value = 0;
-      registerLevel.value = 0;
-      alltype.value = 0;
-      userLevel.value = 0;
-      level.value = '0';
-      nickna.value = '';
-      isregist.value = false;
-      isregistUser.value = false;
-      dobadge.value = '-1';
-      UniqVer.value = 0;
-      userInfo.address = '';
-      addForm.val = {
-        email: '',
-        name: '',
-        code: ''
-      };
-      connect()
-      isRefresh.value = false;
+      if( isReady.value !== 1 ){
+        // 数据初始化
+        data.value = [];
+        isReady.value = 0;
+        registerLevel.value = 0;
+        alltype.value = 0;
+        userLevel.value = 0;
+        level.value = '0';
+        nickna.value = '';
+        isregist.value = false;
+        isregistUser.value = false;
+        dobadge.value = '-1';
+        UniqVer.value = 0;
+        userInfo.address = '';
+        addForm.val = {
+          email: '',
+          name: '',
+          code: ''
+        };
+        connect()
+        isRefresh.value = false;
+      }
     }
   },{immediate:true,deep:true})
+
 
   onMounted(() => {
     localStorage.removeItem('isLogin')
     localStorage.removeItem('bImg')
     localStorage.removeItem('userLl')
-    localStorage.removeItem('satoken')
+    localStorage.removeItem('userEm')
     localStorage.removeItem('address')
     connect();
   });

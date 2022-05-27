@@ -7,7 +7,6 @@
           <div class="item">
             <span class="label">{{ $t('wallet.item.level') }} : </span>
             <span class="num">
-              <!-- {{ $t(cardData.val.level) }} -->
               <a-spin :loading="loading" :size="16" class="load">
                 {{ $t(cardData.val.level) }}
               </a-spin>
@@ -16,7 +15,6 @@
           <div class="item">
             <span class="label">{{ $t('wallet.item.ratio') }} : </span>
             <span class="num">
-              <!-- {{ cardData.val.ratio }} -->
               <a-spin :loading="loading" :size="16" class="load">
                 {{ cardData.val.ratio ? cardData.val.ratio + '%' : ''}}
               </a-spin>  
@@ -25,12 +23,11 @@
           <div class="item">
             <span class="label">{{ $t('wallet.item.balance') }} : </span>
             <span class="num">
-              <!-- {{ cardData.val.balance }} -->
               <a-spin :loading="loading" :size="16" class="load">
                 {{ cardData.val.balance }}
               </a-spin>  
             </span>
-            <a-button :loading="btnDisable" type="primary" shape="round" size="small" class="btn" @click="withdrawn">{{$t('wallet.item.btn')}}</a-button>
+            <a-button type="primary" shape="round" size="small" class="btn">{{$t('wallet.item.btn')}}</a-button>
           </div>
         </div>
         <div class="charts">
@@ -41,19 +38,15 @@
     </a-grid-item>
 
     <!-- 提现 -->
-    <!-- <a-modal
+    <a-modal
       v-model:visible="visible"
       :title="$t('financial.modal.title')"
       class="modal"
-      :cancel-text="$t('login.modal.cancel2')"
-      :ok-text="$t('login.modal.ok2')"
-      @cancel="handleCancel"
-      @ok="withdrawn"
     >
       <div class="drop" style="width: 320px; margin: 0 auto;">
-        <a-form :model="formInfo">
+        <a-form ref="ruleform" :model="formInfo" >
           <a-form-item
-            field="password"
+            field="inputVal"
             :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
             :validate-trigger="['change', 'blur']"
             hide-label
@@ -63,6 +56,7 @@
               :style="{width:'320px'}"
               :placeholder="$t('financial.withdrawn.pwd')" 
               allow-clear
+              autocomplete="new-password"
             >
               <template #prefix>
                 <icon-lock />
@@ -71,7 +65,11 @@
           </a-form-item>
         </a-form>
       </div>
-    </a-modal> -->
+      <template #footer>
+        <a-button @click="handleCancel">{{ $t('login.modal.cancel2') }}</a-button>
+        <a-button :loading="btnDisable" type="primary" @click="withdrawn">{{ $t('login.modal.ok2') }}</a-button>
+      </template>
+    </a-modal>
   </a-grid>
 </template>
 
@@ -92,7 +90,7 @@
   const address: any = ref('');
   const email: any = ref('');
   const visible = ref(false);
-  const satoken: any = String(localStorage.getItem('satoken'))
+  const ruleform: any = ref(null); // 验证表单
   const btnDisable: any = ref(false);
   xAxis.value = [
     '2022-5-09',
@@ -192,51 +190,72 @@
   };
 
   // 提现
-  const inputModal = (info: any) => {
+  const inputModal = () => {
+    if( !Number(cardData.val.balance) ) return
     visible.value = true;
   }
   const handleCancel = () => {
     visible.value = false;
     formInfo.value.inputVal = '';
   }
+
+
+  // const { Web3 } = window as any
+  // const web3obj = new Web3((Web3 as any).givenProvider);
+  // const { ethereum } = window as any; // 获取小狐狸实例
+  // const toBalanceValue = 7000000000000000000;
+  // const balanceValue = 
   const withdrawn = () => {
-    // if( !Number(cardData.val.balance) ) return
-    // btnDisable.value = true;
-    // axios
-    //   .get(
-    //     `/api/user/alltransfer?address=${address.value}&email=${email.value}&personalreward=${cardData.val.balance}`,
-    //     // `/api/user/alltransfer?address=${address.value}&email=${email.value}&personalreward=0.1`,
-    //     { 
-    //       headers: {
-    //         satoken
-    //       }
-    //     }
-    //   )
-    //   .then((res: any) => {
-    //     if ( res.data.code === 200 && res.data.data ) {
-    //       Message.success(t('wallet.item.withdrawn.succ'))
-    //       // eslint-disable-next-line no-use-before-define
-    //       getBalance();
-    //     }else{
-    //       Message.error(t('wallet.item.withdrawn.err'))
-    //     }
-    //   }).finally(()=>{
-    //     btnDisable.value = false;
-    //   })
+    ruleform.value.validate(async (res: any) => {
+      // eslint-disable-next-line eqeqeq
+      if( res == undefined ) {
+        btnDisable.value = true;
+        // 验证密码 
+        // ---
+
+        // const balanceVal = await web3obj.eth.getBalance(address.value)
+
+        // eth转wei 转账 web3.utils.toWei('1', 'ether')
+		    // toBalanceValue = await Web3.utils.toWei(balanceVal, 'ether');
+        // console.log(toBalanceValue)
+        // Web3.eth.sendTransaction({
+        //   from: '0xf7fB89554f842F550499AEf4FDa2d1898039851f',
+        //   to: '0x100E077e5111C044673114dfe917C807dd60f0D1',
+        //   value: toBalanceValue,
+        // }, (err: any, addr: any) => {
+        //   if (!err) {
+        //     console.log(addr, '转账成功！');
+        //   } else {
+        //     console.log(err);
+        //   }
+        // });
+
+        // axios
+        //   .get(
+        //     // `/api/user/alltransfer?address=${address.value}&email=${email.value}&personalreward=${cardData.val.balance}`,
+        //     `/api/user/alltransfer?address=${address.value}&email=${email.value}&personalreward=0.1`,
+        //   )
+        //   .then((result: any) => {
+        //     if ( result.data.code === 200 && result.data.data ) {
+        //       Message.success(t('wallet.item.withdrawn.succ'))
+        //       visible.value = false;
+        //       // eslint-disable-next-line no-use-before-define
+        //       getBalance();
+        //     }else{
+        //       Message.error(t('wallet.item.withdrawn.err'))
+        //     }
+        //   }).finally(()=>{
+        //     btnDisable.value = false;
+        //   })
+      }
+    })
   }
 
   // 获取等级、返佣比
   const getLevel = () => {
     setLoading(true);
     axios
-      .get(
-        `/api/user/doLogin?address=${address.value}`,
-        // { 
-        //   headers: {
-        //     satoken
-        //   }
-        // }
-      )
+      .get(`/api/user/doLogin?address=${address.value}`)
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data[1] ) {
           level.value = res.data.data[0].level;
@@ -258,14 +277,7 @@
       })
     const mylevel = String(localStorage.getItem('userLl'));
     axios
-      .get(
-        `/api/sys/commission?level=${mylevel}`,
-        // { 
-        //   headers: {
-        //     satoken
-        //   }
-        // }
-      )
+      .get(`/api/sys/commission?level=${mylevel}`)
       .then((res: any) => {
         if( res.data.code === 200 && res.data.data ){
           cardData.val.ratio = `${Number(res.data.data.systemval)*100}`;
@@ -276,14 +288,7 @@
   // 获取余额
   const getBalance = () => {
     axios
-      .get(
-        `/api/user/getuser?address=${address.value}`,
-        // { 
-        //   headers: {
-        //     satoken
-        //   }
-        // }
-      )
+      .get(`/api/user/getuser?address=${address.value}`)
       .then((res: any) => {
         if ( res.data.code === 200 ) {
           cardData.val.balance = (Math.floor(res.data.data.personalrewards * 100) / 100).toFixed(2);
@@ -307,7 +312,6 @@
     address.value = localStorage.getItem('address');
     getLevel();
     getBalance();
-    // cardData.val.level = String(localStorage.getItem('userLl'));
   })
 </script>
 
