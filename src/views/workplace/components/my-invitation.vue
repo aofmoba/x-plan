@@ -889,7 +889,7 @@
     .my-card {
       :deep(.arco-card-header){
         .me {
-          width: 140px;
+          width: auto;
           text-overflow: ellipsis;
           overflow: hidden;
         }

@@ -30,7 +30,7 @@
           ethereum.on('accountsChanged', (accounts: any) => {
             console.log(accounts[0]); // 一旦切换账号这里就会执行
             if( router.currentRoute.value.name === 'login' ) isRefresh.value = true;
-            logout();
+            // logout();
           });
         }
       });

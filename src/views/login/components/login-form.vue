@@ -1,38 +1,98 @@
 <template>
   <div class="login-form-wrapper">
-    <ul v-if="data.length > 0" class="login-form-badge">
-        <li v-for="(item, index) in data" :key="index">
-          <a-image
-            :src="item.data.image"
-            :title='item.data.name'
-            width="100"
-            footer-position="outer"
-            :preview-visible="false"
+    <div class="login-form-title">{{ $t('login.form.title') }}</div>
+    <div class="methods">
+      <div :class="!choose ? 'choose' : ''" @click="exEmail">{{ $t('login.methods.email') }}</div>
+      <div :class="choose ? 'choose' : ''" @click="exWallet">{{ $t('login.methods.wallet') }}</div>
+    </div>
+
+    <div v-show="choose" class="metamask">
+      <ul v-if="data.length > 0" class="login-form-badge">
+          <li v-for="(item, index) in data" :key="index">
+            <a-image
+              :src="item.data.image"
+              :title='item.data.name'
+              width="100"
+              footer-position="outer"
+              :preview-visible="false"
+            >
+            </a-image>
+          </li>
+      </ul>
+      <!-- <div v-if="!isregist" class="login-form-title">{{ $t('login.form.title') }}</div> -->
+      <div v-if="isregist" class="login-form-title">{{ $t(userLevel) }} {{nickna}}</div>
+      <div class="login-form-error-msg">{{ errorMessage }}</div>
+      <a-form
+        ref="loginForm"
+        :model="userInfo"
+        class="login-form"
+        layout="vertical"
+      >
+        <a-space :size="16" direction="vertical">
+          <a-button
+              :loading="logDisable"
+              type="primary"
+              class="login-form-connect"
+              long
+              @click="fetchLogin"
+            >
+            {{ $t('login.form.login') }}
+          </a-button>
+        </a-space>
+      </a-form>
+    </div>
+
+    <div v-show="!choose" class="emailPwd">
+      <a-form
+        ref="emailForm"
+        :model="emailInfo"
+        class="email-form"
+        layout="vertical"
+      >
+        <a-form-item
+          field="email"
+          :rules="[{ required: true, message: $t('login.form.email.errMsg') },{ match: /@/, message: $t('login.form.email.ruleMsg') }]"
+          :validate-trigger="['change', 'blur']"
+          hide-label
+        >
+          <a-input
+            v-model="emailInfo.email"
+            :placeholder="$t('login.form.email.placeholder')"
           >
-          </a-image>
-        </li>
-    </ul>
-    <div v-if="!isregist" class="login-form-title">{{ $t('login.form.title') }}</div>
-    <div v-if="isregist" class="login-form-title">{{ $t('login.form.title2') }}, {{ $t(userLevel) }} {{nickna}}</div>
-    <div class="login-form-error-msg">{{ errorMessage }}</div>
-    <a-form
-      ref="loginForm"
-      :model="userInfo"
-      class="login-form"
-      layout="vertical"
-    >
-      <a-space :size="16" direction="vertical">
-        <a-button
-            :loading="logDisable"
-            type="primary"
-            class="login-form-connect"
-            long
-            @click="fetchLogin"
+            <template #prefix>
+              <icon-email />
+            </template>
+          </a-input>
+        </a-form-item>
+        <a-form-item
+          field="password"
+          :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+          :validate-trigger="['change', 'blur']"
+          hide-label
+        >
+          <a-input-password
+            v-model="emailInfo.password"
+            :placeholder="$t('login.form.password.placeholder')"
+            allow-clear
           >
-          {{ $t('login.form.login') }}
-        </a-button>
-      </a-space>
-    </a-form>
+            <template #prefix>
+              <icon-lock />
+            </template>
+          </a-input-password>
+        </a-form-item>
+        <a-space :size="16" direction="vertical">
+          <a-button
+              :loading="pwdDisable"
+              type="primary"
+              class="login-form-email"
+              long
+              @click="emailLogin"
+            >
+            {{ $t('login.form.login') }}
+          </a-button>
+        </a-space>
+      </a-form>
+    </div>
 
     <!-- delete userInfo -->
     <a-modal
@@ -93,7 +153,7 @@
         </a-form-item>
         <a-form-item 
             field="email" 
-            :rules="[{ required: true, message: $t('login.form.email.errMsg') }, { match: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/, message: $t('login.form.email.ruleMsg') }]"
+            :rules="[{ required: true, message: $t('login.form.email.errMsg') }, { match: /@/, message: $t('login.form.email.ruleMsg') }]"
             :validate-trigger="['change', 'blur']"
             :label="$t('login.modal.email')">
           <a-input v-model="addForm.val.email" />
@@ -105,6 +165,8 @@
       </template>
     </a-modal>
   </div>
+
+  <bindWallet :show="showbind"></bindWallet>
 </template>
 
 <script lang="ts" setup>
@@ -117,13 +179,14 @@
   import { storeToRefs } from 'pinia';
   import web3J from '@/utils/web3';
   import contracts from '@/utils/contracts';
+  import bindWallet from '@/components/bind-wallet/index.vue';
 
 
   const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
   const comStore = staticData();
-  const { badgeData, userAddress, isRefresh } = storeToRefs(comStore);
+  const { badgeData, userAddress, isRefresh, showbind } = storeToRefs(comStore);
   const delVisible = ref(false); // 删除C端用户弹框确认
   const noInVisible = ref(false); // metamask下载弹框
   const data: any = ref([]); // 徽章图片信息存储
@@ -147,6 +210,10 @@
   const { ethereum } = window as any; // 获取小狐狸实例
   const userInfo = reactive({
     address: '',
+  });
+   const emailInfo = reactive({
+    email: '',
+    password: ''
   });
   const addForm = reactive({
     val: {
@@ -177,15 +244,27 @@
                 loop(i);
             }else{
                 // eslint-disable-next-line eqeqeq
-                if( dobadge.value == '1' && data.value.length == 0 ){ // 通过徽章注册的用户再次登录验证对应徽章
-                    isReady.value = 9;
-                    Message.error(t('dobadge.error'));
-                    logDisable.value = false; // 查询结束，按钮的loading结束
-                    return
+                if( dobadge.value == '1' ){ // 通过徽章注册的用户再次登录验证对应徽章
+                    // eslint-disable-next-line eqeqeq
+                    const tempData2 = data.value.filter((item: any) => {
+                      // eslint-disable-next-line eqeqeq
+                      if( level.value == 2 ){
+                        // eslint-disable-next-line eqeqeq
+                        return item.id == 1 || item.id == 2
+                      }
+                      // eslint-disable-next-line eqeqeq
+                      return item.id == level.value
+                    })
+                    if( !tempData2.length ){ // 没有对应徽章
+                      isReady.value = 9;
+                      Message.error(t('dobadge.error'));
+                      logDisable.value = false; // 查询结束，按钮的loading结束
+                      return
+                    }
                 }
                 isReady.value = 2;
                 logDisable.value = false; // 查询结束，按钮的loading结束
-                localStorage.removeItem('bImg');
+                localStorage.setItem('bImg',JSON.stringify(data.value));
             }
             return;
         }
@@ -259,30 +338,36 @@
           userInfo.address = res0;
           localStorage.setItem('address', res0);
           userAddress.value = res0;
-          await axios.get(`/api/user/getuser?address=${userInfo.address}`).then((xres: any)=>{
-            if ( xres.data.code === 200 && xres.data.data ) {
-              dobadge.value = xres.data.data.dobadge;
-              nickna.value = xres.data.data.nikename;
-              level.value = xres.data.data.level;
-              // eslint-disable-next-line eqeqeq
-              if( xres.data.data.level == '4' ){
-                isregist.value = true
-                userLevel.value = 'agent.level1'
-              // eslint-disable-next-line eqeqeq
-              }else if( xres.data.data.level == '3' ){
-                isregist.value = true
-                userLevel.value = 'agent.level2'
-              // eslint-disable-next-line eqeqeq
-              }else if( xres.data.data.level == '2' ){
-                isregist.value = true
-                userLevel.value = 'agent.level3'
-              // eslint-disable-next-line eqeqeq
-              }else if( xres.data.data.level == '1' ){
-                isregistUser.value = true
-                userLevel.value = 'agent.level4'
+          try {
+            await axios.get(`/api/user/getuser?address=${userInfo.address}`).then((xres: any)=>{
+              if ( xres.data.code === 200 && xres.data.data ) {
+                dobadge.value = xres.data.data.dobadge;
+                nickna.value = xres.data.data.nikename;
+                level.value = xres.data.data.level;
+                // eslint-disable-next-line eqeqeq
+                if( xres.data.data.level == '4' ){
+                  isregist.value = true
+                  userLevel.value = 'agent.level1'
+                // eslint-disable-next-line eqeqeq
+                }else if( xres.data.data.level == '3' ){
+                  isregist.value = true
+                  userLevel.value = 'agent.level2'
+                // eslint-disable-next-line eqeqeq
+                }else if( xres.data.data.level == '2' ){
+                  isregist.value = true
+                  userLevel.value = 'agent.level3'
+                // eslint-disable-next-line eqeqeq
+                }else if( xres.data.data.level == '1' ){
+                  isregistUser.value = true
+                  userLevel.value = 'agent.level4'
+                }
               }
-            }
-          })
+            })
+          } catch (error:any) {
+            Message.error(error.message);
+            isReady.value = 0;
+            logDisable.value = false; // 查询结束，按钮的loading结束
+          }
           await web3obj.eth.net.getId().then(async (chainId: any) => {
               console.log(chainId);
               // eslint-disable-next-line eqeqeq
@@ -442,10 +527,10 @@
   } 
   // 弹框信息校验、确认
   const register = () => {
-    regDisable.value = true;
     ruleform.value.validate((res: any) => {
       // eslint-disable-next-line eqeqeq
       if( res == undefined ) {
+        regDisable.value = true;
         // 提前校验 userInfo.address addForm.val.email
         axios.get(`/api/user/bemail?email=${addForm.val.email}`)
         .then((result: any) => {
@@ -471,10 +556,10 @@
     })
   };
 
-
   // 在当前页监听钱包地址切换，一旦切换自动刷新
   watch(isRefresh,(newV, oldV) => {
-    if( newV && router.currentRoute.value.name === 'login'){
+    // eslint-disable-next-line no-use-before-define
+    if( newV && router.currentRoute.value.name === 'login'){ // 当在登录页登录方式为钱包登录，切换账号重新查询
       if( isReady.value !== 1 ){
         // 数据初始化
         data.value = [];
@@ -501,13 +586,73 @@
   },{immediate:true,deep:true})
 
 
+
+  // methods
+  const choose: any = ref(false);
+  const exEmail = () => {   // exchange email methods
+    choose.value = false;
+  }
+  const exWallet = () => {  // exchange wallet methods
+    choose.value = true;
+    console.log( isReady.value )
+    // eslint-disable-next-line eqeqeq
+    if( isReady.value == 0 ){
+      connect();
+    }
+  }
+
+  // email login
+  const pwdDisable: any = ref(false);
+  const emailForm: any = ref(null);
+  const emailLogin = () => {
+    emailForm.value.validate(async (res: any) => {
+      // eslint-disable-next-line eqeqeq
+      if( res == undefined ) {
+        pwdDisable.value = true;
+        console.log('success');
+        try {
+            await axios.post(`/api/user/doLoginEmail?email=${emailInfo.email}&password=${emailInfo.password}`).then((result: any)=>{
+              console.log(result);
+              pwdDisable.value = false;
+              if ( result.data.code === 200 && result.data.data[1] ) {
+                localStorage.setItem('isLogin', 'true');
+                localStorage.setItem('userLl', result.data.data[0].level);
+                localStorage.setItem('userEm', result.data.data[0].email);
+                if( !result.data.data[0].address ){
+                  comStore.updateShowBind(true);
+                }else{
+                  localStorage.setItem('address', result.data.data[0].address);
+                  router.push({name: 'Workplace'});
+                  Message.success(t('login.success'));
+                }
+              } else if( result.data.code === 513 ) {
+                Message.error(t('login.email.error1'));
+              } else if( result.data.code === 515 ) {
+                Message.error(t('login.email.error2'));
+              } else if( result.data.code === 516 ) {
+                Message.error(t('login.email.error3'));
+              } else {
+                Message.error(t('login.email.error3'));
+              }
+            })
+        } catch (error: any) {
+            Message.error(error.message);
+            pwdDisable.value = false; // 查询结束，按钮的loading结束
+        }
+      }
+    })
+  }
+
+
+
+
   onMounted(() => {
     localStorage.removeItem('isLogin')
     localStorage.removeItem('bImg')
     localStorage.removeItem('userLl')
     localStorage.removeItem('userEm')
     localStorage.removeItem('address')
-    connect();
+    // connect();
   });
 </script>
 
@@ -570,6 +715,30 @@
       margin-bottom: 10px;
     }
   }
+  .login-form-wrapper{
+    .methods{
+      display: flex;
+      width: 100%;
+      height: 40px;
+      margin: 20px 0 40px;
+      line-height: 40px;
+      text-align: center;
+      background: #f2f3f5;
+      div{
+        flex: 1;
+        cursor: pointer;
+        &:hover{
+          opacity: .9;
+        }
+      }
+      .choose{
+        background: #165dff;
+        color: #ffffff;
+      }
+    }
+  }
+
+
   :deep(.arco-image-footer-caption-title) {
     font-size: 14px !important;
     font-weight: bold;

@@ -91,10 +91,10 @@
                 <div class="label">{{ $t('promotion.down.link') }} :</div>
                 <div class="num">
                   <a
-                    :href="`https://test.cyberpop.online/download?code=` + codeInfo.userCode"
+                    :href="`https://cyberpop.online/download?code=` + codeInfo.userCode"
                     target="view_window"
                   >
-                    https://test.cyberpop.online/download?code={{ codeInfo.userCode }}
+                    https://cyberpop.online/download?code={{ codeInfo.userCode }}
                   </a>
                 </div>
               </div>
@@ -141,23 +141,24 @@
 
   const getCode = () => {
     setLoading(true);
-    const address = localStorage.getItem('address');
-    if (address) {
-      axios
-        .get(`/api/user/getdata?email=${email.value}`)
-        .then((res: any) => {
-          if (res.data.code === 200) {
-            setLoading(false);
-            codeInfo.value.userCode = res.data.data.threeClass ? res.data.data.threeClass : ''
-            codeInfo.value.partnerCode = res.data.data.twoClass ? res.data.data.twoClass : ''
-            codeInfo.value.quyuCode = res.data.data.OneClass ? res.data.data.OneClass : ''
-          }
-        });
-    }
+    axios
+      .get(`/api/user/getdata?email=${email.value}`)
+      .then((res: any) => {
+        if (res.data.code === 200) {
+          setLoading(false);
+          codeInfo.value.userCode = res.data.data.threeClass ? res.data.data.threeClass : ''
+          codeInfo.value.partnerCode = res.data.data.twoClass ? res.data.data.twoClass : ''
+          codeInfo.value.quyuCode = res.data.data.OneClass ? res.data.data.OneClass : ''
+        }
+      });
   };
 
   const getBadgeImg = () => {
-    tempDate.value = JSON.parse(localStorage.getItem('bImg')||'')
+    if( localStorage.getItem('bImg') ){
+      tempDate.value = JSON.parse(localStorage.getItem('bImg') || '')
+    }else{
+      tempDate.value = [];
+    }
     console.log(tempDate.value);
     for( let i=0; i< tempDate.value.length; i+=1 ){
       // eslint-disable-next-line eqeqeq

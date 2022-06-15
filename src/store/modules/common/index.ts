@@ -7,12 +7,17 @@ const staticData = defineStore('common', {
       userAddress: '',
       badgeData: [],
       isRefresh: false,
+      showbind: false,
     };
   },
 
   getters: {},
 
-  actions: {},
+  actions: {
+    updateShowBind(newValue: any){
+      this.showbind = newValue;
+    }
+  },
 });
 
 export default staticData;

@@ -12,14 +12,14 @@
               </a-spin>
             </span>
           </div>
-          <div class="item">
+          <!-- <div class="item">
             <span class="label">{{ $t('wallet.item.ratio') }} : </span>
             <span class="num">
               <a-spin :loading="loading" :size="16" class="load">
                 {{ cardData.val.ratio ? cardData.val.ratio + '%' : ''}}
               </a-spin>  
             </span>
-          </div>
+          </div> -->
           <div class="item">
             <span class="label">{{ $t('wallet.item.balance') }} : </span>
             <span class="num">
@@ -29,6 +29,10 @@
             </span>
             <a-button type="primary" shape="round" size="small" class="btn">{{$t('wallet.item.btn')}}</a-button>
           </div>
+          <div class="item">
+            <span class="label">{{ $t('login.update.pwd') }} : </span>
+            <a-button type="primary" shape="round" size="small" class="btn upbtn" @click="updatePwd()">{{ $t('login.update.btn') }}</a-button>
+          </div>
         </div>
         <div class="charts">
           <div class="name">{{ $t('wallet.charts.title') }} :</div>
@@ -36,6 +40,51 @@
         </div>
       </div>
     </a-grid-item>
+
+     <!-- 修改密码 -->
+    <a-modal
+      v-model:visible="pwdVisible"
+      :title="$t('login.update.pwd')"
+      class="modal"
+      :mask-closable="false"
+    >
+      <a-form ref="rulePwdform" :model="inputPwd">
+        <a-form-item
+          field="oldPwd"
+          :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+          :validate-trigger="['change', 'blur']"
+          hide-label
+          style="padding-left: 60px;"
+        >
+          <label style="white-space: nowrap; margin-right: 16px;width: 90px;">{{ $t('login.update.label1') }} :</label>
+          <a-input-password
+            v-model="inputPwd.oldPwd"
+            :style="{width:'260px'}"
+            allow-clear
+            autocomplete="new-password"
+          />
+        </a-form-item>
+        <a-form-item
+          field="newPwd"
+          :rules="[{ required: true, message: $t('login.form.password.errMsg') }, { match: /^(?![a-zA-Z]+$)(?!\d+$)(?![^\da-zA-Z\s]+$).{6,12}$/, message: $t('login.update.pwdrule') }]"
+          :validate-trigger="['change', 'blur']"
+          hide-label
+          style="padding-left: 60px;"
+        >
+          <label style="white-space: nowrap; margin-right: 16px;width: 90px;">{{ $t('login.update.label2') }} :</label>
+          <a-input-password
+            v-model="inputPwd.newPwd"
+            :style="{width:'260px'}"
+            allow-clear
+            autocomplete="new-password"
+          />
+        </a-form-item>
+      </a-form>
+      <template #footer>
+        <a-button @click="pwdCancel">{{ $t('login.modal.cancel2') }}</a-button>
+        <a-button :loading="btnDisable" type="primary" @click="okUpdate">{{ $t('login.modal.ok2') }}</a-button>
+      </template>
+    </a-modal>
 
     <!-- 提现 -->
     <a-modal
@@ -80,9 +129,11 @@
   import useLoading from '@/hooks/loading';
   import { useI18n } from 'vue-i18n';
   import { Message } from '@arco-design/web-vue';
+  import useUser from '@/hooks/user';
 
   // import { useRouter } from 'vue-router';
   // const router = useRouter();
+  const { logout } = useUser();
   const { t } = useI18n();
   const { loading, setLoading } = useLoading(true);
   const xAxis = ref<string[]>([]);
@@ -209,7 +260,7 @@
     ruleform.value.validate(async (res: any) => {
       // eslint-disable-next-line eqeqeq
       if( res == undefined ) {
-        btnDisable.value = true;
+        // btnDisable.value = true;
         // 验证密码 
         // ---
 
@@ -308,8 +359,54 @@
   })
 
 
+  // 修改密码
+  const pwdVisible = ref(false);
+  const rulePwdform: any = ref(null);
+  const inputPwd: any = ref({
+    oldPwd: '',
+    newPwd: '',
+  });
+  const pwdCancel = () => {
+    pwdVisible.value = false;
+    inputPwd.value = {
+      oldPwd: '',
+      newPwd: '',
+    }
+  }
+  const updatePwd = () => {
+    pwdVisible.value = true;
+  }
+  const okUpdate = () => {
+    rulePwdform.value.validate(async (res: any) => {
+      // eslint-disable-next-line eqeqeq
+      if( res == undefined ) {
+        btnDisable.value = true;
+        try {
+          await axios.put(`/api/user/updatePassword?email=${email.value}&lastps=${inputPwd.value.oldPwd}&ps=${inputPwd.value.newPwd}`).then((result: any)=>{
+            console.log(result);
+            // eslint-disable-next-line eqeqeq
+            if( result.data.code == 200 && result.data.data ){
+              Message.success(t('login.update.succ'))
+              pwdVisible.value = false;
+              logout();
+            } else {
+              Message.error(t('login.update.err'))
+            }
+            btnDisable.value = false;
+          })
+        } catch (error: any) {
+          Message.error(error.message)
+          btnDisable.value = false;
+        }
+      }
+    })
+  }
+
+
+
   onMounted(() =>{
     address.value = localStorage.getItem('address');
+    email.value = localStorage.getItem('userEm');
     getLevel();
     getBalance();
   })
@@ -354,10 +451,12 @@
               margin-bottom: 4px;
             }
           }
-
           .btn {
             margin-left: 80px;
             border-radius: 4px;
+          }
+          .upbtn{
+            margin-left: 0px;
           }
         }
 
