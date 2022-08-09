@@ -90,9 +90,8 @@
                 :stripe="true"
                 :loading="loading"
                 :pagination="pagination" 
+                @page-change="onPageChange"
               >
-                <!-- :pagination="false" -->
-                <!-- :pagination="pagination" @page-change="onPageChange" -->
                 <template #columns>
                   <a-table-column :title="$t('workplace.table.online')">
                     <template #cell="{ record }">
@@ -282,6 +281,7 @@
   const pagination: any = ref({
     type: 'pagination',
     page: 50,
+    current: 1,
     pageSize: 10,
   });
   // switch code
@@ -295,13 +295,22 @@
       curCode.value = inCode.value.quyuCode;
       btnContent.value = 'workplace.code3';
     // eslint-disable-next-line eqeqeq
-    }else if( curCode.value == inCode.value.quyuCode ){
+    }else{
       curCode.value = inCode.value.userCode;
       btnContent.value = 'workplace.code1';
     }
   }
+
+
+  // pagination
+  const onPageChange = async (current: number) => {
+    pagination.value.current = current;
+  };
+
+
   // switch type
   const changeItem = (type: any) => {
+    pagination.value.current = 1;
     levels.value = type;
     if (type === 4) {
       useDate.value = treeDataL2.value;

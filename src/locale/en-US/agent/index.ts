@@ -15,4 +15,5 @@ export default {
   'agent.addModal.title': 'Add members',
   'agent.addModal.label': 'address',
   'agent.table.action': 'Action',
+  'agent.total': 'Total'
 };

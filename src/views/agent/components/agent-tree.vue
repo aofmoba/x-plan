@@ -41,17 +41,33 @@
             <a-table 
               class="tree"
               column-resizable
+              :scroll="{x: 800,y: 540}"
               :load-more="moretable"
               :data="useDate" 
               :loading="loading"
               :pagination="pagination"
+              @page-change="onPageChange"
             >
               <template #columns>
                   <a-table-column
+                    width="220"
                     :title="$t('workplace.table.email')"
                     data-index="email"
                   />
                   <a-table-column
+                    width="162"
+                    :title="$t('agent.total')"
+                    data-index="total"
+                  >
+                  <template #cell="{ record }">
+                      <div v-if="record.countlevel3">{{ $t('agent.level2') }} : {{ record.countlevel3 }}</div>
+                      <div v-if="record.countlevel2">{{ $t('agent.level3') }} : {{ record.countlevel2 }}</div>
+                      <div v-if="record.countlevel1">{{ $t('agent.level4') }} : {{ record.countlevel1 }}</div>
+                      <div v-if="!record.countlevel3 && !record.countlevel2 && !record.countlevel1">{{ $t('workplace.table.nodata') }}</div>
+                    </template>
+                  </a-table-column>
+                  <a-table-column
+                    width="80"
                     :title="$t('workplace.table.nickname')"
                   >
                     <template #cell="{ record }">
@@ -59,6 +75,7 @@
                     </template>
                   </a-table-column>
                   <a-table-column
+                    width="220"
                     :title="$t('workplace.table.address')"
                   >
                     <template #cell="{ record }">
@@ -66,30 +83,37 @@
                     </template>
                   </a-table-column>
                   <a-table-column
+                    width="70"
                     :title="$t('workplace.table.download')"
                     data-index="download"
                   />
                   <a-table-column
+                    width="130"
                     :title="$t('workplace.table.ontime')"
                     data-index="duration"
                   />
                   <a-table-column
+                    width="130"
                     :title="$t('workplace.table.game')"
                     data-index="gametime"
                   />
                   <a-table-column
+                    width="60"
                     :title="$t('workplace.table.balance')"
                     data-index="balance"
                   />
                   <a-table-column
+                    width="120"
                     :title="$t('workplace.table.date')"
                     data-index="createTime"
                   />
                   <a-table-column
+                    width="100"
                     :title="$t('workplace.table.hashrate')"
                     data-index="hashrate"
                   />
                   <a-table-column
+                    width="120"
                     :title="$t('workplace.table.beiz')"
                   >
                     <template #cell="{ record }">
@@ -97,7 +121,10 @@
                       <icon-pen-fill v-if="!record.loadEdit" class="remarks-edit" @click="editRemarks(record.email, record.level)"/>
                     </template>
                   </a-table-column>
-                  <a-table-column :title="$t('agent.table.action')">
+                  <a-table-column 
+                    width="80"
+                    :title="$t('agent.table.action')"
+                  >
                     <template #cell="{ record }">
                       <div class="actionBtn">
                         <a-button
@@ -212,6 +239,7 @@
   const pagination: any = ref({
     type: 'pagination',
     page: 50,
+    current: 1,
     pageSize: 10,
   });
   const remarkInfo = reactive({
@@ -239,6 +267,9 @@
           nickname: resultL[i].nikename,
           addr: resultL[i].address,
           email: resultL[i].email,
+          countlevel1: Number(resultL[i].level1),
+          countlevel2: Number(resultL[i].level2),
+          countlevel3: Number(resultL[i].level3),
           download: Number(resultL[i].download) ? 'true' : 'false',
           duration:
             resultL[i].onlineTime > 86400
@@ -269,9 +300,23 @@
             const result = res.data.data;
             // eslint-disable-next-line eqeqeq
             if( record.level == 3 ){
+              const children: any = ref([]);
               if( result.level2 ){
+                isLeaf.value = false;
+                const childrenTemp2: any = childPush(result.level2, true);
+                children.value.push(...childrenTemp2)
+              }
+              if( result.level1 ){
                 isLeaf.value = true;
-                const children = childPush(result.level2, true);
+                const childrentemp1: any = childPush(result.level1, true);
+                children.value.push(...childrentemp1)
+              }
+              done(children.value);
+            // eslint-disable-next-line eqeqeq
+            }else if( record.level == 2 ){
+              if( result.level1 ){
+                isLeaf.value = true;
+                const children = childPush(result.level1, true);
                 done(children)
               }else{
                 done([]);
@@ -285,8 +330,15 @@
       })
   }
 
+  // pagination
+  const onPageChange = async (current: number) => {
+    pagination.value.current = current;
+  };
+
+
   // switch type
   const changeItem = (type: any) => {
+    pagination.value.current = 1;
     levels.value = type;
     if (type === 4) {
       useDate.value = treeDataL2.value;
@@ -317,7 +369,7 @@
               treeDataL2.value.push(...children2)
             }
             if( result.level2 ){ // 当前用户下的伙伴代理
-              isLeaf.value = true;
+              // isLeaf.value = true;
               const children3 = childPush(result.level2, false);
               treeDataL3.value.push(...children3)
             }
@@ -512,34 +564,11 @@
     }
   }
   :deep(.arco-table-tr) {
-    // .arco-table-td:nth-child(1) {
+    // .arco-table-td:nth-child(10) {
     //   .arco-table-cell {
-    //     display: block;
-    //     min-width: 160px !important;
-    //     margin: 0 auto;
+    //     width: 120px;
     //   }
     // }
-    .arco-table-td:nth-child(1),.arco-table-td:nth-child(2), .arco-table-td:nth-child(4), .arco-table-td:nth-child(5), .arco-table-td:nth-child(6) {
-      .arco-table-cell {
-        white-space: nowrap;
-      }
-    }
-    .arco-table-td:nth-child(3) {
-      .arco-table-cell {
-        width: 240px;
-        margin: 0 auto;
-      }
-    }
-    .arco-table-td:nth-child(8) {
-      .arco-table-cell {
-        width: 120px;
-      }
-    }
-    .arco-table-td:nth-child(10) {
-      .arco-table-cell {
-        width: 120px;
-      }
-    }
     .remarks-edit {
       float: right;
       color: #165dff;
