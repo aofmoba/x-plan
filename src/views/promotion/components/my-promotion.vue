@@ -22,10 +22,10 @@
                 <div class="label">{{ $t('promotion.quyu.link') }} :</div>
                 <div class="num">
                   <a
-                    :href="`https://cyberpop.online?code=` + codeInfo.quyuCode"
+                    :href="`https://cyberpop.online/mystery?code=` + codeInfo.quyuCode"
                     target="view_window"
                   >
-                    https://cyberpop.online?code={{ codeInfo.quyuCode }}
+                    https://cyberpop.online/mystery?code={{ codeInfo.quyuCode }}
                   </a>
                 </div>
               </div>
@@ -49,10 +49,10 @@
                 <div class="label">{{ $t('promotion.partner.link') }} :</div>
                 <div class="num">
                   <a
-                    :href="`https://cyberpop.online?code=` + codeInfo.partnerCode"
+                    :href="`https://cyberpop.online/mystery?code=` + codeInfo.partnerCode"
                     target="view_window"
                   >
-                    https://cyberpop.online?code={{ codeInfo.partnerCode }}
+                    https://cyberpop.online/mystery?code={{ codeInfo.partnerCode }}
                   </a>
                 </div>
               </div>
@@ -76,10 +76,10 @@
                 <div class="label">{{ $t('promotion.user.link') }} :</div>
                 <div class="num">
                   <a
-                    :href="`https://cyberpop.online?code=` + codeInfo.userCode"
+                    :href="`https://cyberpop.online/mystery?code=` + codeInfo.userCode"
                     target="view_window"
                   >
-                    https://cyberpop.online?code={{ codeInfo.userCode }}
+                    https://cyberpop.online/mystery?code={{ codeInfo.userCode }}
                   </a>
                 </div>
               </div>

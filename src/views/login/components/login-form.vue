@@ -178,9 +178,10 @@
   import axios from 'axios';
   import { storeToRefs } from 'pinia';
   import web3J from '@/utils/web3';
+  // eslint-disable-next-line import/extensions
+  import Web3 from 'web3/dist/web3.min.js'
   import contracts from '@/utils/contracts';
   import bindWallet from '@/components/bind-wallet/index.vue';
-
 
   const router = useRouter();
   const { t } = useI18n();
@@ -205,7 +206,6 @@
   const delLoading: any = ref(false); // 删除注册用户信息放重复点击
   const dobadge: any = ref('-1'); // 标识是否被邀请成为经销商 1:自己注册(校验注册徽章等级)，0:被邀请(不校验徽章)
   const UniqVer: any = ref(0); // 注册地址、邮箱唯一性验证
-  const { Web3 } = window as any
   const web3obj = new Web3((Web3 as any).givenProvider);
   const { ethereum } = window as any; // 获取小狐狸实例
   const userInfo = reactive({

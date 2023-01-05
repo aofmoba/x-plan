@@ -130,6 +130,9 @@
   import { useI18n } from 'vue-i18n';
   import { Message } from '@arco-design/web-vue';
   import useUser from '@/hooks/user';
+  // // eslint-disable-next-line import/extensions
+  // import Web3 from 'web3/dist/web3.min.js'
+
 
   // import { useRouter } from 'vue-router';
   // const router = useRouter();
@@ -251,7 +254,6 @@
   }
 
 
-  // const { Web3 } = window as any
   // const web3obj = new Web3((Web3 as any).givenProvider);
   // const { ethereum } = window as any; // 获取小狐狸实例
   // const toBalanceValue = 7000000000000000000;

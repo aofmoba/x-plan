@@ -101,7 +101,10 @@
   import { Message } from '@arco-design/web-vue';
   import { useI18n } from 'vue-i18n';
   import contracts from '@/utils/contracts';
-  import web3 from '@/utils/web3';
+  import web3J from '@/utils/web3';
+  // eslint-disable-next-line import/extensions
+  import Web3 from 'web3/dist/web3.min.js'
+
   // import useLoading from '@/hooks/loading';
   // import axios from 'axios';
 
@@ -180,53 +183,53 @@
   // 初次查询 fuji
   const circInit = async () => {
     fujiGame.value.push(
-      await web3.totolsuppl(
+      await web3J.totolsuppl(
         contracts.game_Fuji.abi,
         contracts.game_Fuji.address,
         0
       ),
-      await web3.totolsuppl(
+      await web3J.totolsuppl(
         contracts.game_Fuji.abi,
         contracts.game_Fuji.address,
         2
       )
     );
     fujiRole.value.push(
-      await web3.totolsuppl(
+      await web3J.totolsuppl(
         contracts.Cyborg_Fuji.abi,
         contracts.Cyborg_Fuji.address,
         -1
       )
     );
     fujiHead.value.push(
-      await web3.totolsuppl(
+      await web3J.totolsuppl(
         contracts.cyberClub_Fuji.abi,
         contracts.cyberClub_Fuji.address,
         -1
       )
     );
     fujiBadge.value.push(
-      await web3.totolsuppl(
+      await web3J.totolsuppl(
         contracts.nft_fuji.abi,
         contracts.nft_fuji.address,
         0
       ),
-      await web3.totolsuppl(
+      await web3J.totolsuppl(
         contracts.nft_fuji.abi,
         contracts.nft_fuji.address,
         1
       ),
-      await web3.totolsuppl(
+      await web3J.totolsuppl(
         contracts.nft_fuji.abi,
         contracts.nft_fuji.address,
         2
       ),
-      await web3.totolsuppl(
+      await web3J.totolsuppl(
         contracts.nft_fuji.abi,
         contracts.nft_fuji.address,
         3
       ),
-      await web3.totolsuppl(
+      await web3J.totolsuppl(
         contracts.nft_fuji.abi,
         contracts.nft_fuji.address,
         4
@@ -240,31 +243,32 @@
     if (v.value === 'Mumbai') {
       if (circFlagMum.value !== 1) {
         Message.info(t('switch.mumbai'));
-        const a: any = await web3.addChain(80001);
+        const a: any = await web3J.addChain(80001);
         if (a) {
+          nowNetWork.value = v.value;
           Message.success(t('switch.success'));
           setTimeout(async () => {
             mumbaiGame.value.push(
-              await web3.totolsuppl(
+              await web3J.totolsuppl(
                 contracts.arms.abi,
                 contracts.arms.address,
                 0
               ),
-              await web3.totolsuppl(
+              await web3J.totolsuppl(
                 contracts.arms.abi,
                 contracts.arms.address,
                 2
               )
             );
             mumbaiRole.value.push(
-              await web3.totolsuppl(
+              await web3J.totolsuppl(
                 contracts.Cyborg.abi,
                 contracts.Cyborg.address,
                 -1
               )
             );
             mumbaiHead.value.push(
-              await web3.totolsuppl(
+              await web3J.totolsuppl(
                 contracts.cyberClub.abi,
                 contracts.cyberClub.address,
                 -1
@@ -323,8 +327,9 @@
     } else if (v.value === 'Fuji') {
       if (circFlaFuji.value !== 1) {
         Message.info(t('switch.fuji'));
-        const a: any = await web3.addChain(43113);
+        const a: any = await web3J.addChain(43113);
         if (a) {
+          nowNetWork.value = v.value;
           Message.success(t('switch.success'));
           setTimeout(async () => {
             circInit();
@@ -332,6 +337,8 @@
         } else {
           Message.error(t('switch.error'));
         }
+      }else{
+        nowNetWork.value = v.value;
       }
       contractDate.value = [];
       contractDate.value.push(
@@ -377,18 +384,16 @@
         }
       );
     }
-    nowNetWork.value = v.value;
   };
 
   const getMyInvit = async () => {
-    const { Web3 } = window as any;
     const web3obj = new Web3((Web3 as any).givenProvider);
     await web3obj.eth.net.getId().then(async (chainId: any) => {
       console.log(chainId);
       // eslint-disable-next-line eqeqeq
       if (chainId != 43113) {
         Message.info(t('switch.fuji'));
-        const a: any = await web3.addChain(43113);
+        const a: any = await web3J.addChain(43113);
         if (a) {
           Message.success(t('switch.success'));
           circInit();

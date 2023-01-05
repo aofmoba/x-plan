@@ -10,3 +10,5 @@ declare module '*.vue' {
 interface ImportMetaEnv {
   readonly VITE_API_BASE_URL: string;
 }
+
+declare module 'web3/dist/web3.min.js'

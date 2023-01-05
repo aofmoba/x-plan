@@ -51,13 +51,14 @@
   import axios from 'axios';
   import { Message } from '@arco-design/web-vue';
   import { useI18n } from 'vue-i18n';
+  // eslint-disable-next-line import/extensions
+  import Web3 from 'web3/dist/web3.min.js'
 
   const { t } = useI18n();
   const router = useRouter();
   const comStore = staticData();
   const { showbind } = storeToRefs(comStore);
   const address: any = ref('');
-  const { Web3 } = window as any
   const web3obj = new Web3((Web3 as any).givenProvider);
   const { ethereum } = window as any; // 获取小狐狸实例
   const loading: any = ref(false);
