@@ -14,5 +14,6 @@ export default {
   'agent.addModal.title': '新增成员',
   'agent.addModal.label': '地址',
   'agent.table.action': '操作',
-  'agent.total': '合计'
+  'agent.total': '合计',
+  'agent.upgrade': '去升级',
 };

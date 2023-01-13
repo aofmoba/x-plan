@@ -19,26 +19,57 @@
               <a-button
                 :class="levels == 9 ? 'active' : ''"
                 @click="changeItem(9)"
-                >{{ $t('agent.level5') }}</a-button
-              >
+                >{{ $t('agent.level5') }}</a-button>
               <a-button
-                v-if="level == 4"
+                v-if="level >= 2"
                 :class="levels == 4 ? 'active' : ''"
                 @click="changeItem(4)"
-                >{{ $t('agent.level2') }}</a-button
-              >
+                >{{ $t('agent.level2') }}-1</a-button>
+              <a-button
+                v-if="level >= 2"
+                :class="levels == '4-2' ? 'active' : ''"
+                @click="changeItem('4-2')"
+                >{{ $t('agent.level2') }}-2</a-button>
+              <a-button
+                v-if="level >= 2"
+                :class="levels == '4-3' ? 'active' : ''"
+                @click="changeItem('4-3')"
+                >{{ $t('agent.level2') }}-3</a-button>
+              <a-button
+                v-if="level >= 2"
+                :class="levels == '4-4' ? 'active' : ''"
+                @click="changeItem('4-4')"
+                >{{ $t('agent.level2') }}-4</a-button>
+              <a-button
+                v-if="level >= 2"
+                :class="levels == '4-5' ? 'active' : ''"
+                @click="changeItem('4-5')"
+                >{{ $t('agent.level2') }}-5</a-button>
+              <a-button
+                v-if="level >= 2"
+                :class="levels == '4-6' ? 'active' : ''"
+                @click="changeItem('4-6')"
+                >{{ $t('agent.level2') }}-6</a-button>
+              <a-button
+                v-if="level >= 2"
+                :class="levels == '4-7' ? 'active' : ''"
+                @click="changeItem('4-7')"
+                >{{ $t('agent.level2') }}-7</a-button>
+              <a-button
+                v-if="level >= 2"
+                :class="levels == '4-8' ? 'active' : ''"
+                @click="changeItem('4-8')"
+                >{{ $t('agent.level2') }}-8</a-button>
               <a-button
                 v-if="level >= 3"
                 :class="levels == 3 ? 'active' : ''"
                 @click="changeItem(3)"
-                >{{ $t('agent.level3') }}</a-button
-              >
+                >{{ $t('agent.level3') }}</a-button>
               <a-button
                 v-if="level >= 2"
                 :class="levels == 2 ? 'active' : ''"
                 @click="changeItem(2)"
-                >{{ $t('agent.level4') }}</a-button
-              >
+                >{{ $t('agent.level4') }}</a-button>
             </div>
           </div>
           <a-card
@@ -48,7 +79,8 @@
             <template #title>
               <div class="me">{{ $t('workplace.me') }} : {{ address }}</div>
               <div class="my-card-title">
-                <a-button type="outline" size="mini" style="height: 18px; line-height: 16px">{{ $t(userLevel) }}</a-button>
+                <a-button type="outline" size="mini" style="min-width: 72px;height: 18px; line-height: 16px">{{ $t(userLevel) }}</a-button>
+                <a-button type="primary" size="mini" style="min-width: 72px;height: 18px; line-height: 16px; margin-left: 12px;">{{ $t('agent.upgrade') }}</a-button>
                 <!-- <div class="useremail">
                   <span v-show="!switchInput2">{{ editInfo.oldEmail }}</span>
                   <input v-show="switchInput2" v-model="editInfo.inputEmail" class="emailInput" type="text" :placeholder="editInfo.oldEmail" @blur="editName(2)">
@@ -234,16 +266,14 @@
   import useLoading from '@/hooks/loading';
   import { computedDur, vertDate } from '@/utils/computed'
   import { Message } from '@arco-design/web-vue';
-  // import { useRouter } from 'vue-router';
 
-  // const router = useRouter();
   const { t } = useI18n();
   const { loading, setLoading } = useLoading(true);
   const address: any = ref('');
   const email: any = ref('');
   const inCode: any = ref({}); // 最多存放三个邀请码
   const curCode: any = ref('');
-  const levels = ref(4);
+  const levels: any = ref(4);
   const useDate = ref([]);
   const myUseDate: any = ref([]);
   const treeDataL2: any = ref([]);
@@ -376,7 +406,6 @@
       axios
         .get(`/api/user/getdata?email=${email.value}`)
         .then((res: any) => {
-          console.log(res);
           if (res.data.code === 200) {
             const result = res.data.data;
             inCode.value.quyuCode = result.OneClass ? result.OneClass : '';
@@ -455,11 +484,10 @@
     selectVal.value = '';
   }
   const handleSelect = (v: any) => {
-    console.log(v)
     selectVal.value = v;
   };
   const disMember = () => {
-    console.log(disAddress.value, selectVal.value);
+    // console.log(disAddress.value, selectVal.value);
   }
   // edit remarks
   const editRemarks = (toE: any, toL: any) => {
@@ -486,21 +514,6 @@
         remarkInfo.val.remarks = ''
       })
   };
-
-
-  // get nickname
-  // const getNickname =() => {
-  //   axios
-  //     .get(`/api/user/doLogin?address=${address.value}`)
-  //       .then((res: any) => {
-  //         if ( res.data.code === 200 && res.data.data[1] ) {
-  //           editInfo.value.oldName = res.data.data[0].nikename;
-  //           editInfo.value.oldEmail = res.data.data[0].email;
-  //         }
-  //       })
-  // } 
-  // edit nickname
-
   const editName = (type: any) => {
     if( type === 1 ){ // 修改昵称
       if( !switchInput.value ){
@@ -554,16 +567,9 @@
   }
 
 
-  // const onPageChange = (current: number) => {
-  //   pagination.value.startPage = current;
-  //   getMyInvit();
-  // };
-
-
   // 获取算力
   const getHashrate = (editNameFlag?: any) => {
-    axios
-      .get(`/api/user/getuser?address=${address.value}`)
+    axios.get(`/api/user/getuser?address=${address.value}`)
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data ) {
           editInfo.value.oldName = res.data.data.nikename;
@@ -585,7 +591,6 @@
     level.value = localStorage.getItem('userLl') ? localStorage.getItem('userLl') : '1';
     getMyInvit();
     getHashrate();
-    // getNickname();
   });
 
   onActivated(() => {

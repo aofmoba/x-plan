@@ -235,7 +235,7 @@
       return
     }
     const len = result.length;
-    console.log(result);
+    // console.log(result);
     (function loop(i){
         // eslint-disable-next-line eqeqeq
         if(result[i] == 0) { // 为了减少不必要的请求
@@ -373,6 +373,7 @@
               // eslint-disable-next-line eqeqeq
               if(chainId != 43113) {
                 const a: any = await web3J.addChain(43113);
+                console.log(a);
                 if (a) {
                   getNft();
                 } else {
@@ -390,7 +391,7 @@
   // into workplace
   const goWorkplace = async () => {
     await dologin().then((res: any)=>{
-      console.log(res);
+      // console.log(res);
       logDisable.value = false;
       regDisable.value = false;
       if ( res.data.code === 200 && res.data.data[1] ) {
@@ -457,7 +458,6 @@
         duration: 1500
       })
     }
-
   };
 
   // 删除注册用户信息弹框 确定 axios
@@ -499,7 +499,7 @@
         `/api/business/${url}?address=${userInfo.address}&nickname=${addForm.val.name}&email=${addForm.val.email}&level=${type}`
       )
       .then((res: any) => {
-        console.log(res);
+        // console.log(res);
         if ( res.data.code === 200 && res.data.data.id) {
           addVisible.value = false;
           addForm.val = {
@@ -594,7 +594,7 @@
   }
   const exWallet = () => {  // exchange wallet methods
     choose.value = true;
-    console.log( isReady.value )
+    // console.log( isReady.value )
     // eslint-disable-next-line eqeqeq
     if( isReady.value == 0 ){
       connect();
@@ -612,7 +612,7 @@
         console.log('success');
         try {
             await axios.post(`/api/user/doLoginEmail?email=${emailInfo.email}&password=${emailInfo.password}`).then((result: any)=>{
-              console.log(result);
+              // console.log(result);
               pwdDisable.value = false;
               if ( result.data.code === 200 && result.data.data[1] ) {
                 localStorage.setItem('isLogin', 'true');

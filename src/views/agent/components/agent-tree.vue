@@ -295,7 +295,6 @@
     axios
       .get(`/api/user/getdata?email=${record.email}`)
       .then((res: any) => {
-        console.log(res);
         if (res.data.code === 200) {
             const result = res.data.data;
             // eslint-disable-next-line eqeqeq

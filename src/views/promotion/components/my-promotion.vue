@@ -150,8 +150,8 @@
           codeInfo.value.partnerCode = res.data.data.twoClass ? res.data.data.twoClass : ''
           codeInfo.value.quyuCode = res.data.data.OneClass ? res.data.data.OneClass : ''
         }
-      });
-  };
+      })
+  }
 
   const getBadgeImg = () => {
     if( localStorage.getItem('bImg') ){
@@ -159,7 +159,7 @@
     }else{
       tempDate.value = [];
     }
-    console.log(tempDate.value);
+    // console.log(tempDate.value);
     for( let i=0; i< tempDate.value.length; i+=1 ){
       // eslint-disable-next-line eqeqeq
       if( tempDate.value[i].id == 1 || tempDate.value[i].id == 2 ){

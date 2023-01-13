@@ -52,14 +52,14 @@ const addChain = (chainId: any) => {
       params: [
         {
           chainId: web3.utils.numberToHex(43113),
-          chainName: 'AVAX',
+          chainName: 'Avalanche Fuji Testnet',
           nativeCurrency: {
             name: 'AVAX',
             symbol: 'AVAX', // 2-6 characters long
             decimals: 18,
           },
           rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
-          blockExplorerUrls: ['https://testnet.snowtrace.io/'],
+          blockExplorerUrls: ['https://testnet.snowtrace.io'],
         },
       ],
     };
