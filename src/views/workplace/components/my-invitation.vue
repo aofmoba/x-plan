@@ -21,45 +21,10 @@
                 @click="changeItem(9)"
                 >{{ $t('agent.level5') }}</a-button>
               <a-button
-                v-if="level >= 2"
+                v-if="level >= 3 && subLevel < 8"
                 :class="levels == 4 ? 'active' : ''"
                 @click="changeItem(4)"
-                >{{ $t('agent.level2') }}-1</a-button>
-              <a-button
-                v-if="level >= 2"
-                :class="levels == '4-2' ? 'active' : ''"
-                @click="changeItem('4-2')"
-                >{{ $t('agent.level2') }}-2</a-button>
-              <a-button
-                v-if="level >= 2"
-                :class="levels == '4-3' ? 'active' : ''"
-                @click="changeItem('4-3')"
-                >{{ $t('agent.level2') }}-3</a-button>
-              <a-button
-                v-if="level >= 2"
-                :class="levels == '4-4' ? 'active' : ''"
-                @click="changeItem('4-4')"
-                >{{ $t('agent.level2') }}-4</a-button>
-              <a-button
-                v-if="level >= 2"
-                :class="levels == '4-5' ? 'active' : ''"
-                @click="changeItem('4-5')"
-                >{{ $t('agent.level2') }}-5</a-button>
-              <a-button
-                v-if="level >= 2"
-                :class="levels == '4-6' ? 'active' : ''"
-                @click="changeItem('4-6')"
-                >{{ $t('agent.level2') }}-6</a-button>
-              <a-button
-                v-if="level >= 2"
-                :class="levels == '4-7' ? 'active' : ''"
-                @click="changeItem('4-7')"
-                >{{ $t('agent.level2') }}-7</a-button>
-              <a-button
-                v-if="level >= 2"
-                :class="levels == '4-8' ? 'active' : ''"
-                @click="changeItem('4-8')"
-                >{{ $t('agent.level2') }}-8</a-button>
+                >{{ $t('agent.level2') + '-'+ (subLevel+1) }}</a-button>
               <a-button
                 v-if="level >= 3"
                 :class="levels == 3 ? 'active' : ''"
@@ -79,7 +44,7 @@
             <template #title>
               <div class="me">{{ $t('workplace.me') }} : {{ address }}</div>
               <div class="my-card-title">
-                <a-button type="outline" size="mini" style="min-width: 72px;height: 18px; line-height: 16px">{{ $t(userLevel) }}</a-button>
+                <a-button type="outline" size="mini" style="min-width: 72px;height: 18px; line-height: 16px">{{ $t(userLevel) + (subLevel >= 1 ? '-'+subLevel : '') }}</a-button>
                 <a-button type="primary" size="mini" style="min-width: 72px;height: 18px; line-height: 16px; margin-left: 12px;">{{ $t('agent.upgrade') }}</a-button>
                 <!-- <div class="useremail">
                   <span v-show="!switchInput2">{{ editInfo.oldEmail }}</span>
@@ -95,9 +60,9 @@
                 </div>
                 <div class="link">
                   <a
-                    :href="`https://cyberpop.online?code=` + curCode"
+                    :href="`https://manager.cyberpop.online?code=` + curCode"
                     target="view_window"
-                    >https://cyberpop.online?code={{ curCode }}</a
+                    >https://manager.cyberpop.online?code={{ curCode }}</a
                   >
                 </div>
               </div>
@@ -279,8 +244,9 @@
   const treeDataL2: any = ref([]);
   const treeDataL3: any = ref([]);
   const treeDataL4: any = ref([]);
-  const btnContent: any = ref('workplace.code1')
+  const btnContent: any = ref('workplace.code2')
   const level: any = ref('1')
+  const subLevel: any = ref(0)
   const userLevel: any = ref('workplace.level')
   const disVisible = ref(false);
   const editVisible = ref(false);
@@ -317,7 +283,7 @@
   // switch code
   const changeCode = () =>{
     // eslint-disable-next-line eqeqeq
-    if( inCode.value.partnerCode && ( curCode.value == inCode.value.userCode ) ){
+    if( inCode.value.partnerCode && ( curCode.value == inCode.value.quyuCode ) ){
       curCode.value = inCode.value.partnerCode;
       btnContent.value = 'workplace.code2';
     // eslint-disable-next-line eqeqeq
@@ -325,9 +291,6 @@
       curCode.value = inCode.value.quyuCode;
       btnContent.value = 'workplace.code3';
     // eslint-disable-next-line eqeqeq
-    }else{
-      curCode.value = inCode.value.userCode;
-      btnContent.value = 'workplace.code1';
     }
   }
 
@@ -411,7 +374,7 @@
             inCode.value.quyuCode = result.OneClass ? result.OneClass : '';
             inCode.value.partnerCode = result.twoClass ? result.twoClass : '';
             inCode.value.userCode = result.threeClass;
-            curCode.value = result.threeClass;
+            curCode.value = result.twoClass;
             if( result.level3 ){
               totalInfo.value.level3count = result.level3.length;
               const children2 = childPush( result.level3 );
@@ -445,17 +408,22 @@
             // eslint-disable-next-line eqeqeq
             } else if( toL == undefined ){
               // eslint-disable-next-line eqeqeq
-              if( level.value == '4'){
+              if( level.value == 4 ){
                 useDate.value = treeDataL2.value;
                 levels.value = 4;
                 userLevel.value = 'agent.level1'
               // eslint-disable-next-line eqeqeq
-              }else if( level.value == '3' ){
+              }else if( level.value == 3 && subLevel.value < 8 ){ // 1-7区域
+                useDate.value = treeDataL2.value;
+                levels.value = 4;
+                userLevel.value = 'agent.level2'
+              // eslint-disable-next-line eqeqeq
+              }else if( level.value == 3 ){ // 8区域
                 useDate.value = treeDataL3.value;
                 levels.value = 3;
                 userLevel.value = 'agent.level2'
               // eslint-disable-next-line eqeqeq
-              }else if( level.value == '2' ){
+              }else if( level.value == 3 ){
                 useDate.value = treeDataL4.value;
                 levels.value = 2;
                 userLevel.value = 'agent.level3'
@@ -574,6 +542,7 @@
         if ( res.data.code === 200 && res.data.data ) {
           editInfo.value.oldName = res.data.data.nikename;
           // editInfo.value.oldEmail = res.data.data.email;
+          subLevel.value = Number(res.data.data.SubLevel)
           const tempArr = []
           tempArr.push(res.data.data)
           myUseDate.value = childPush( tempArr,editNameFlag); // 当修改昵称时，children不进行总数、算力计算
@@ -589,14 +558,14 @@
     address.value = localStorage.getItem('address');
     email.value = localStorage.getItem('userEm');
     level.value = localStorage.getItem('userLl') ? localStorage.getItem('userLl') : '1';
-    getMyInvit();
     getHashrate();
+    getMyInvit();
   });
 
   onActivated(() => {
     if( remarksActive.value ){
-      getMyInvit(); // 进入页面局部刷新数据
       getHashrate();
+      getMyInvit(); // 进入页面局部刷新数据
     }
   })
 

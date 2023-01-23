@@ -6,10 +6,10 @@
         <a-space class="btnGroup">
           <div>
             <a-button
-              v-if="level == 4"
+              v-if="level >= 3 && subLevel < 8"
               :class="levels == 4 ? 'active' : ''"
               @click="changeItem(4)"
-              >{{ $t('agent.level2') }}</a-button
+              >{{ $t('agent.level2')+ ( subLevel ? '('+ (subLevel+1)+' Level)' : '' ) }}</a-button
             >
             <a-button
               v-if="level >= 3"
@@ -60,7 +60,7 @@
                     data-index="total"
                   >
                   <template #cell="{ record }">
-                      <div v-if="record.countlevel3">{{ $t('agent.level2') }} : {{ record.countlevel3 }}</div>
+                      <div v-if="record.countlevel3">{{ $t('agent.level2') + '('+(Number(record.subLevel)+1)+'Level)' }} : {{ record.countlevel3 }}</div>
                       <div v-if="record.countlevel2">{{ $t('agent.level3') }} : {{ record.countlevel2 }}</div>
                       <div v-if="record.countlevel1">{{ $t('agent.level4') }} : {{ record.countlevel1 }}</div>
                       <div v-if="!record.countlevel3 && !record.countlevel2 && !record.countlevel1">{{ $t('workplace.table.nodata') }}</div>
@@ -121,7 +121,7 @@
                       <icon-pen-fill v-if="!record.loadEdit" class="remarks-edit" @click="editRemarks(record.email, record.level)"/>
                     </template>
                   </a-table-column>
-                  <a-table-column 
+                  <!-- <a-table-column 
                     width="80"
                     :title="$t('agent.table.action')"
                   >
@@ -139,7 +139,7 @@
                         </a-button>
                       </div>
                     </template>
-                  </a-table-column>
+                  </a-table-column> -->
                 </template>
             </a-table>
           </a-spin>
@@ -283,6 +283,7 @@
           hashrate: resultL[i].hashrate,
           remarks: resultL[i].remarks ? resultL[i].remarks : 'Cyber user',
           level: resultL[i].level,
+          subLevel: resultL[i].SubLevel,
           isLeaf: isLeaf.value,
           loadEdit: loade,
         });
@@ -300,6 +301,11 @@
             // eslint-disable-next-line eqeqeq
             if( record.level == 3 ){
               const children: any = ref([]);
+              if( result.level3 ){
+                isLeaf.value = false;
+                const childrenTemp3: any = childPush(result.level3, true);
+                children.value.push(...childrenTemp3)
+              }
               if( result.level2 ){
                 isLeaf.value = false;
                 const childrenTemp2: any = childPush(result.level2, true);
@@ -348,6 +354,18 @@
     }
   };
 
+  // get userinfo - subLevel
+  const subLevel: any = ref(0)
+  const getUserInfo = () => {
+    axios.get(`/api/user/getuser?address=${address.value}`).then((res: any) => {
+      if ( res.data.code === 200 && res.data.data ) {
+        subLevel.value = Number(res.data.data.SubLevel)
+        // email.value = res.data.data.email
+        // level.value = res.data.data.level
+      }
+    })
+  }
+
   // init data
   const fetchData = async (toL?: any) => {
     useDate.value = [];
@@ -391,23 +409,25 @@
             // eslint-disable-next-line eqeqeq
             } else if( toL == undefined ){
               // eslint-disable-next-line eqeqeq
-              if( level.value == '4'){
+              if( level.value == 4){
                 useDate.value = treeDataL2.value;
                 levels.value = 4;
               // eslint-disable-next-line eqeqeq
-              }else if( level.value == '3' ){
+              }else if( level.value == 3 && subLevel.value < 8 ){  // 1-7区域
+                useDate.value = treeDataL2.value;
+                levels.value = 4;
+              // eslint-disable-next-line eqeqeq
+              }else if( level.value == 3 ){ // 8区域
                 useDate.value = treeDataL3.value;
                 levels.value = 3;
               // eslint-disable-next-line eqeqeq
-              }else if( level.value == '2' ){
+              }else if( level.value == 2 ){
                 useDate.value = treeDataL4.value;
                 levels.value = 2;
               }else{
                 levels.value = 1;
               }
             }
-
-
           }
         })
         .finally(() => {
@@ -501,6 +521,7 @@
     address.value = localStorage.getItem('address');
     email.value = localStorage.getItem('userEm');
     level.value = localStorage.getItem('userLl') ? localStorage.getItem('userLl') : '1';
+    getUserInfo()
     fetchData();
   });
 

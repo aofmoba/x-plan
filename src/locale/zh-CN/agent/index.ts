@@ -16,4 +16,8 @@ export default {
   'agent.table.action': '操作',
   'agent.total': '合计',
   'agent.upgrade': '去升级',
+  'agent.register': '注册',
+  'agent.register.err1': '邮箱已被注册',
+  'agent.register.err2': '邀请码错误',
+  'agent.register.err3': '邮箱错误',
 };

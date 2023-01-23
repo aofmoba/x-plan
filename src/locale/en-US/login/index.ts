@@ -12,7 +12,7 @@ export default {
   'login.form.address.placeholder': 'address',
   'login.form.rememberPassword': 'Remember password',
   'login.form.forgetPassword': 'Forgot password',
-  'login.form.login': 'login',
+  'login.form.login': 'Login',
   'login.form.connect': 'CONNECT WALLET',
   'login.form.reg.btn1': 'Register as a partner dealer',
   'login.form.reg.btn2': 'Register as a regional distributor',
@@ -66,4 +66,8 @@ export default {
   'login.update.succ': 'Password modified successfully',
   'login.update.err': 'Password modified failed',
   'login.update.pwdrule': 'Two types of numbers, letters and special characters, with 6-12 digits',
+  'login.connect.tips': 'Welcome to the dealer system!',
+  'login.register.code': 'Invitation code',
+  'login.register.tips': 'Congratulations on being invited to register as a dealer, click to register below!',
+  'login.no.tips': 'Sorry, you have not been invited to become a dealer!',
 };

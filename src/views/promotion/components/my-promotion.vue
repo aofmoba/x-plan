@@ -4,14 +4,11 @@
       <div class="title">{{ $t('promotion.title') }}</div>
       <div class="content">
         <div class="card">
-          <div v-if="codeInfo.quyuCode" class="item">
+          <div v-if="codeInfo.quyuCode && userData.level == 4" class="item">
             <div class="identity"><span>{{ $t('promotion.national') }}</span></div>
-            <div v-if="tempDate.length>0" class="badge">
-              <img :src="badgeInfo.quyuCodeImg" alt="">
-            </div>
             <div class="info">
               <div class="subitem">
-                <div class="label">{{ $t('promotion.quyu.code') }} :</div>
+                <div class="label">{{ $t('promotion.quyu.code') }} (1 Level):</div>
                 <div class="num">
                   <a-spin :loading="loading" class="load">
                     {{codeInfo.quyuCode}}
@@ -19,24 +16,22 @@
                 </div>
               </div>
               <div class="subitem">
-                <div class="label">{{ $t('promotion.quyu.link') }} :</div>
+                <div class="label">{{ $t('promotion.quyu.link') }} (1 Level):</div>
                 <div class="num">
                   <a
-                    :href="`https://cyberpop.online/mystery?code=` + codeInfo.quyuCode"
+                    :href="`https://manager.cyberpop.online?code=` + codeInfo.quyuCode"
                     target="view_window"
                   >
-                    https://cyberpop.online/mystery?code={{ codeInfo.quyuCode }}
+                  https://manager.cyberpop.online?code={{ codeInfo.quyuCode }}
                   </a>
                 </div>
               </div>
             </div>
           </div>
-          <div v-if="codeInfo.partnerCode" class="item">
+          <div v-if="(codeInfo.quyuCode || codeInfo.partnerCode) && userData.level >= 3" class="item">
             <div class="identity"><span>{{ $t('promotion.regional') }}</span></div>
-            <div v-if="tempDate.length>0" class="badge">
-              <img :src="badgeInfo.partnerCodeImg" alt="">
-            </div>
-            <div class="info">
+            <!-- 全国代理的伙伴邀请码、8级区域的伙伴邀请码 -->
+            <div v-if="Number(userData.SubLevel) < 1 || Number(userData.SubLevel) > 7" class="info">
               <div class="subitem">
                 <div class="label">{{ $t('promotion.partner.code') }} :</div>
                 <div class="num">
@@ -49,20 +44,58 @@
                 <div class="label">{{ $t('promotion.partner.link') }} :</div>
                 <div class="num">
                   <a
-                    :href="`https://cyberpop.online/mystery?code=` + codeInfo.partnerCode"
+                    :href="`https://manager.cyberpop.online?code=` + codeInfo.partnerCode"
                     target="view_window"
                   >
-                    https://cyberpop.online/mystery?code={{ codeInfo.partnerCode }}
+                    https://manager.cyberpop.online?code={{ codeInfo.partnerCode }}
+                  </a>
+                </div>
+              </div>
+            </div>
+            <!-- 1-7级代理的区域邀请码，伙伴邀请码 -->
+            <div v-else class="info">
+              <div class="subitem">
+                <div v-if="Number(userData.SubLevel) >= 1 && Number(userData.SubLevel) < 8" class="label">{{ $t('promotion.quyu.code') + '(' + (Number(userData.SubLevel) + 1)+' Level)' }}:</div>
+                <div class="num">
+                  <a-spin :loading="loading" class="load">
+                    {{codeInfo.quyuCode}}
+                  </a-spin>
+                </div>
+              </div>
+              <div class="subitem">
+                <div v-if="Number(userData.SubLevel) >= 1 && Number(userData.SubLevel) < 8" class="label">{{ $t('promotion.quyu.link') + '(' + (Number(userData.SubLevel) + 1)+' Level)' }}:</div>
+                <div class="num">
+                  <a
+                    :href="`https://manager.cyberpop.online?code=` + codeInfo.quyuCode"
+                    target="view_window"
+                  >
+                    https://manager.cyberpop.online?code={{ codeInfo.quyuCode }}
+                  </a>
+                </div>
+              </div>
+              <div class="subitem">
+                <div class="label">{{ $t('promotion.partner.code') }} :</div>
+                <div class="num">
+                  <a-spin :loading="loading" class="load">
+                    {{codeInfo.partnerCode}}
+                  </a-spin>
+                </div>
+              </div>
+              <div class="subitem">
+                <div class="label">{{ $t('promotion.partner.link') }} :</div>
+                <div class="num">
+                  <a
+                    :href="`https://manager.cyberpop.online?code=` + codeInfo.partnerCode"
+                    target="view_window"
+                  >
+                    https://manager.cyberpop.online?code={{ codeInfo.partnerCode }}
                   </a>
                 </div>
               </div>
             </div>
           </div>
-          <div v-if="codeInfo.userCode" class="item">
+          <!-- <div v-if="codeInfo.userCode" class="item">
             <div class="identity"><span>{{ $t('promotion.partner') }}</span></div>
-            <div v-if="tempDate.length>0" class="badge">
-              <img :src="badgeInfo.userCodeImg" alt="">
-            </div>
             <div class="info">
               <div class="subitem">
                 <div class="label">{{ $t('promotion.user.code') }} :</div>
@@ -76,31 +109,31 @@
                 <div class="label">{{ $t('promotion.user.link') }} :</div>
                 <div class="num">
                   <a
-                    :href="`https://cyberpop.online/mystery?code=` + codeInfo.userCode"
+                    :href="`https://manager.cyberpop.online?code=` + codeInfo.userCode"
                     target="view_window"
                   >
-                    https://cyberpop.online/mystery?code={{ codeInfo.userCode }}
+                    https://manager.cyberpop.online?code={{ codeInfo.userCode }}
                   </a>
                 </div>
               </div>
             </div>
-          </div>
-          <div v-if="codeInfo.userCode" class="item">
+          </div> -->
+          <!-- <div v-if="codeInfo.userCode" class="item">
             <div class="info">
               <div class="subitem">
                 <div class="label">{{ $t('promotion.down.link') }} :</div>
                 <div class="num">
                   <a
-                    :href="`https://cyberpop.online/download?code=` + codeInfo.userCode"
+                    :href="`https://manager.cyberpop.online?code=` + codeInfo.userCode"
                     target="view_window"
                   >
-                    https://cyberpop.online/download?code={{ codeInfo.userCode }}
+                    https://manager.cyberpop.online?code={{ codeInfo.userCode }}
                   </a>
                 </div>
               </div>
             </div>
-          </div>
-          <div v-if="!codeInfo.userCode && !codeInfo.partnerCode && !codeInfo.quyuCode && !loading" class="nothing">{{ $t('promotion.nothing') }}</div>
+          </div> -->
+          <div v-if="!codeInfo.partnerCode && !codeInfo.quyuCode && !loading" class="nothing">{{ $t('promotion.nothing') }}</div>
           <!-- loading -->
           <a-skeleton v-if="!codeInfo.userCode && !codeInfo.partnerCode && !codeInfo.quyuCode" :animation="true" :loading="loading" style="padding: 30px;">
             <a-space direction="vertical" :style="{width:'100%'}" size="large">
@@ -123,25 +156,27 @@
   import { storeToRefs } from 'pinia';
 
   const comStore = staticData();
-  const { badgeData } = storeToRefs(comStore);
   const { t } = useI18n();
-  const tempDate: any = ref([])
   const email: any = ref('');
+  const address: any = ref('')
+  const userData: any = ref({})
   const codeInfo: any = ref({
     userCode: '',
     partnerCode: '',
     quyuCode: ''
   });
-  const badgeInfo: any = ref({
-    userCodeImg: '',
-    partnerCodeImg: '',
-    quyuCodeImg: ''
-  });
   const { loading, setLoading } = useLoading(true);
 
-  const getCode = () => {
+  const getCode = async () => {
     setLoading(true);
-    axios
+    await axios
+      .get(`/api/user/getuser?address=${address.value}`)
+      .then((res: any) => {
+        if (res.data.code === 200) {
+          userData.value = res.data.data
+        }
+      })
+    await axios
       .get(`/api/user/getdata?email=${email.value}`)
       .then((res: any) => {
         if (res.data.code === 200) {
@@ -153,32 +188,11 @@
       })
   }
 
-  const getBadgeImg = () => {
-    if( localStorage.getItem('bImg') ){
-      tempDate.value = JSON.parse(localStorage.getItem('bImg') || '')
-    }else{
-      tempDate.value = [];
-    }
-    // console.log(tempDate.value);
-    for( let i=0; i< tempDate.value.length; i+=1 ){
-      // eslint-disable-next-line eqeqeq
-      if( tempDate.value[i].id == 1 || tempDate.value[i].id == 2 ){
-        badgeInfo.value.userCodeImg = tempDate.value[i].data.image;
-      // eslint-disable-next-line eqeqeq
-      } else if( tempDate.value[i].id == 3 ){
-        badgeInfo.value.partnerCodeImg = tempDate.value[i].data.image;
-      // eslint-disable-next-line eqeqeq
-      }else if( tempDate.value[i].id == 4 ){
-        badgeInfo.value.quyuCodeImg = tempDate.value[i].data.image;
-      }
-    }
-  }
 
   onMounted(()=>{
     email.value = localStorage.getItem('userEm');
-    getBadgeImg();
+    address.value = localStorage.getItem('address');
     getCode();
-
   })
 </script>
 
@@ -228,11 +242,13 @@
             }
           }
           .info {
+            display: flex;
+            flex-direction: column;
             width: 100%;
             .subitem {
+              flex: 1;
               display: flex;
               width: 100%;
-              height: 50%;
               padding: 20px 20px;
               .label {
                 padding-right: 18px;
@@ -270,7 +286,7 @@
           border-top: 1px solid var(--color-neutral-3);
         }
         .nothing {
-          padding: 40px 30px 0px;
+          padding: 40px 30px;
           text-align: center;
           color: var(--color-text-1);
         }

@@ -17,4 +17,8 @@ export default {
   'agent.table.action': 'Action',
   'agent.total': 'Total',
   'agent.upgrade': 'To upgrade',
+  'agent.register': 'Register',
+  'agent.register.err1': 'Email has been registered',
+  'agent.register.err2': 'Invitation Code Error',
+  'agent.register.err3': 'Email Error',
 };
