@@ -9,7 +9,8 @@ export default {
   'promotion.quyu.link': '我的区域推广链接',
   'promotion.down.link': '我的下载推广链接',
   'promotion.nothing': '呀, 空空如也。',
-  'promotion.national': '全国代理特权',
+  'promotion.national': '发展代理特权',
   'promotion.regional': '区域代理特权',
   'promotion.partner': '伙伴代理特权',
+  'promotion.purchase.link': '购买链接',
 };

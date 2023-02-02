@@ -28,10 +28,10 @@
               </div>
             </div>
           </div>
-          <div v-if="(codeInfo.quyuCode || codeInfo.partnerCode) && userData.level >= 3" class="item">
-            <div class="identity"><span>{{ $t('promotion.regional') }}</span></div>
+          <div v-if="(codeInfo.quyuCode || codeInfo.partnerCode) && userData.level >= 3 && Number(userData.SubLevel) >= 1 && Number(userData.SubLevel) < 8" class="item">
+            <div class="identity"><span>{{ $t('promotion.national') }}</span></div>
             <!-- 全国代理的伙伴邀请码、8级区域的伙伴邀请码 -->
-            <div v-if="Number(userData.SubLevel) < 1 || Number(userData.SubLevel) > 7" class="info">
+            <!-- <div v-if="Number(userData.SubLevel) < 1 || Number(userData.SubLevel) > 7" class="info">
               <div class="subitem">
                 <div class="label">{{ $t('promotion.partner.code') }} :</div>
                 <div class="num">
@@ -51,9 +51,9 @@
                   </a>
                 </div>
               </div>
-            </div>
+            </div> -->
             <!-- 1-7级代理的区域邀请码，伙伴邀请码 -->
-            <div v-else class="info">
+            <!-- <div v-else class="info">
               <div class="subitem">
                 <div v-if="Number(userData.SubLevel) >= 1 && Number(userData.SubLevel) < 8" class="label">{{ $t('promotion.quyu.code') + '(' + (Number(userData.SubLevel) + 1)+' Level)' }}:</div>
                 <div class="num">
@@ -92,6 +92,27 @@
                   </a>
                 </div>
               </div>
+            </div> -->
+            <div v-if="Number(userData.SubLevel) >= 1 && Number(userData.SubLevel) < 8" class="info">
+              <div class="subitem">
+                <div class="label">{{ $t('promotion.quyu.code') + '(' + (Number(userData.SubLevel) + 1)+' Level)' }}:</div>
+                <div class="num">
+                  <a-spin :loading="loading" class="load">
+                    {{codeInfo.quyuCode}}
+                  </a-spin>
+                </div>
+              </div>
+              <div class="subitem">
+                <div class="label">{{ $t('promotion.quyu.link') + '(' + (Number(userData.SubLevel) + 1)+' Level)' }}:</div>
+                <div class="num">
+                  <a
+                    :href="`https://manager.cyberpop.online?code=` + codeInfo.quyuCode"
+                    target="view_window"
+                  >
+                    https://manager.cyberpop.online?code={{ codeInfo.quyuCode }}
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
           <!-- <div v-if="codeInfo.userCode" class="item">
@@ -118,22 +139,22 @@
               </div>
             </div>
           </div> -->
-          <!-- <div v-if="codeInfo.userCode" class="item">
+          <div v-if="!loading" class="item">
             <div class="info">
               <div class="subitem">
-                <div class="label">{{ $t('promotion.down.link') }} :</div>
+                <div class="label">{{ $t('promotion.purchase.link') }} :</div>
                 <div class="num">
                   <a
-                    :href="`https://manager.cyberpop.online?code=` + codeInfo.userCode"
+                    href="https://dealers.cyberpop.online"
                     target="view_window"
                   >
-                    https://manager.cyberpop.online?code={{ codeInfo.userCode }}
+                  https://dealers.cyberpop.online
                   </a>
                 </div>
               </div>
             </div>
-          </div> -->
-          <div v-if="!codeInfo.partnerCode && !codeInfo.quyuCode && !loading" class="nothing">{{ $t('promotion.nothing') }}</div>
+          </div>
+          <!-- <div v-if="!codeInfo.partnerCode && !codeInfo.quyuCode && !loading" class="nothing">{{ $t('promotion.nothing') }}</div> -->
           <!-- loading -->
           <a-skeleton v-if="!codeInfo.userCode && !codeInfo.partnerCode && !codeInfo.quyuCode" :animation="true" :loading="loading" style="padding: 30px;">
             <a-space direction="vertical" :style="{width:'100%'}" size="large">

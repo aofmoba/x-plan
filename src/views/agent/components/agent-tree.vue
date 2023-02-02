@@ -9,7 +9,7 @@
               v-if="level >= 3 && subLevel < 8"
               :class="levels == 4 ? 'active' : ''"
               @click="changeItem(4)"
-              >{{ $t('agent.level2')+ ( subLevel ? '('+ (subLevel+1)+' Level)' : '' ) }}</a-button
+              >{{ $t('agent.level2')+ ( subLevel != -1 ? '('+ (subLevel+1)+' Level)' : '' ) }}</a-button
             >
             <a-button
               v-if="level >= 3"
@@ -355,7 +355,7 @@
   };
 
   // get userinfo - subLevel
-  const subLevel: any = ref(0)
+  const subLevel: any = ref(-1)
   const getUserInfo = () => {
     axios.get(`/api/user/getuser?address=${address.value}`).then((res: any) => {
       if ( res.data.code === 200 && res.data.data ) {

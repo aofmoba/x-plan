@@ -24,7 +24,7 @@
                 v-if="level >= 3 && subLevel < 8"
                 :class="levels == 4 ? 'active' : ''"
                 @click="changeItem(4)"
-                >{{ $t('agent.level2') + '-'+ (subLevel+1) }}</a-button>
+                >{{ $t('agent.level2') + ( subLevel != -1 ? '-'+ (subLevel+1) : '') }}</a-button>
               <a-button
                 v-if="level >= 3"
                 :class="levels == 3 ? 'active' : ''"
@@ -54,7 +54,7 @@
               </div>
             </template>
             <template #extra>
-              <div class="code-group">
+              <div v-if="level > 2" class="code-group">
                 <div class="code">
                   <a-button type="outline" size="mini" @click="changeCode()">{{ $t(btnContent) }}</a-button>
                 </div>
@@ -246,7 +246,7 @@
   const treeDataL4: any = ref([]);
   const btnContent: any = ref('workplace.code2')
   const level: any = ref('1')
-  const subLevel: any = ref(0)
+  const subLevel: any = ref(-1)
   const userLevel: any = ref('workplace.level')
   const disVisible = ref(false);
   const editVisible = ref(false);
@@ -350,7 +350,7 @@
   }
 
   // init data
-  const getMyInvit = (toL?: any) => {
+  const getMyInvit = async (toL?: any) => {
     useDate.value = [];
     treeDataL2.value = [];
     treeDataL3.value = [];
@@ -366,8 +366,7 @@
       hash: 0,
     };
     if (address.value) {
-      axios
-        .get(`/api/user/getdata?email=${email.value}`)
+      await axios.get(`/api/user/getdata?email=${email.value}`)
         .then((res: any) => {
           if (res.data.code === 200) {
             const result = res.data.data;
@@ -409,27 +408,17 @@
             } else if( toL == undefined ){
               // eslint-disable-next-line eqeqeq
               if( level.value == 4 ){
-                useDate.value = treeDataL2.value;
-                levels.value = 4;
-                userLevel.value = 'agent.level1'
-              // eslint-disable-next-line eqeqeq
-              }else if( level.value == 3 && subLevel.value < 8 ){ // 1-7区域
-                useDate.value = treeDataL2.value;
-                levels.value = 4;
-                userLevel.value = 'agent.level2'
-              // eslint-disable-next-line eqeqeq
-              }else if( level.value == 3 ){ // 8区域
-                useDate.value = treeDataL3.value;
-                levels.value = 3;
-                userLevel.value = 'agent.level2'
+                useDate.value = treeDataL2.value
               // eslint-disable-next-line eqeqeq
               }else if( level.value == 3 ){
+                if( subLevel.value < 8 ){  // 1-7区域
+                  useDate.value = treeDataL2.value
+                }else{ // 8-区域
+                  useDate.value = treeDataL3.value
+                }
+              // eslint-disable-next-line eqeqeq
+              }else if( level.value == 2 ){
                 useDate.value = treeDataL4.value;
-                levels.value = 2;
-                userLevel.value = 'agent.level3'
-              }else{
-                levels.value = 1;
-                userLevel.value = 'agent.level4'
               }
             }
           }
@@ -536,13 +525,34 @@
 
 
   // 获取算力
-  const getHashrate = (editNameFlag?: any) => {
-    axios.get(`/api/user/getuser?address=${address.value}`)
+  const getHashrate = async (editNameFlag?: any) => {
+    await axios.get(`/api/user/getuser?address=${address.value}`)
       .then((res: any) => {
         if ( res.data.code === 200 && res.data.data ) {
           editInfo.value.oldName = res.data.data.nikename;
           // editInfo.value.oldEmail = res.data.data.email;
           subLevel.value = Number(res.data.data.SubLevel)
+          // eslint-disable-next-line eqeqeq
+          if( level.value == 4 ){
+            levels.value = 4;
+            userLevel.value = 'agent.level1'
+          // eslint-disable-next-line eqeqeq
+          }else if( level.value == 3 ){
+            if( subLevel.value < 8 ){  // 1-7区域
+              levels.value = 4;
+              userLevel.value = 'agent.level2'
+            }else{ // 8-区域
+              levels.value = 3;
+              userLevel.value = 'agent.level2'
+            }
+          // eslint-disable-next-line eqeqeq
+          }else if( level.value == 2 ){
+            levels.value = 2;
+            userLevel.value = 'agent.level3'
+          }else{
+            levels.value = 1;
+            userLevel.value = 'agent.level4'
+          }
           const tempArr = []
           tempArr.push(res.data.data)
           myUseDate.value = childPush( tempArr,editNameFlag); // 当修改昵称时，children不进行总数、算力计算

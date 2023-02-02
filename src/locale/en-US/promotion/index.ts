@@ -9,7 +9,8 @@ export default {
   'promotion.quyu.link': 'My regional promotion link',
   'promotion.down.link': 'My download promotion link',
   'promotion.nothing': 'Oops, There’s nothing left here.',
-  'promotion.national': 'National agency privilege',
+  'promotion.national': 'Develop agency privileges',
   'promotion.regional': 'Regional agent privileges',
   'promotion.partner': 'Partner agent privilege',
+  'promotion.purchase.link': 'Purchase link',
 };
