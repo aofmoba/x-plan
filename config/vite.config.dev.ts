@@ -12,21 +12,26 @@ export default mergeConfig(
       },
       host: '0.0.0.0',
       proxy: {
-          '/data': {
-            target: 'https://api.cyberpop.online/', // 实际请求地址
-            changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/data/, '')
-          },
-          '/api': {
-              target: 'https://invitecode.cyberpop.online/', // http://1.14.201.147:8612/
-              changeOrigin: true,
-              rewrite: (path) => path.replace(/^\/api/, '')
-          }
-          // '/email': {
-          //   target: 'http://192.168.0.134/', // 实际请求地址
-          //   changeOrigin: true,
-          //   rewrite: (path) => path.replace(/^\/email/, '')
-          // },
+        '/data': {
+          target: 'https://api.cyberpop.online/', // 实际请求地址
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/data/, ''),
+        },
+        '/api': {
+          target: 'https://invitecode.cyberpop.online/',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+        '/nftapi': {
+          target: 'https://nftapi.cyberpop.online/',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/nftapi/, ''),
+        },
+        // '/email': {
+        //   target: 'http://192.168.0.134/', // 实际请求地址
+        //   changeOrigin: true,
+        //   rewrite: (path) => path.replace(/^\/email/, '')
+        // },
       },
     },
     plugins: [

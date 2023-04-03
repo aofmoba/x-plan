@@ -20,4 +20,6 @@ export default {
   'agent.register.err1': '邮箱已被注册',
   'agent.register.err2': '邀请码错误',
   'agent.register.err3': '邮箱错误',
+  'agent.share': '分佣',
+  'agent.sync': '同步',
 };

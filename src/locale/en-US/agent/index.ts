@@ -21,4 +21,6 @@ export default {
   'agent.register.err1': 'Email has been registered',
   'agent.register.err2': 'Invitation Code Error',
   'agent.register.err3': 'Email Error',
+  'agent.share': 'Share',
+  'agent.sync': 'Sync',
 };

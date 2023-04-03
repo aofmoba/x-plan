@@ -1,6 +1,9 @@
 export default {
   // my
   'wallet.card.title': '钱包信息',
+  'wallet.share.title': '分佣信息',
+  'wallet.share.status1': '未分佣',
+  'wallet.share.status2': '已分佣',
   'wallet.item.level': '等级',
   'wallet.item.ratio': '返佣比例',
   'wallet.item.balance': '余额',
